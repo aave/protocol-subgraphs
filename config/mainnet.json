@@ -1,0 +1,9 @@
+{
+  "network": "mainnet",
+  "AaveOracleAddress": "0xA50ba011c48153De246E5192C8f9258A2ba79Ca9",
+  "AaveOracleStartBlock": 11275900,
+  "ChainlinkSourcesRegistryAddress": "0x39fEef0534a837571daF660df9B9F1Ee1bCE441a",
+  "ChainlinkSourcesRegistryStartBlock": 11379687,
+  "LendingPoolAddressesProviderRegistryAddress": "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413",
+  "LendingPoolAddressesProviderRegistryStartBlock": 11360920
+}

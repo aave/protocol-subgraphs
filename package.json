@@ -1,0 +1,64 @@
+{
+  "name": "subgraph-protocol-v2",
+  "version": "1.0.0",
+  "description": "This package contains subgraph of the protocol v2",
+  "scripts": {
+    "dev-environment": "npm i && tail -f /dev/null",
+    "update-address": "node ./scripts/updateMigratorAddress",
+    "update-abi-addresses": "npm run update-address && npm run prepare:abi",
+    "prepare:all": "npm run prepare:contracts && npm run prepare:subgraph",
+    "prepare:contracts": "rm -rf externals && npm run submodule:get && npm run submodule:compile-contracts",
+    "prepare:subgraph": "mustache ./config/${NETWORK:-dev}.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:contracts:local": "npm run submodule:get && npm run deploy-contracts && npm run update-address",
+    "subgraph:codegen": "graph codegen --output-dir ./generated",
+    "subgraph:build": "graph build",
+    "subgraph:create:local": "graph create aave/protocol-v2 --node http://localhost:8020",
+    "subgraph:create:self-hosted:kovan": "graph create aave/protocol-v2-kovan --node https://adm-thegraph.aave.com",
+    "subgraph:create:self-hosted:mainnet": "graph create aave/protocol-v2 --node https://adm-thegraph.aave.com",
+    "subgraph:deploy:local": "graph deploy aave/protocol-v2 --ipfs http://localhost:5001 --node http://localhost:8020",
+    "subgraph:deploy:self-hosted": "graph deploy $SLUG --ipfs https://ipfs-thegraph.aave.com --node https://adm-thegraph.aave.com",
+    "subgraph:deploy:hosted": "graph deploy $SLUG --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token $ACCESS_TOKEN",
+    "submodule:get": "git submodule add -f https://github.com/aave/protocol-v2.git externals/protocol-v2 && npm run submodule:install",
+    "submodule:install": "git submodule foreach npm install",
+    "submodule:compile-contracts": "git submodule foreach npm run compile",
+    "submodule:deploy-contracts": "git submodule foreach npm run aave:docker:dev:migration",
+    "submodule:deploy:scenario": "git submodule foreach npm run test-subgraph:scenarios",
+    "deploy-contracts": "npm run submodule:compile-contracts && npm run submodule:deploy-contracts",
+    "deploy-stack:local": "npm run prepare:all && npm run subgraph:local",
+    "deploy-stack:local:scenario": "npm run submodule:deploy:scenario && npm run update-abi-addresses && npm run prepare:subgraph && npm run subgraph:local",
+    "deploy-stack:local:post-scenario": "npm run update-abi-addresses && npm run prepare:subgraph && npm run subgraph:deploy:local",
+    "deploy:hosted:kovan": "NETWORK=kovan env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2-kovan env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:mainnet": "NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2 env-cmd npm run subgraph:deploy:hosted",
+    "deploy:self-hosted:kovan": "NETWORK=kovan npm run prepare:subgraph && SLUG=aave/protocol-v2-kovan npm run subgraph:deploy:self-hosted",
+    "deploy:self-hosted:mainnet": "NETWORK=mainnet npm run prepare:subgraph && SLUG=aave/protocol-v2 npm run subgraph:deploy:self-hosted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/aave-tech/subgraph-v2"
+  },
+  "author": "AAVE <tech@aave.com>",
+  "contributors": [
+    {
+      "name": "Pol Sendra",
+      "email": "pol@aave.com"
+    },
+    {
+      "name": "Andrey Kozlov",
+      "email": "andrey@aave.com"
+    }
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.18.0",
+    "@graphprotocol/graph-ts": "^0.18.1",
+    "env-cmd": "^10.1.0",
+    "mustache": "^3.1.0",
+    "typescript": "3.5.3",
+    "@typescript-eslint/eslint-plugin": "^2.0.0",
+    "@typescript-eslint/parser": "^2.0.0",
+    "eslint": "^6.2.2",
+    "eslint-config-prettier": "^6.1.0",
+    "lint-staged": "^9.2.5",
+    "prettier": "^1.18.2"
+  }
+}

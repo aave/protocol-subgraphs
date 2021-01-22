@@ -1,0 +1,72 @@
+version: '3.5'
+
+volumes:
+  graph_pg_data:
+    driver: local
+  graph_ipfs_data:
+    driver: local
+
+x-graph-pg-base: &graph-pg-base
+  POSTGRES_USER: graph-node
+  POSTGRES_PASSWORD: let-me-in
+  POSTGRES_DB: graph-node
+  postgres_user: graph-node
+  postgres_pass: let-me-in
+  postgres_db: graph-node
+
+services:
+  thegraph-env:
+    image: node:11
+    command: npm run dev-environment
+    restart: always
+    working_dir: /src
+    volumes:
+      - type: bind
+        source: ./
+        target: /src
+    environment:
+      TARGET: 'dev'
+      GANACHE_URL: 'http://buidler:8545'
+    depends_on:
+      - buidler
+      - graph-node
+      - graph-ipfs
+
+  graph-node:
+    image: graphprotocol/graph-node
+    depends_on:
+      - buidler
+      - graph-postgres
+      - graph-ipfs
+    ports:
+      - '8000:8000'
+      - '8001:8001'
+      - '8030:8030'
+      - '8020:8020'
+    restart: always
+    environment:
+      <<: *graph-pg-base
+      postgres_host: 'graph-postgres:5432'
+      ipfs: 'graph-ipfs:5001'
+      ethereum: 'buidlerevm:http://buidler:8545'
+      RUST_LOG: 'info'
+
+  graph-ipfs:
+    image: ipfs/go-ipfs:v0.4.23
+    restart: always
+    volumes:
+      - type: volume
+        source: graph_ipfs_data
+        target: /data/ipfs
+    ports:
+      - '5001:5001'
+
+  graph-postgres:
+    image: postgres
+    command: ['postgres', '-cshared_preload_libraries=pg_stat_statements']
+    environment:
+      <<: *graph-pg-base
+    volumes:
+      - type: volume
+        source: graph_pg_data
+        target: /var/lib/postgresql/data

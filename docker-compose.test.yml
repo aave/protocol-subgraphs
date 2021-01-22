@@ -1,0 +1,6 @@
+version: "3.5"
+services:
+  dlp-contracts:
+    build:
+      context: ./
+    command: npm run ci:test
