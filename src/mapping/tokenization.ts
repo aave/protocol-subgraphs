@@ -109,6 +109,11 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   reserveParamsHistoryItem.liquidityIndex = reserve.liquidityIndex;
   reserveParamsHistoryItem.liquidityRate = reserve.liquidityRate;
 
+  reserveParamsHistoryItem.lifetimeRepayments = reserve.lifetimeRepayments;
+  reserveParamsHistoryItem.lifetimeWithdrawals = reserve.lifetimeWithdrawals;
+  reserveParamsHistoryItem.lifetimeLiquidity = reserve.lifetimeLiquidity;
+  reserveParamsHistoryItem.lifetimeBorrows = reserve.lifetimeBorrows;
+
   let priceOracleAsset = getPriceOracleAsset(reserve.price);
   reserveParamsHistoryItem.priceInEth = priceOracleAsset.priceInEth;
 
@@ -190,7 +195,6 @@ function tokenMint(event: ethereum.Event, from: Address, value: BigInt, index: B
   } else {
     // log.error('Minting to treasuey {} an amount of: {}', [from.toHexString(), value.toString()]);
   }
-
 }
 
 export function handleATokenBurn(event: ATokenBurn): void {
@@ -323,6 +327,7 @@ export function handleVariableTokenMint(event: VTokenMint): void {
   poolReserve.lifetimeCurrentVariableDebt = rayMul(poolReserve.lifetimeScaledVariableDebt, index);
 
   poolReserve.availableLiquidity = poolReserve.availableLiquidity.minus(value);
+  poolReserve.lifetimeBorrows = poolReserve.lifetimeBorrows.plus(value);
 
   saveReserve(poolReserve, event);
 
@@ -355,6 +360,7 @@ export function handleStableTokenMint(event: STokenMint): void {
     calculatedAmount
   );
 
+  poolReserve.lifetimeBorrows = poolReserve.lifetimeBorrows.plus(borrowedAmount);
   poolReserve.averageStableRate = event.params.avgStableRate;
 
   poolReserve.availableLiquidity = poolReserve.availableLiquidity.minus(borrowedAmount);
@@ -402,7 +408,9 @@ export function handleStableTokenBurn(event: STokenBurn): void {
   // poolReserve.availableLiquidity = poolReserve.totalDeposits
   //   .minus(poolReserve.totalPrincipalStableDebt)
   //   .minus(poolReserve.totalScaledVariableDebt);
-  poolReserve.availableLiquidity = poolReserve.availableLiquidity.plus(amount).plus(balanceIncrease);
+  poolReserve.availableLiquidity = poolReserve.availableLiquidity
+    .plus(amount)
+    .plus(balanceIncrease);
 
   poolReserve.totalLiquidity = poolReserve.totalLiquidity.plus(balanceIncrease);
 

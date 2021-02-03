@@ -391,6 +391,11 @@ type ReserveParamsHistoryItem @entity {
   lifetimePrincipalStableDebt: BigInt!
   lifetimeScaledVariableDebt: BigInt!
   lifetimeCurrentVariableDebt: BigInt!
+
+  lifetimeRepayments: BigInt! # default: 0
+  lifetimeWithdrawals: BigInt! # default: 0
+  lifetimeLiquidity: BigInt! # default: 0
+  lifetimeBorrows: BigInt! #default: 0
 }
 
 type Reserve @entity {
@@ -449,6 +454,7 @@ type Reserve @entity {
   lifetimeCurrentVariableDebt: BigInt! # default: 0
   lifetimeRepayments: BigInt! # default: 0
   lifetimeWithdrawals: BigInt! # default: 0
+  lifetimeBorrows: BigInt! # default 0
   lifetimeLiquidated: BigInt! # default: 0
   lifetimeFeeCollected: BigInt! # default: 0
   lifetimeFlashLoans: BigInt! # default: 0

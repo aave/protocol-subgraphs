@@ -141,6 +141,7 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
     reserve.lifetimeCurrentVariableDebt = zeroBI();
 
     reserve.lifetimeLiquidity = zeroBI();
+    reserve.lifetimeBorrows = zeroBI();
     reserve.lifetimeFeeCollected = zeroBI();
     reserve.lifetimeRepayments = zeroBI();
     reserve.lifetimeWithdrawals = zeroBI();
@@ -272,6 +273,10 @@ export function getOrInitReserveParamsHistoryItem(
     reserveParamsHistoryItem.lifetimePrincipalStableDebt = zeroBI();
     reserveParamsHistoryItem.lifetimeScaledVariableDebt = zeroBI();
     reserveParamsHistoryItem.lifetimeCurrentVariableDebt = zeroBI();
+    reserveParamsHistoryItem.lifetimeRepayments = zeroBI();
+    reserveParamsHistoryItem.lifetimeWithdrawals = zeroBI();
+    reserveParamsHistoryItem.lifetimeLiquidity = zeroBI();
+    reserveParamsHistoryItem.lifetimeBorrows = zeroBI();
   }
   return reserveParamsHistoryItem as ReserveParamsHistoryItem;
 }
