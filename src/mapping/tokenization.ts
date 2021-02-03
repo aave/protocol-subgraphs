@@ -108,7 +108,6 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   reserveParamsHistoryItem.stableBorrowRate = reserve.stableBorrowRate;
   reserveParamsHistoryItem.liquidityIndex = reserve.liquidityIndex;
   reserveParamsHistoryItem.liquidityRate = reserve.liquidityRate;
-
   reserveParamsHistoryItem.lifetimeRepayments = reserve.lifetimeRepayments;
   reserveParamsHistoryItem.lifetimeWithdrawals = reserve.lifetimeWithdrawals;
   reserveParamsHistoryItem.lifetimeLiquidity = reserve.lifetimeLiquidity;
