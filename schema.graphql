@@ -631,3 +631,20 @@ type User @entity {
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "user")
   originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "user")
 }
+
+enum SwapType {
+  REPAY
+  LIQUIDITY
+}
+
+type SwapHistory @entity {
+  """
+  tx hash
+  """
+  id: ID!
+  fromAsset: Bytes!
+  toAsset: Bytes!
+  fromAmount: BigInt!
+  receivedAmount: BigInt!
+  swapType: SwapType!
+}
