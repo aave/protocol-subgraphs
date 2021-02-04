@@ -284,10 +284,6 @@ export function getOrInitReserveParamsHistoryItem(
     reserveParamsHistoryItem.lifetimeDepositorsInterestEarned = zeroBI();
     // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = zeroBI();
     // reserveParamsHistoryItem.lifetimeVariableDebtFeeCollected = zeroBI();
-    reserveParamsHistoryItem.lifetimeRepayments = zeroBI();
-    reserveParamsHistoryItem.lifetimeWithdrawals = zeroBI();
-    reserveParamsHistoryItem.lifetimeLiquidity = zeroBI();
-    reserveParamsHistoryItem.lifetimeBorrows = zeroBI();
   }
   return reserveParamsHistoryItem as ReserveParamsHistoryItem;
 }

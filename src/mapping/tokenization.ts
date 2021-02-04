@@ -116,11 +116,6 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   reserveParamsHistoryItem.liquidityIndex = reserve.liquidityIndex;
   reserveParamsHistoryItem.liquidityRate = reserve.liquidityRate;
   reserveParamsHistoryItem.totalATokenSupply = reserve.totalATokenSupply;
-  reserveParamsHistoryItem.lifetimeRepayments = reserve.lifetimeRepayments;
-  reserveParamsHistoryItem.lifetimeWithdrawals = reserve.lifetimeWithdrawals;
-  reserveParamsHistoryItem.lifetimeLiquidity = reserve.lifetimeLiquidity;
-  reserveParamsHistoryItem.lifetimeBorrows = reserve.lifetimeBorrows;
-
   let priceOracleAsset = getPriceOracleAsset(reserve.price);
   reserveParamsHistoryItem.priceInEth = priceOracleAsset.priceInEth;
 
@@ -373,8 +368,8 @@ export function handleStableTokenMint(event: STokenMint): void {
     calculatedAmount
   );
 
-  poolReserve.lifetimeBorrows = poolReserve.lifetimeBorrows.plus(borrowedAmount);
   poolReserve.averageStableRate = event.params.avgStableRate;
+  poolReserve.lifetimeBorrows = poolReserve.lifetimeBorrows.plus(borrowedAmount);
 
   poolReserve.availableLiquidity = poolReserve.availableLiquidity.minus(borrowedAmount);
 
