@@ -99,6 +99,13 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   reserveParamsHistoryItem.lifetimePrincipalStableDebt = reserve.lifetimePrincipalStableDebt;
   reserveParamsHistoryItem.lifetimeScaledVariableDebt = reserve.lifetimeScaledVariableDebt;
   reserveParamsHistoryItem.lifetimeCurrentVariableDebt = reserve.lifetimeCurrentVariableDebt;
+  reserveParamsHistoryItem.lifetimeFlashLoanPremium = reserve.lifetimeFlashLoanPremium;
+  reserveParamsHistoryItem.lifetimeFlashLoans = reserve.lifetimeFlashLoans;
+  // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = reserve.lifetimeStableDebFeeCollected;
+  // reserveParamsHistoryItem.lifetimeVariableDebtFeeCollected = reserve.lifetimeVariableDebtFeeCollected;
+  reserveParamsHistoryItem.lifetimeReserveFactorAccrued = reserve.lifetimeReserveFactorAccrued;
+  reserveParamsHistoryItem.lifetimeDepositorsInterestEarned =
+    reserve.lifetimeDepositorsInterestEarned;
   reserveParamsHistoryItem.availableLiquidity = reserve.availableLiquidity;
   reserveParamsHistoryItem.totalLiquidity = reserve.totalLiquidity;
   reserveParamsHistoryItem.totalLiquidityAsCollateral = reserve.totalLiquidityAsCollateral;
@@ -108,6 +115,7 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   reserveParamsHistoryItem.stableBorrowRate = reserve.stableBorrowRate;
   reserveParamsHistoryItem.liquidityIndex = reserve.liquidityIndex;
   reserveParamsHistoryItem.liquidityRate = reserve.liquidityRate;
+  reserveParamsHistoryItem.totalATokenSupply = reserve.totalATokenSupply;
   reserveParamsHistoryItem.lifetimeRepayments = reserve.lifetimeRepayments;
   reserveParamsHistoryItem.lifetimeWithdrawals = reserve.lifetimeWithdrawals;
   reserveParamsHistoryItem.lifetimeLiquidity = reserve.lifetimeLiquidity;
@@ -144,6 +152,7 @@ function tokenBurn(event: ethereum.Event, from: Address, value: BigInt, index: B
   //   .minus(poolReserve.totalScaledVariableDebt);
 
   poolReserve.availableLiquidity = poolReserve.availableLiquidity.minus(value);
+  poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.minus(value);
 
   poolReserve.totalLiquidity = poolReserve.totalLiquidity.minus(value);
   poolReserve.lifetimeWithdrawals = poolReserve.lifetimeWithdrawals.plus(value);
@@ -159,12 +168,12 @@ function tokenBurn(event: ethereum.Event, from: Address, value: BigInt, index: B
 }
 
 function tokenMint(event: ethereum.Event, from: Address, value: BigInt, index: BigInt): void {
+  let aToken = getOrInitAToken(event.address);
+  let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress as Address, event);
+  poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(value);
   // Check if we are minting to treasury
   if (from.toHexString() != '0x464c71f6c2f760dda6093dcb91c24c39e5d6e18c') {
-    let aToken = getOrInitAToken(event.address);
     let userReserve = getOrInitUserReserve(from, aToken.underlyingAssetAddress as Address, event);
-    let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress as Address, event);
-
     let calculatedAmount = rayDiv(value, index);
 
     userReserve.scaledATokenBalance = userReserve.scaledATokenBalance.plus(calculatedAmount);
@@ -192,6 +201,8 @@ function tokenMint(event: ethereum.Event, from: Address, value: BigInt, index: B
     saveReserve(poolReserve, event);
     saveUserReserveAHistory(userReserve, event, index);
   } else {
+    poolReserve.lifetimeReserveFactorAccrued = poolReserve.lifetimeReserveFactorAccrued.plus(value);
+    saveReserve(poolReserve, event);
     // log.error('Minting to treasuey {} an amount of: {}', [from.toHexString(), value.toString()]);
   }
 }
@@ -258,6 +269,9 @@ export function handleVariableTokenBurn(event: VTokenBurn): void {
 
   poolReserve.totalScaledVariableDebt = poolReserve.totalScaledVariableDebt.minus(calculatedAmount);
   poolReserve.totalCurrentVariableDebt = rayMul(poolReserve.totalScaledVariableDebt, index);
+  // poolReserve.lifetimeVariableDebtFeeCollected = poolReserve.lifetimeVariableDebtFeeCollected.plus(
+  //  value.minus(calculatedAmount)
+  // );
 
   poolReserve.availableLiquidity = poolReserve.availableLiquidity.plus(value);
   poolReserve.lifetimeRepayments = poolReserve.lifetimeRepayments.plus(value);
@@ -410,8 +424,12 @@ export function handleStableTokenBurn(event: STokenBurn): void {
   poolReserve.availableLiquidity = poolReserve.availableLiquidity
     .plus(amount)
     .plus(balanceIncrease);
+  // poolReserve.lifetimeStableDebFeeCollected = poolReserve.lifetimeStableDebFeeCollected.plus(
+  //  balanceIncrease
+  // );
 
   poolReserve.totalLiquidity = poolReserve.totalLiquidity.plus(balanceIncrease);
+  poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(balanceIncrease);
 
   saveReserve(poolReserve, event);
 

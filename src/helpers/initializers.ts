@@ -118,6 +118,7 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
     reserve.stableRateSlope2 = zeroBI();
     reserve.utilizationRate = zeroBD();
     reserve.totalLiquidity = zeroBI();
+    reserve.totalATokenSupply = zeroBI();
     reserve.totalLiquidityAsCollateral = zeroBI();
     reserve.availableLiquidity = zeroBI();
     reserve.liquidityRate = zeroBI();
@@ -142,16 +143,19 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
 
     reserve.lifetimeLiquidity = zeroBI();
     reserve.lifetimeBorrows = zeroBI();
-    reserve.lifetimeFeeCollected = zeroBI();
     reserve.lifetimeRepayments = zeroBI();
     reserve.lifetimeWithdrawals = zeroBI();
     reserve.lifetimeLiquidated = zeroBI();
     reserve.lifetimeFlashLoans = zeroBI();
-    // reserve.lifetimeFlashloanDepositorsFee = zeroBI();
-    reserve.lifetimeFlashloanProtocolFee = zeroBI();
+    reserve.lifetimeFlashLoanPremium = zeroBI();
 
     reserve.stableDebtLastUpdateTimestamp = 0;
     reserve.lastUpdateTimestamp = 0;
+
+    reserve.lifetimeReserveFactorAccrued = zeroBI();
+    reserve.lifetimeDepositorsInterestEarned = zeroBI();
+    // reserve.lifetimeStableDebFeeCollected = zeroBI();
+    // reserve.lifetimeVariableDebtFeeCollected = zeroBI();
 
     let priceOracleAsset = getPriceOracleAsset(underlyingAsset.toHexString());
     if (!priceOracleAsset.lastUpdateTimestamp) {
@@ -262,6 +266,7 @@ export function getOrInitReserveParamsHistoryItem(
     reserveParamsHistoryItem.liquidityIndex = zeroBI();
     reserveParamsHistoryItem.liquidityRate = zeroBI();
     reserveParamsHistoryItem.totalLiquidity = zeroBI();
+    reserveParamsHistoryItem.totalATokenSupply = zeroBI();
     reserveParamsHistoryItem.availableLiquidity = zeroBI();
     reserveParamsHistoryItem.totalLiquidityAsCollateral = zeroBI();
     reserveParamsHistoryItem.priceInEth = zeroBI();
@@ -273,6 +278,12 @@ export function getOrInitReserveParamsHistoryItem(
     reserveParamsHistoryItem.lifetimePrincipalStableDebt = zeroBI();
     reserveParamsHistoryItem.lifetimeScaledVariableDebt = zeroBI();
     reserveParamsHistoryItem.lifetimeCurrentVariableDebt = zeroBI();
+    reserveParamsHistoryItem.lifetimeFlashLoans = zeroBI();
+    reserveParamsHistoryItem.lifetimeFlashLoanPremium = zeroBI();
+    reserveParamsHistoryItem.lifetimeReserveFactorAccrued = zeroBI();
+    reserveParamsHistoryItem.lifetimeDepositorsInterestEarned = zeroBI();
+    // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = zeroBI();
+    // reserveParamsHistoryItem.lifetimeVariableDebtFeeCollected = zeroBI();
     reserveParamsHistoryItem.lifetimeRepayments = zeroBI();
     reserveParamsHistoryItem.lifetimeWithdrawals = zeroBI();
     reserveParamsHistoryItem.lifetimeLiquidity = zeroBI();

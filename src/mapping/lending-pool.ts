@@ -1,8 +1,9 @@
-import { ethereum } from '@graphprotocol/graph-ts';
+import { ethereum, BigInt } from '@graphprotocol/graph-ts';
 import {
   BORROW_MODE_STABLE,
   BORROW_MODE_VARIABLE,
   getBorrowRateMode,
+  zeroBI,
 } from '../utils/converters';
 import {
   Borrow,
@@ -22,9 +23,11 @@ import {
 import {
   getOrInitPriceOracle,
   getOrInitReferrer,
-  getOrInitReserve, getOrInitReserveParamsHistoryItem,
+  getOrInitReserve,
+  getOrInitReserveParamsHistoryItem,
   getOrInitUser,
-  getOrInitUserReserve, getPriceOracleAsset,
+  getOrInitUserReserve,
+  getPriceOracleAsset,
 } from '../helpers/initializers';
 import {
   Borrow as BorrowAction,
@@ -40,6 +43,7 @@ import {
   UsageAsCollateral as UsageAsCollateralAction,
 } from '../../generated/schema';
 import { EventTypeRef, getHistoryId } from '../utils/id-generation';
+import { calculateGrowth } from '../helpers/math';
 
 export function handleDeposit(event: Deposit): void {
   let poolReserve = getOrInitReserve(event.params.reserve, event);
@@ -93,8 +97,8 @@ export function handleBorrow(event: Borrow): void {
   borrow.userReserve = userReserve.id;
   borrow.reserve = poolReserve.id;
   borrow.amount = event.params.amount;
-  borrow.stableTokenDebt = userReserve.principalStableDebt; // TODO: why it make sense ?
-  borrow.variableTokenDebt = userReserve.scaledVariableDebt; // TODO: why it make sense ?
+  borrow.stableTokenDebt = userReserve.principalStableDebt;
+  borrow.variableTokenDebt = userReserve.scaledVariableDebt;
   borrow.borrowRate = event.params.borrowRate;
   borrow.borrowRateMode = getBorrowRateMode(event.params.borrowRateMode);
   borrow.timestamp = event.block.timestamp.toI32();
@@ -222,8 +226,8 @@ export function handleFlashLoan(event: FlashLoan): void {
   poolReserve.availableLiquidity = poolReserve.availableLiquidity.plus(premium);
 
   poolReserve.lifetimeFlashLoans = poolReserve.lifetimeFlashLoans.plus(event.params.amount);
-  poolReserve.lifetimeFlashloanProtocolFee = poolReserve.lifetimeFlashloanProtocolFee.plus(premium);
-  poolReserve.lifetimeFeeCollected = poolReserve.lifetimeFeeCollected.plus(premium);
+  poolReserve.lifetimeFlashLoanPremium = poolReserve.lifetimeFlashLoanPremium.plus(premium);
+  poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(premium);
 
   poolReserve.save();
 
@@ -282,11 +286,25 @@ export function handleReserveUsedAsCollateralDisabled(
 
 export function handleReserveDataUpdated(event: ReserveDataUpdated): void {
   let reserve = getOrInitReserve(event.params.reserve, event);
-  reserve.liquidityRate = event.params.liquidityRate;
   reserve.stableBorrowRate = event.params.stableBorrowRate;
   reserve.variableBorrowRate = event.params.variableBorrowRate;
-  reserve.liquidityIndex = event.params.liquidityIndex;
   reserve.variableBorrowIndex = event.params.variableBorrowIndex;
+  let timestamp = event.block.timestamp;
+  let prevTimestamp = BigInt.fromI32(reserve.lastUpdateTimestamp);
+  if (timestamp.gt(prevTimestamp)) {
+    let growth = calculateGrowth(
+      reserve.totalATokenSupply,
+      reserve.liquidityRate,
+      prevTimestamp,
+      timestamp
+    );
+    reserve.totalATokenSupply = reserve.totalATokenSupply.plus(growth);
+    reserve.lifetimeDepositorsInterestEarned = reserve.lifetimeDepositorsInterestEarned.plus(
+      growth
+    );
+  }
+  reserve.liquidityRate = event.params.liquidityRate;
+  reserve.liquidityIndex = event.params.liquidityIndex;
   reserve.lastUpdateTimestamp = event.block.timestamp.toI32();
 
   reserve.save();

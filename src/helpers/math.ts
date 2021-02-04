@@ -7,6 +7,16 @@ let WAD = BigInt.fromI32(10).pow(18);
 let halfRAY = RAY.div(BigInt.fromI32(2));
 let SECONDS_PER_YEAR = BigInt.fromI32(31556952);
 
+export function rayToWad(a: BigInt): BigInt {
+  let halfRatio = WAD_RAY_RATIO.div(BigInt.fromI32(2));
+  return halfRatio.plus(a).div(WAD_RAY_RATIO);
+}
+
+export function wadToRay(a: BigInt): BigInt {
+  let result = a.times(WAD_RAY_RATIO);
+  return result;
+}
+
 export function rayDiv(a: BigInt, b: BigInt): BigInt {
   let halfB = b.div(BigInt.fromI32(2));
   let result = a.times(RAY);
@@ -66,17 +76,18 @@ export function calculateLinearInterest(
 
   let timeDelta = rayDiv(wadToRay(timeDifference), wadToRay(SECONDS_PER_YEAR));
 
-  return rayMul(rate, timeDelta).plus(RAY);
+  return rayMul(rate, timeDelta);
 }
 
-export function rayToWad(a: BigInt): BigInt {
-  let halfRatio = WAD_RAY_RATIO.div(BigInt.fromI32(2));
-  let result = halfRatio.plus(a);
+export function calculateGrowth(
+  amount: BigInt,
+  rate: BigInt,
+  lastUpdatedTimestamp: BigInt,
+  nowTimestamp: BigInt
+): BigInt {
+  let growthRate = calculateLinearInterest(rate, lastUpdatedTimestamp, nowTimestamp);
 
-  return result.div(WAD_RAY_RATIO);
-}
+  let growth = rayMul(wadToRay(amount), growthRate);
 
-export function wadToRay(a: BigInt): BigInt {
-  let result = a.times(WAD_RAY_RATIO);
-  return result;
+  return rayToWad(growth);
 }
