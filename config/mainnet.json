@@ -5,5 +5,9 @@
   "ChainlinkSourcesRegistryAddress": "0x39fEef0534a837571daF660df9B9F1Ee1bCE441a",
   "ChainlinkSourcesRegistryStartBlock": 11379687,
   "LendingPoolAddressesProviderRegistryAddress": "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413",
-  "LendingPoolAddressesProviderRegistryStartBlock": 11360920
+  "LendingPoolAddressesProviderRegistryStartBlock": 11360920,
+  "UniswapLiquiditySwapAdapterAddress": "0x63a3f444e97d14e671e7ee323c4234c8095e3516",
+  "UniswapLiquiditySwapAdapterStartBlock": 11614820,
+  "UniswapRepayAdapterAddress": "0x498c5431eb517101582988fbb36431ddaac8f4b1",
+  "UniswapRepayAdapterStartBlock": 11614200
 }

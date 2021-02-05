@@ -20,6 +20,8 @@ import {
   Swap,
   ReserveDataUpdated,
 } from '../../generated/templates/LendingPool/LendingPool';
+import { Swapped as SwappedRepay } from '../../generated/UniswapRepayAdapter/UniswapRepayAdapter';
+import { Swapped as SwappedLiquidity } from '../../generated/UniswapLiquiditySwapAdapter/UniswapLiquiditySwapAdapter';
 import {
   getOrInitPriceOracle,
   getOrInitReferrer,
@@ -40,6 +42,7 @@ import {
   Repay as RepayAction,
   Reserve,
   Swap as SwapAction,
+  SwapHistory,
   UsageAsCollateral as UsageAsCollateralAction,
 } from '../../generated/schema';
 import { EventTypeRef, getHistoryId } from '../utils/id-generation';
@@ -308,4 +311,28 @@ export function handleReserveDataUpdated(event: ReserveDataUpdated): void {
   reserve.lastUpdateTimestamp = event.block.timestamp.toI32();
 
   reserve.save();
+}
+
+export function handleSwappedRepay(event: SwappedRepay): void {
+  let swap = new SwapHistory(getHistoryId(event, EventTypeRef.SwapAdapter));
+
+  swap.fromAsset = event.params.fromAsset.toHexString();
+  swap.toAsset = event.params.toAsset.toHexString();
+  swap.fromAmount = event.params.fromAmount;
+  swap.receivedAmount = event.params.receivedAmount;
+  swap.swapType = 'REPAY';
+
+  swap.save();
+}
+
+export function handleSwappedLiquidity(event: SwappedLiquidity): void {
+  let swap = new SwapHistory(getHistoryId(event, EventTypeRef.SwapAdapter));
+
+  swap.fromAsset = event.params.fromAsset.toHexString();
+  swap.toAsset = event.params.toAsset.toHexString();
+  swap.fromAmount = event.params.fromAmount;
+  swap.receivedAmount = event.params.receivedAmount;
+  swap.swapType = 'LIQUIDITY';
+
+  swap.save();
 }

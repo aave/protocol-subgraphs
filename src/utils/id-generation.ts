@@ -13,6 +13,7 @@ export enum EventTypeRef {
   LiquidationCall,
   FlashLoan,
   OriginationFeeLiquidation,
+  SwapAdapter,
 }
 
 export function getHistoryId(

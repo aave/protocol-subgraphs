@@ -5,5 +5,9 @@
   "ChainlinkSourcesRegistryAddress": "0x0000000000000000000000000000000000000000",
   "ChainlinkSourcesRegistryStartBlock": 0,
   "LendingPoolAddressesProviderRegistryAddress": "0x987D8EE0F70EdC8e9651c9E6a1618B8Bc8B9FB61",
-  "LendingPoolAddressesProviderRegistryStartBlock": 0
+  "LendingPoolAddressesProviderRegistryStartBlock": 0,
+  "UniswapLiquiditySwapAdapterAddress": "0x0000000000000000000000000000000000000000",
+  "UniswapLiquiditySwapAdapterStartBlock": 0,
+  "UniswapRepayAdapterAddress": "0x0000000000000000000000000000000000000000",
+  "UniswapRepayAdapterStartBlock": 0 
 }

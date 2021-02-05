@@ -631,3 +631,15 @@ type User @entity {
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "user")
   originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "user")
 }
+
+type SwapHistory @entity {
+  """
+  tx hash
+  """
+  id: ID!
+  fromAsset: String!
+  toAsset: String!
+  fromAmount: BigInt!
+  receivedAmount: BigInt!
+  swapType: String!
+}
