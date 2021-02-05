@@ -480,8 +480,8 @@ type Reserve @entity {
   paramsHistory: [ReserveParamsHistoryItem!]! @derivedFrom(field: "reserve")
   configurationHistory: [ReserveConfigurationHistoryItem!]! @derivedFrom(field: "reserve")
   deposits: [Deposit!]! @derivedFrom(field: "reserve")
-  fromSwapsHistory: [SwapHistory!]! @derivatedFrom(field: "fromAsset")
-  receivedSwapsHistory: [SwapHistory!]! @derivatedFrom(field: "toAsset")
+  #fromSwapsHistory: [SwapHistory!]! @derivatedFrom(field: "fromAsset")
+  #receivedSwapsHistory: [SwapHistory!]! @derivatedFrom(field: "toAsset")
 }
 
 type WETHReserve @entity {
@@ -634,19 +634,14 @@ type User @entity {
   originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "user")
 }
 
-enum SwapType {
-  REPAY
-  LIQUIDITY
-}
-
 type SwapHistory @entity {
   """
   tx hash
   """
   id: ID!
-  fromAsset: Bytes!
-  toAsset: Bytes!
+  fromAsset: String!
+  toAsset: String!
   fromAmount: BigInt!
   receivedAmount: BigInt!
-  swapType: SwapType!
+  swapType: String!
 }
