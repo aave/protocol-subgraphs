@@ -380,6 +380,7 @@ type ReserveParamsHistoryItem @entity {
   liquidityIndex: BigInt!
   liquidityRate: BigInt!
   totalLiquidity: BigInt!
+  totalATokenSupply: BigInt!
   totalLiquidityAsCollateral: BigInt!
   availableLiquidity: BigInt!
   priceInEth: BigInt!
@@ -391,6 +392,12 @@ type ReserveParamsHistoryItem @entity {
   lifetimePrincipalStableDebt: BigInt!
   lifetimeScaledVariableDebt: BigInt!
   lifetimeCurrentVariableDebt: BigInt!
+  lifetimeFlashLoans: BigInt!
+  lifetimeFlashLoanPremium: BigInt!
+  lifetimeReserveFactorAccrued: BigInt!
+  lifetimeDepositorsInterestEarned: BigInt!
+  # lifetimeStableDebFeeCollected: BigInt!
+  # lifetimeVariableDebtFeeCollected: BigInt!
 }
 
 type Reserve @entity {
@@ -424,6 +431,7 @@ type Reserve @entity {
   reserveLiquidationBonus: BigInt!
   utilizationRate: BigDecimal! # default: 0
   totalLiquidity: BigInt! # default: 0
+  totalATokenSupply: BigInt!
   totalLiquidityAsCollateral: BigInt! # default: 0
   availableLiquidity: BigInt! # default: 0
   totalPrincipalStableDebt: BigInt! # default: 0
@@ -449,11 +457,14 @@ type Reserve @entity {
   lifetimeCurrentVariableDebt: BigInt! # default: 0
   lifetimeRepayments: BigInt! # default: 0
   lifetimeWithdrawals: BigInt! # default: 0
+  lifetimeBorrows: BigInt! # default: 0
   lifetimeLiquidated: BigInt! # default: 0
-  lifetimeFeeCollected: BigInt! # default: 0
   lifetimeFlashLoans: BigInt! # default: 0
-  #lifetimeFlashloanDepositorsFee: BigInt! # default: 0
-  lifetimeFlashloanProtocolFee: BigInt! # default: 0
+  lifetimeFlashLoanPremium: BigInt! # default: 0
+  lifetimeDepositorsInterestEarned: BigInt!
+  lifetimeReserveFactorAccrued: BigInt!
+  # lifetimeStableDebFeeCollected: BigInt!
+  # lifetimeVariableDebtFeeCollected: BigInt!
   userReserves: [UserReserve!]! @derivedFrom(field: "reserve")
   depositHistory: [Deposit!]! @derivedFrom(field: "reserve")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "reserve")
