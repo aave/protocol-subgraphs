@@ -480,8 +480,6 @@ type Reserve @entity {
   paramsHistory: [ReserveParamsHistoryItem!]! @derivedFrom(field: "reserve")
   configurationHistory: [ReserveConfigurationHistoryItem!]! @derivedFrom(field: "reserve")
   deposits: [Deposit!]! @derivedFrom(field: "reserve")
-  #fromSwapsHistory: [SwapHistory!]! @derivatedFrom(field: "fromAsset")
-  #receivedSwapsHistory: [SwapHistory!]! @derivatedFrom(field: "toAsset")
 }
 
 type WETHReserve @entity {

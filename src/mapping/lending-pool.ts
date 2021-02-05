@@ -314,7 +314,7 @@ export function handleReserveDataUpdated(event: ReserveDataUpdated): void {
 }
 
 export function handleSwappedRepay(event: SwappedRepay): void {
-  let swap = new SwapHistory(event.transaction.hash.toHexString());
+  let swap = new SwapHistory(getHistoryId(event, EventTypeRef.SwapAdapter));
 
   swap.fromAsset = event.params.fromAsset.toHexString();
   swap.toAsset = event.params.toAsset.toHexString();
@@ -326,7 +326,7 @@ export function handleSwappedRepay(event: SwappedRepay): void {
 }
 
 export function handleSwappedLiquidity(event: SwappedLiquidity): void {
-  let swap = new SwapHistory(event.transaction.hash.toHexString());
+  let swap = new SwapHistory(getHistoryId(event, EventTypeRef.SwapAdapter));
 
   swap.fromAsset = event.params.fromAsset.toHexString();
   swap.toAsset = event.params.toAsset.toHexString();

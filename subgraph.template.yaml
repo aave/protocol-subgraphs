@@ -99,7 +99,7 @@ dataSources:
     source:
       address: '{{UniswapLiquiditySwapAdapterAddress}}'
       abi: UniswapLiquiditySwapAdapter
-      startBlock: {{UniswapLiquiditySwapAdapteryStartBlock}}
+      startBlock: {{UniswapLiquiditySwapAdapterStartBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
