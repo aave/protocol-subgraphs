@@ -1,6 +1,6 @@
 specVersion: 0.0.2
 description: Protocol v2 subgraph
-repository: https://gitlab.com/aave-tech/dlp/token-migration-subgraph.git
+repository: https://github.com/aave/protocol-v2-subgraph
 schema:
   file: ./schema.graphql
 dataSources:

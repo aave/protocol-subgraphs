@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "This package contains subgraph of the protocol v2",
   "scripts": {
-    "dev-environment": "npm i && tail -f /dev/null",
     "update-address": "node ./scripts/updateMigratorAddress",
     "update-abi-addresses": "npm run update-address && npm run prepare:abi",
     "prepare:all": "npm run prepare:contracts && npm run prepare:subgraph",
