@@ -88,7 +88,7 @@ dataSources:
         - event: AddressesProviderRegistered(indexed address)
           handler: handleAddressesProviderRegistered
         - event: AddressesProviderUnregistered(indexed address)
-          handler: handleAddressesProviderUnregistered
+          handler: handleAddressesProviderUnRegistered
       file: src/mapping/address-provider-registry.ts
   # --------------------------------------
   #             ADAPTERS
