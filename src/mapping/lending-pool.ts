@@ -1,10 +1,5 @@
-import { ethereum, BigInt } from '@graphprotocol/graph-ts';
-import {
-  BORROW_MODE_STABLE,
-  BORROW_MODE_VARIABLE,
-  getBorrowRateMode,
-  zeroBI,
-} from '../utils/converters';
+import { BigInt } from '@graphprotocol/graph-ts';
+import { BORROW_MODE_STABLE, BORROW_MODE_VARIABLE, getBorrowRateMode } from '../utils/converters';
 import {
   Borrow,
   Deposit,
@@ -23,13 +18,10 @@ import {
 import { Swapped as SwappedRepay } from '../../generated/UniswapRepayAdapter/UniswapRepayAdapter';
 import { Swapped as SwappedLiquidity } from '../../generated/UniswapLiquiditySwapAdapter/UniswapLiquiditySwapAdapter';
 import {
-  getOrInitPriceOracle,
   getOrInitReferrer,
   getOrInitReserve,
-  getOrInitReserveParamsHistoryItem,
   getOrInitUser,
   getOrInitUserReserve,
-  getPriceOracleAsset,
 } from '../helpers/initializers';
 import {
   Borrow as BorrowAction,

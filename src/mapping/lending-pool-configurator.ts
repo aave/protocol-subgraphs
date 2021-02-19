@@ -32,10 +32,9 @@ import {
   getOrInitVToken,
   getOrInitReserve,
   getOrInitReserveConfigurationHistoryItem,
-  getPriceOracleAsset,
 } from '../helpers/initializers';
 import { Reserve, WETHReserve } from '../../generated/schema';
-import { exponentToBigInt, zeroAddress, zeroBI } from '../utils/converters';
+import { zeroAddress, zeroBI } from '../utils/converters';
 
 function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   let timestamp = event.block.timestamp.toI32();
@@ -107,11 +106,6 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
     reserve.name = weth.name;
     reserve.symbol = weth.symbol;
     reserve.decimals = weth.decimals;
-
-    let oracleAsset = getPriceOracleAsset(reserve.underlyingAsset.toHexString());
-    oracleAsset.priceInEth = exponentToBigInt(18);
-    oracleAsset.lastUpdateTimestamp = event.block.timestamp.toI32();
-    oracleAsset.save();
   }
 
   updateInterestRateStrategy(reserve, event.params.interestRateStrategyAddress, true);

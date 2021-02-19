@@ -60,66 +60,6 @@ type Pool @entity {
   active: Boolean!
 }
 
-type PriceHistoryItem @entity {
-  id: ID!
-  asset: PriceOracleAsset!
-  price: BigInt!
-  timestamp: Int!
-}
-
-type UsdEthPriceHistoryItem @entity {
-  id: ID!
-  oracle: PriceOracle!
-  price: BigInt!
-  timestamp: Int!
-}
-
-type ChainlinkAggregator @entity {
-  # aggregator address
-  id: ID!
-  oracleAsset: PriceOracleAsset!
-}
-
-enum PriceOracleAssetType {
-  Simple
-  Composite
-}
-
-enum PriceOracleAssetPlatform {
-  Simple
-  Uniswap
-}
-
-# TODO: check nomenclature
-type PriceOracleAsset @entity {
-  # underlying asset address
-  id: ID!
-  oracle: PriceOracle!
-  priceInEth: BigInt!
-  priceSource: Bytes!
-  isFallbackRequired: Boolean!
-  type: PriceOracleAssetType!
-  platform: PriceOracleAssetPlatform!
-  dependentAssets: [PriceOracleAsset!]!
-  lastUpdateTimestamp: Int!
-  priceHistory: [PriceHistoryItem!]! @derivedFrom(field: "asset")
-  fromChainlinkSourcesRegistry: Boolean!
-}
-
-type PriceOracle @entity {
-  id: ID!
-  proxyPriceProvider: Bytes!
-  usdPriceEth: BigInt!
-  usdPriceEthMainSource: Bytes!
-  usdPriceEthFallbackRequired: Boolean!
-  usdDependentAssets: [PriceOracleAsset!]!
-  fallbackPriceOracle: Bytes!
-  tokens: [PriceOracleAsset!]! @derivedFrom(field: "oracle")
-  usdPriceEthHistory: [UsdEthPriceHistoryItem!]! @derivedFrom(field: "oracle")
-  tokensWithFallback: [PriceOracleAsset!]!
-  lastUpdateTimestamp: Int!
-}
-
 type SToken @entity {
   """
   SToken address
@@ -383,8 +323,6 @@ type ReserveParamsHistoryItem @entity {
   totalATokenSupply: BigInt!
   totalLiquidityAsCollateral: BigInt!
   availableLiquidity: BigInt!
-  priceInEth: BigInt!
-  priceInUsd: BigDecimal!
   timestamp: Int!
   totalScaledVariableDebt: BigInt!
   totalCurrentVariableDebt: BigInt!
@@ -418,7 +356,6 @@ type Reserve @entity {
   stableBorrowRateEnabled: Boolean! # defalt false
   isActive: Boolean! # defalt false
   isFrozen: Boolean! # defalt false
-  price: PriceOracleAsset!
   reserveInterestRateStrategy: Bytes!
   optimalUtilisationRate: BigInt!
   variableRateSlope1: BigInt!
