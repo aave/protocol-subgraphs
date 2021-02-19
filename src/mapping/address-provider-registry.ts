@@ -44,7 +44,7 @@ export function handleAddressesProviderRegistered(event: AddressesProviderRegist
   }
 }
 
-export function handleAddressesProviderUnRegistered(event: AddressesProviderUnregistered): void {
+export function handleAddressesProviderUnregistered(event: AddressesProviderUnregistered): void {
   let pool = Pool.load(event.params.newAddress.toHexString());
   pool.active = false;
   pool.save();
