@@ -27,6 +27,7 @@
     "deploy-stack:local:scenario": "npm run submodule:deploy:scenario && npm run update-abi-addresses && npm run prepare:subgraph && npm run subgraph:local",
     "deploy-stack:local:post-scenario": "npm run update-abi-addresses && npm run prepare:subgraph && npm run subgraph:deploy:local",
     "deploy:hosted:kovan": "NETWORK=kovan env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2-kovan env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:rinkeby": "NETWORK=rinkeby env-cmd npm run prepare:subgraph && SLUG=1hive/agave-rinkeby env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:mainnet": "NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2 env-cmd npm run subgraph:deploy:hosted",
     "deploy:self-hosted:kovan": "NETWORK=kovan npm run prepare:subgraph && SLUG=aave/protocol-v2-kovan npm run subgraph:deploy:self-hosted",
     "deploy:self-hosted:mainnet": "NETWORK=mainnet npm run prepare:subgraph && SLUG=aave/protocol-v2 npm run subgraph:deploy:self-hosted"

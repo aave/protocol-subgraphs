@@ -1,0 +1,13 @@
+{
+  "network": "rinkeby",
+  "AaveOracleAddress": "0x3aD3B127f890623085691F740eD021A665f6648F",
+  "AaveOracleStartBlock": 8120417,
+  "ChainlinkSourcesRegistryAddress": "0x05ccebD43Dcf66BE1BC83aCe122a04658B4c9811",
+  "ChainlinkSourcesRegistryStartBlock": 8121696,
+  "LendingPoolAddressesProviderRegistryAddress": "0x33c99beB183107f008D74cF0Fa2B5108AF5fD4A1",
+  "LendingPoolAddressesProviderRegistryStartBlock": 8120393,
+  "UniswapLiquiditySwapAdapterAddress": "0x007aeCE602455d0b4b694B448FE751301127ba67",
+  "UniswapLiquiditySwapAdapterStartBlock": 8121587,
+  "UniswapRepayAdapterAddress": "0x4dF5b0126b658B893A60B871C44ac9c84e45f110",
+  "UniswapRepayAdapterStartBlock": 8121582
+}
