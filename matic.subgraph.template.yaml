@@ -167,7 +167,7 @@ templates:
           handler: handleATokenTransfer
         - event: Mint(indexed address,uint256,uint256)
           handler: handleATokenMint
-      file: src/mapping/tokenization.ts
+      file: src/mapping/tokenization-matic.ts
   - kind: ethereum/contract
     name: StableDebtToken
     network: {{network}}
@@ -190,7 +190,7 @@ templates:
           handler: handleStableTokenMint
         - event: BorrowAllowanceDelegated(indexed address,indexed address,address,uint256)
           handler: handleStableTokenBorrowAllowanceDelegated
-      file: src/mapping/tokenization.ts
+      file: src/mapping/tokenization-matic.ts
   - kind: ethereum/contract
     name: VariableDebtToken
     network: {{network}}
@@ -213,7 +213,7 @@ templates:
           handler: handleVariableTokenMint
         - event: BorrowAllowanceDelegated(indexed address,indexed address,address,uint256)
           handler: handleVariableTokenBorrowAllowanceDelegated
-      file: src/mapping/tokenization.ts
+      file: src/mapping/tokenization-matic.ts
 
   # --------------------------------------
   #       CONFIGURATIONS
