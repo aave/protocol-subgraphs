@@ -93,46 +93,46 @@ dataSources:
   # --------------------------------------
   #             ADAPTERS
   # --------------------------------------
-  # - kind: ethereum/contract
-  #   name: UniswapLiquiditySwapAdapter
-  #   network: {{network}}
-  #   source:
-  #     address: '{{UniswapLiquiditySwapAdapterAddress}}'
-  #     abi: UniswapLiquiditySwapAdapter
-  #     startBlock: {{UniswapLiquiditySwapAdapterStartBlock}}
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.4
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - UniswapLiquiditySwapAdapter
-  #     abis:
-  #       - name: UniswapLiquiditySwapAdapter
-  #         file: ./externals/protocol-v2/artifacts/contracts/adapters/UniswapLiquiditySwapAdapter.sol/UniswapLiquiditySwapAdapter.json
-  #     eventHandlers:
-  #       - event: Swapped(address,address,uint256,uint256)
-  #         handler: handleSwappedLiquidity
-  #     file: src/mapping/lending-pool.ts
-  # - kind: ethereum/contract
-  #   name: UniswapRepayAdapter
-  #   network: {{network}}
-  #   source:
-  #     address: '{{UniswapRepayAdapterAddress}}'
-  #     abi: UniswapRepayAdapter
-  #     startBlock: {{UniswapRepayAdapterStartBlock}}
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.4
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - UniswapRepayAdapter
-  #     abis:
-  #       - name: UniswapRepayAdapter
-  #         file: ./externals/protocol-v2/artifacts/contracts/adapters/UniswapRepayAdapter.sol/UniswapRepayAdapter.json
-  #     eventHandlers:
-  #       - event: Swapped(address,address,uint256,uint256)
-  #         handler: handleSwappedRepay
-  #     file: src/mapping/lending-pool.ts
+  - kind: ethereum/contract
+    name: UniswapLiquiditySwapAdapter
+    network: {{network}}
+    source:
+      address: '{{UniswapLiquiditySwapAdapterAddress}}'
+      abi: UniswapLiquiditySwapAdapter
+      startBlock: {{UniswapLiquiditySwapAdapterStartBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - UniswapLiquiditySwapAdapter
+      abis:
+        - name: UniswapLiquiditySwapAdapter
+          file: ./externals/protocol-v2/artifacts/contracts/adapters/UniswapLiquiditySwapAdapter.sol/UniswapLiquiditySwapAdapter.json
+      eventHandlers:
+        - event: Swapped(address,address,uint256,uint256)
+          handler: handleSwappedLiquidity
+      file: src/mapping/lending-pool.ts
+  - kind: ethereum/contract
+    name: UniswapRepayAdapter
+    network: {{network}}
+    source:
+      address: '{{UniswapRepayAdapterAddress}}'
+      abi: UniswapRepayAdapter
+      startBlock: {{UniswapRepayAdapterStartBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - UniswapRepayAdapter
+      abis:
+        - name: UniswapRepayAdapter
+          file: ./externals/protocol-v2/artifacts/contracts/adapters/UniswapRepayAdapter.sol/UniswapRepayAdapter.json
+      eventHandlers:
+        - event: Swapped(address,address,uint256,uint256)
+          handler: handleSwappedRepay
+      file: src/mapping/lending-pool.ts
   # --------------------------------------
   #
   # --------------------------------------

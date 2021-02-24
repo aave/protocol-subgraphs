@@ -7,7 +7,7 @@
     "update-abi-addresses": "npm run update-address && npm run prepare:abi",
     "prepare:all": "npm run prepare:contracts && npm run prepare:subgraph",
     "prepare:contracts": "rm -rf externals && npm run submodule:get && npm run submodule:compile-contracts",
-    "prepare:subgraph": "mustache ./config/${NETWORK:-dev}.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:subgraph": "mustache ./config/${NETWORK:-dev}.json ${BLOCKCHAIN:-ethereum}.subgraph.template.yaml > subgraph.yaml && npm run subgraph:codegen",
     "prepare:contracts:local": "npm run submodule:get && npm run deploy-contracts && npm run update-address",
     "subgraph:codegen": "graph codegen --output-dir ./generated",
     "subgraph:build": "graph build",
@@ -26,11 +26,11 @@
     "deploy-stack:local": "npm run prepare:all && npm run subgraph:local",
     "deploy-stack:local:scenario": "npm run submodule:deploy:scenario && npm run update-abi-addresses && npm run prepare:subgraph && npm run subgraph:local",
     "deploy-stack:local:post-scenario": "npm run update-abi-addresses && npm run prepare:subgraph && npm run subgraph:deploy:local",
-    "deploy:hosted:kovan": "NETWORK=kovan env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2-kovan env-cmd npm run subgraph:deploy:hosted",
-    "deploy:hosted:mainnet": "NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2 env-cmd npm run subgraph:deploy:hosted",
-    "deploy:hosted:matic": "NETWORK=matic env-cmd npm run prepare:subgraph && SLUG=aave/aave-v2-matic env-cmd npm run subgraph:deploy:hosted",
-    "deploy:self-hosted:kovan": "NETWORK=kovan npm run prepare:subgraph && SLUG=aave/protocol-v2-kovan npm run subgraph:deploy:self-hosted",
-    "deploy:self-hosted:mainnet": "NETWORK=mainnet npm run prepare:subgraph && SLUG=aave/protocol-v2 npm run subgraph:deploy:self-hosted"
+    "deploy:hosted:kovan": "BLOCKCHAIN=ethereum NETWORK=kovan env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2-kovan env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:mainnet": "BLOCKCHAIN=ethereum NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2 env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:matic": "BLOCKCHAIN=matic NETWORK=matic env-cmd npm run prepare:subgraph && SLUG=aave/aave-v2-matic env-cmd npm run subgraph:deploy:hosted",
+    "deploy:self-hosted:kovan": "BLOCKCHAIN=ethereum NETWORK=kovan npm run prepare:subgraph && SLUG=aave/protocol-v2-kovan npm run subgraph:deploy:self-hosted",
+    "deploy:self-hosted:mainnet": "BLOCKCHAIN=ethereum NETWORK=mainnet npm run prepare:subgraph && SLUG=aave/protocol-v2 npm run subgraph:deploy:self-hosted"
   },
   "repository": {
     "type": "git",
