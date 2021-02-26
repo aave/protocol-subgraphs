@@ -84,7 +84,7 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
   let weth = WETHReserve.load('weth');
 
   if (weth == null || weth.address.toHexString() != reserve.underlyingAsset.toHexString()) {
-    let ERC20ATokenContract = IERC20Detailed.bind(event.params.aToken);
+    // let ERC20ATokenContract = IERC20Detailed.bind(event.params.aToken);
     let ERC20ReserveContract = IERC20Detailed.bind(underlyingAssetAddress);
     let ERC20DetailedBytesContract = IERC20DetailedBytes.bind(underlyingAssetAddress);
 
@@ -100,7 +100,7 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
       reserve.name = nameStringCall.value;
     }
 
-    reserve.symbol = ERC20ATokenContract.symbol().slice(1);
+    reserve.symbol = ERC20ReserveContract.symbol(); //.slice(1);
 
     reserve.decimals = ERC20ReserveContract.decimals();
   } else {
