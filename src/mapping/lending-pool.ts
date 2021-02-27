@@ -74,6 +74,7 @@ export function handleDeposit(event: Deposit): void {
 }
 
 export function handleWithdraw(event: Withdraw): void {
+  let toUser = getOrInitUser(event.params.to);
   let poolReserve = getOrInitReserve(event.params.reserve, event);
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let redeemedAmount = event.params.amount;
@@ -81,7 +82,7 @@ export function handleWithdraw(event: Withdraw): void {
   let redeemUnderlying = new RedeemUnderlyingAction(getHistoryId(event, EventTypeRef.Redeem));
   redeemUnderlying.pool = poolReserve.pool;
   redeemUnderlying.user = userReserve.user;
-  redeemUnderlying.onBehalfOf = event.params.to.toHexString();
+  redeemUnderlying.onBehalfOf = toUser.id;
   redeemUnderlying.userReserve = userReserve.id;
   redeemUnderlying.reserve = poolReserve.id;
   redeemUnderlying.amount = redeemedAmount;
@@ -167,6 +168,7 @@ export function handleRebalanceStableBorrowRate(event: RebalanceStableBorrowRate
 }
 
 export function handleRepay(event: Repay): void {
+  let repayer = getOrInitUser(event.params.repayer);
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let poolReserve = getOrInitReserve(event.params.reserve, event);
 
@@ -175,7 +177,7 @@ export function handleRepay(event: Repay): void {
   let repay = new RepayAction(getHistoryId(event, EventTypeRef.Repay));
   repay.pool = poolReserve.pool;
   repay.user = userReserve.user;
-  repay.onBehalfOf = event.params.repayer.toHexString();
+  repay.onBehalfOf = repayer.id;
   repay.userReserve = userReserve.id;
   repay.reserve = poolReserve.id;
   repay.amount = event.params.amount;
@@ -222,6 +224,7 @@ export function handleLiquidationCall(event: LiquidationCall): void {
 }
 
 export function handleFlashLoan(event: FlashLoan): void {
+  let initiator = getOrInitUser(event.params.initiator);
   let poolReserve = getOrInitReserve(event.params.asset, event);
 
   let premium = event.params.premium;
@@ -238,7 +241,7 @@ export function handleFlashLoan(event: FlashLoan): void {
   flashLoan.pool = poolReserve.pool;
   flashLoan.reserve = poolReserve.id;
   flashLoan.target = event.params.target;
-  flashLoan.initiator = event.params.initiator.toHexString();
+  flashLoan.initiator = initiator.id;
   flashLoan.totalFee = premium;
   flashLoan.amount = event.params.amount;
   flashLoan.timestamp = event.block.timestamp.toI32();
