@@ -215,7 +215,6 @@ type RedeemUnderlying implements UserTransaction @entity {
   id: ID!
   pool: Pool!
   user: User!
-  onBehalfOf: User!
   reserve: Reserve!
   userReserve: UserReserve!
   amount: BigInt!

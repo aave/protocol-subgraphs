@@ -81,7 +81,6 @@ export function handleWithdraw(event: Withdraw): void {
   let redeemUnderlying = new RedeemUnderlyingAction(getHistoryId(event, EventTypeRef.Redeem));
   redeemUnderlying.pool = poolReserve.pool;
   redeemUnderlying.user = userReserve.user;
-  redeemUnderlying.onBehalfOf = event.params.to.toHexString();
   redeemUnderlying.userReserve = userReserve.id;
   redeemUnderlying.reserve = poolReserve.id;
   redeemUnderlying.amount = redeemedAmount;
