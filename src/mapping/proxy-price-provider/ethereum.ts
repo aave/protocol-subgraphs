@@ -1,6 +1,10 @@
 import { WETHReserve } from '../../../generated/schema';
 import { WethSet } from '../../../generated/AaveOracle/AaveOracle';
-export * from './proxy-price-provider';
+export {
+  handleFallbackOracleUpdated,
+  handleAssetSourceUpdated,
+  handleChainlinkAggregatorUpdated,
+} from './proxy-price-provider';
 
 export function handleWethSet(event: WethSet): void {
   let wethAddress = event.params.weth;
