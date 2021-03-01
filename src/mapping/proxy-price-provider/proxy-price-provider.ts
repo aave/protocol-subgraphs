@@ -4,7 +4,6 @@ import {
   AssetSourceUpdated,
   FallbackOracleUpdated,
   AaveOracle,
-  WethSet,
 } from '../../../generated/AaveOracle/AaveOracle';
 import { IExtendedPriceAggregator } from '../../../generated/AaveOracle/IExtendedPriceAggregator';
 import { GenericOracleI as FallbackPriceOracle } from '../../../generated/AaveOracle/GenericOracleI';
@@ -24,29 +23,13 @@ import {
 import {
   formatUsdEthChainlinkPrice,
   getPriceOracleAssetType,
-  PRICE_ORACLE_ASSET_PLATFORM_UNISWAP,
   PRICE_ORACLE_ASSET_TYPE_SIMPLE,
   zeroAddress,
   zeroBI,
 } from '../../utils/converters';
 import { MOCK_USD_ADDRESS, ZERO_ADDRESS } from '../../utils/constants';
 import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
-import { PriceOracle, PriceOracleAsset, WETHReserve } from '../../../generated/schema';
-
-export function handleWethSet(event: WethSet): void {
-  let wethAddress = event.params.weth;
-  let weth = WETHReserve.load('weth');
-  if (weth == null) {
-    weth = new WETHReserve('weth');
-  }
-  weth.address = wethAddress;
-  weth.name = 'Wrapped Matic';
-  weth.symbol = 'WMATIC';
-  weth.decimals = 18;
-  weth.updatedTimestamp = event.block.timestamp.toI32();
-  weth.updatedBlockNumber = event.block.number;
-  weth.save();
-}
+import { PriceOracle, PriceOracleAsset } from '../../../generated/schema';
 
 export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void {
   let priceOracle = getOrInitPriceOracle();
