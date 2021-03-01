@@ -40,7 +40,7 @@ export function handleWethSet(event: WethSet): void {
     weth = new WETHReserve('weth');
   }
   weth.address = wethAddress;
-  weth.name = 'WMatic';
+  weth.name = 'Wrapped Matic';
   weth.symbol = 'WMATIC';
   weth.decimals = 18;
   weth.updatedTimestamp = event.block.timestamp.toI32();
@@ -57,7 +57,7 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
 
     // update prices on assets which use fallback
 
-    priceOracle.tokensWithFallback.forEach((token) => {
+    priceOracle.tokensWithFallback.forEach(token => {
       let priceOracleAsset = getPriceOracleAsset(token);
       if (
         priceOracleAsset.priceSource.equals(zeroAddress()) ||
@@ -245,7 +245,7 @@ function chainLinkAggregatorUpdated(
       !priceOracleAsset.isFallbackRequired
     ) {
       priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-        (token) => token != assetAddress.toHexString()
+        token => token != assetAddress.toHexString()
       );
     }
 
