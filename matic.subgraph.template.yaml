@@ -36,7 +36,7 @@ dataSources:
           handler: handleFallbackOracleUpdated
         - event: WethSet(indexed address)
           handler: handleWethSet
-      file: src/mapping/proxy-price-provider.ts
+      file: src/mapping/proxy-price-provider/matic.ts
 
   - kind: ethereum/contract
     name: ChainlinkSourcesRegistry
@@ -63,7 +63,7 @@ dataSources:
       eventHandlers:
         - event: AggregatorUpdated(address,address)
           handler: handleChainlinkAggregatorUpdated
-      file: src/mapping/proxy-price-provider.ts
+      file: src/mapping/proxy-price-provider/matic.ts
 
   # --------------------------------------
   #           CONFIGURATIONS

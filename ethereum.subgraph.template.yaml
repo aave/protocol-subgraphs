@@ -63,7 +63,7 @@ dataSources:
       eventHandlers:
         - event: AggregatorUpdated(address,address)
           handler: handleChainlinkAggregatorUpdated
-      file: src/mapping/proxy-price-provider.ts
+      file: src/mapping/proxy-price-provider/ethereum.ts
 
   # --------------------------------------
   #           CONFIGURATIONS
@@ -89,7 +89,7 @@ dataSources:
           handler: handleAddressesProviderRegistered
         - event: AddressesProviderUnregistered(indexed address)
           handler: handleAddressesProviderUnregistered
-      file: src/mapping/address-provider-registry.ts
+      file: src/mapping/address-provider-registry/ethereum.ts
   # --------------------------------------
   #             ADAPTERS
   # --------------------------------------

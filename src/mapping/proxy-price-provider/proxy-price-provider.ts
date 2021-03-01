@@ -5,22 +5,22 @@ import {
   FallbackOracleUpdated,
   AaveOracle,
   WethSet,
-} from '../../generated/AaveOracle/AaveOracle';
-import { IExtendedPriceAggregator } from '../../generated/AaveOracle/IExtendedPriceAggregator';
-import { GenericOracleI as FallbackPriceOracle } from '../../generated/AaveOracle/GenericOracleI';
-import { AggregatorUpdated } from '../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
+} from '../../../generated/AaveOracle/AaveOracle';
+import { IExtendedPriceAggregator } from '../../../generated/AaveOracle/IExtendedPriceAggregator';
+import { GenericOracleI as FallbackPriceOracle } from '../../../generated/AaveOracle/GenericOracleI';
+import { AggregatorUpdated } from '../../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
 
 import {
   ChainlinkAggregator as ChainlinkAggregatorContract,
   FallbackPriceOracle as FallbackPriceOracleContract,
   // UniswapExchange as UniswapExchangeContract,
-} from '../../generated/templates';
+} from '../../../generated/templates';
 
 import {
   getChainlinkAggregator,
   getOrInitPriceOracle,
   getPriceOracleAsset,
-} from '../helpers/initializers';
+} from '../../helpers/initializers';
 import {
   formatUsdEthChainlinkPrice,
   getPriceOracleAssetType,
@@ -28,10 +28,10 @@ import {
   PRICE_ORACLE_ASSET_TYPE_SIMPLE,
   zeroAddress,
   zeroBI,
-} from '../utils/converters';
-import { MOCK_USD_ADDRESS, ZERO_ADDRESS } from '../utils/constants';
-import { genericPriceUpdate, usdEthPriceUpdate } from '../helpers/price-updates';
-import { PriceOracle, PriceOracleAsset, WETHReserve } from '../../generated/schema';
+} from '../../utils/converters';
+import { MOCK_USD_ADDRESS, ZERO_ADDRESS } from '../../utils/constants';
+import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
+import { PriceOracle, PriceOracleAsset, WETHReserve } from '../../../generated/schema';
 
 export function handleWethSet(event: WethSet): void {
   let wethAddress = event.params.weth;
