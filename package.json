@@ -9,7 +9,7 @@
     "prepare:contracts": "rm -rf externals && npm run submodule:get && npm run submodule:compile-contracts",
     "prepare:subgraph": "mustache ./config/${NETWORK:-dev}.json subgraph.template.yaml > subgraph.yaml",
     "prepare:contracts:local": "npm run submodule:get && npm run deploy-contracts && npm run update-address",
-    "subgraph:codegen": "graph codegen --output-dir ./generated",
+    "subgraph:codegen": "env-cmd npm run prepare:subgraph && graph codegen --output-dir ./generated",
     "subgraph:build": "graph build",
     "subgraph:create:local": "graph create aave/protocol-v2 --node http://localhost:8020",
     "subgraph:create:self-hosted:kovan": "graph create aave/protocol-v2-kovan --node https://adm-thegraph.aave.com",
@@ -29,7 +29,8 @@
     "deploy:hosted:kovan": "NETWORK=kovan env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2-kovan env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:mainnet": "NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2 env-cmd npm run subgraph:deploy:hosted",
     "deploy:self-hosted:kovan": "NETWORK=kovan npm run prepare:subgraph && SLUG=aave/protocol-v2-kovan npm run subgraph:deploy:self-hosted",
-    "deploy:self-hosted:mainnet": "NETWORK=mainnet npm run prepare:subgraph && SLUG=aave/protocol-v2 npm run subgraph:deploy:self-hosted"
+    "deploy:self-hosted:mainnet": "NETWORK=mainnet npm run prepare:subgraph && SLUG=aave/protocol-v2 npm run subgraph:deploy:self-hosted",
+    "deploy:hosted:env": "env-cmd npm run prepare:subgraph && env-cmd npm run subgraph:deploy:hosted"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,10 @@
     {
       "name": "Pol Sendra",
       "email": "pol@aave.com"
+    },
+    {
+      "name": "Daniel Martin",
+      "email": "daniel@aave.com"
     },
     {
       "name": "Andrey Kozlov",

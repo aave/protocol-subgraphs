@@ -14,6 +14,7 @@ import {
   ChainlinkAggregator,
   ContractToPoolMapping,
   Protocol,
+  ENS,
 } from '../../generated/schema';
 import {
   PRICE_ORACLE_ASSET_PLATFORM_SIMPLE,
@@ -51,6 +52,16 @@ export function getOrInitUser(address: Address): User {
     user.save();
   }
   return user as User;
+}
+
+export function getOrInitENS(node: string): ENS {
+  let ens = ENS.load(node);
+  if (!ens) {
+    ens = new ENS(node);
+
+    ens.save();
+  }
+  return ens as ENS;
 }
 
 export function getOrInitUserReserve(

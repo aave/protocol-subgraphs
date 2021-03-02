@@ -29,6 +29,8 @@ dataSources:
           file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/GenericOracleI.sol/GenericOracleI.json
         - name: IExtendedPriceAggregator
           file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
+        - name: IERC20Detailed
+          file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
       eventHandlers:
         - event: AssetSourceUpdated(indexed address,indexed address)
           handler: handleAssetSourceUpdated
@@ -65,6 +67,28 @@ dataSources:
           handler: handleChainlinkAggregatorUpdated
       file: src/mapping/proxy-price-provider.ts
 
+  - kind: ethereum/contract
+    name: ChainlinkENSResolver
+    network: {{network}}
+    source:
+      address: '{{ChainlinkENSResolver}}'
+      startBlock: {{ChainlinkENSResolverBlock}}
+      abi: ChainlinkENSResolver
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - ENS
+      abis:
+        - name: ChainlinkENSResolver
+          file: ./constant-abis/ENSResolverChainlink.json
+        - name: IExtendedPriceAggregator
+          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
+      eventHandlers:
+        - event: AddrChanged(indexed bytes32,address)
+          handler: handleAddressesChanged
+      file: src/mapping/ens-chainlink.ts
   # --------------------------------------
   #           CONFIGURATIONS
   # --------------------------------------

@@ -74,6 +74,12 @@ type UsdEthPriceHistoryItem @entity {
   timestamp: Int!
 }
 
+type ENS @entity {
+  id: ID!
+  address: Bytes
+  name: String
+}
+
 type ChainlinkAggregator @entity {
   # aggregator address
   id: ID!
@@ -642,4 +648,9 @@ type SwapHistory @entity {
   fromAmount: BigInt!
   receivedAmount: BigInt!
   swapType: String!
+}
+
+type OracleSystemMigrated @entity {
+  id: ID!
+  activated: Boolean
 }

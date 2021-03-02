@@ -1,4 +1,4 @@
-import { Bytes, Address, log, ethereum } from '@graphprotocol/graph-ts';
+import { Bytes, Address, log, ethereum, crypto } from '@graphprotocol/graph-ts';
 
 import {
   AssetSourceUpdated,
@@ -9,17 +9,19 @@ import {
 import { IExtendedPriceAggregator } from '../../generated/AaveOracle/IExtendedPriceAggregator';
 import { GenericOracleI as FallbackPriceOracle } from '../../generated/AaveOracle/GenericOracleI';
 import { AggregatorUpdated } from '../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
-
+import { ChainlinkENSResolver } from '../../generated/ChainlinkENSResolver/ChainlinkENSResolver';
+import { OracleSystemMigrated } from '../../generated/schema';
 import {
   ChainlinkAggregator as ChainlinkAggregatorContract,
   FallbackPriceOracle as FallbackPriceOracleContract,
   // UniswapExchange as UniswapExchangeContract,
 } from '../../generated/templates';
-
+import { byteArrayFromHex } from '../utils/converters';
 import {
   getChainlinkAggregator,
   getOrInitPriceOracle,
   getPriceOracleAsset,
+  getOrInitENS,
 } from '../helpers/initializers';
 import {
   formatUsdEthChainlinkPrice,
@@ -120,14 +122,26 @@ export function handleAssetSourceUpdated(event: AssetSourceUpdated): void {
   }
 
   let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
-  if (!priceOracleAsset.fromChainlinkSourcesRegistry) {
-    chainLinkAggregatorUpdated(
+
+  let oracleMigrated = OracleSystemMigrated.load('1');
+  if (oracleMigrated) {
+    chainLinkEnsAggregatorUpdated(
       event,
       assetAddress,
       assetOracleAddress,
       priceOracleAsset,
       priceOracle
     );
+  } else {
+    if (!priceOracleAsset.fromChainlinkSourcesRegistry) {
+      chainLinkAggregatorUpdated(
+        event,
+        assetAddress,
+        assetOracleAddress,
+        priceOracleAsset,
+        priceOracle
+      );
+    }
   }
 }
 
@@ -145,6 +159,41 @@ export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void
     priceOracleAsset,
     priceOracle
   );
+}
+
+function chainLinkEnsAggregatorUpdated(
+  event: ethereum.Event,
+  assetAddress: Address,
+  assetOracleAddress: Address,
+  priceOracleAsset: PriceOracleAsset,
+  priceOracle: PriceOracle
+) {
+  // Ask for the SYMBOL and if I don't get it from the EVENT.
+  // let Asset = IERC20Detailed.bind(assetAddress);
+  // let symbol = Asset.try_symbol();
+  let symbol = ''; // TODO: Ver de donde lo sacamos.
+  // if (!symbol.reverted) {
+  // Hash the ENS to generate the node and create the ENS register in the schema.
+  let node = crypto
+    .keccak256(byteArrayFromHex('aggregator.' + symbol + '-eth.data.eth'))
+    .toHexString();
+  // ASk to the ChainlinkENSResolver.assr(node)to get the aggregated
+  // const chainlinkENSResolver = ChainlinkENSResolver.bind()
+  // let address = ChainlinkENSResolver.(node);
+  // Check if the contract is it a proxy and try to get the correct address asking for try_aggregator()
+
+  // Create the ENS or update
+  let ens = getOrInitENS(node);
+  ens.address = assetOracleAddress;
+
+  ens.save();
+  // Create watch for the new Chainlink aggregator
+  ChainlinkAggregatorContract.create(assetOracleAddress);
+
+  log.error('>>> FOUND NODE: {} - A :{}', [ens.id, ens.address.toHexString()]);
+  // } else {
+  //   log.error('ERROR GET SYMBOL FROM ASSET {} ', [assetAddress.toHexString()]);
+  // }
 }
 
 function chainLinkAggregatorUpdated(
