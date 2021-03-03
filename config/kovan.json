@@ -9,5 +9,7 @@
   "UniswapLiquiditySwapAdapterAddress": "0xC18451d36aA370fDACe8d45839bF975F48f7AEa1",
   "UniswapLiquiditySwapAdapterStartBlock": 22703070,
   "UniswapRepayAdapterAddress": "0xf86Be05f535EC2d217E4c6116B3fa147ee5C05A1",
-  "UniswapRepayAdapterStartBlock": 22703050
+  "UniswapRepayAdapterStartBlock": 22703050,
+  "ChainlinkENSResolver": "0x0000000000000000000000000000000000000000",
+  "ChainlinkENSResolverBlock": 22703050
 }

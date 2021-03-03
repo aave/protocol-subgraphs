@@ -152,13 +152,21 @@ export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void
   let priceOracle = getOrInitPriceOracle();
   let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
   priceOracleAsset.fromChainlinkSourcesRegistry = true;
-  chainLinkAggregatorUpdated(
-    event,
-    assetAddress,
-    assetOracleAddress,
-    priceOracleAsset,
-    priceOracle
-  );
+  let oracleMigrated = OracleSystemMigrated.load('1');
+  if (oracleMigrated == null) {
+    chainLinkAggregatorUpdated(
+      event,
+      assetAddress,
+      assetOracleAddress,
+      priceOracleAsset,
+      priceOracle
+    );
+  } else {
+    log.error(`This event should not have been called. || asset: {} | source: {}`, [
+      event.params.token.toHexString(),
+      event.params.aggregator.toHexString(),
+    ]);
+  }
 }
 
 function chainLinkEnsAggregatorUpdated(
@@ -167,7 +175,19 @@ function chainLinkEnsAggregatorUpdated(
   assetOracleAddress: Address,
   priceOracleAsset: PriceOracleAsset,
   priceOracle: PriceOracle
-) {
+): void {
+  // TODO: steps:
+  // 1- if direct chainlink
+  //    - execute chainlink ens registry logic
+  // 2- if custom:
+  //   check if source is simple or complex. Do that by checking if can execute getTokenType
+  //   2.1- if simple
+  //      - it means its direct chainlink. Execute chainlink ens registry logic
+  //   2.2- if complex
+  //      - get dependant proxyies on and use this to listen to events / chainlink ens logic
+}
+
+function chainlinkEnsRegistry(): void {
   // Ask for the SYMBOL and if I don't get it from the EVENT.
   // let Asset = IERC20Detailed.bind(assetAddress);
   // let symbol = Asset.try_symbol();
