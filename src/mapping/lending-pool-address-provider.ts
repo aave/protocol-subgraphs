@@ -129,10 +129,10 @@ export function handlePriceOracleUpdated(event: PriceOracleUpdated): void {
 
   // TODO: should be more general
   let priceOracle = getOrInitPriceOracle();
-  if (priceOracle.proxyPriceProvider.equals(zeroAddress())) {
-    priceOracle.proxyPriceProvider = event.params.newAddress;
-    priceOracle.save();
-  }
+  //if (priceOracle.proxyPriceProvider.equals(zeroAddress())) {
+  priceOracle.proxyPriceProvider = event.params.newAddress;
+  priceOracle.save();
+  //}
 }
 
 export function handleLendingRateOracleUpdated(event: LendingRateOracleUpdated): void {
