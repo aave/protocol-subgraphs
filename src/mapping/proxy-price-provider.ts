@@ -22,6 +22,7 @@ import {
   getOrInitPriceOracle,
   getPriceOracleAsset,
   getOrInitENS,
+  getOrInitReserve,
 } from '../helpers/initializers';
 import {
   formatUsdEthChainlinkPrice,
@@ -32,8 +33,13 @@ import {
   zeroBI,
 } from '../utils/converters';
 import { MOCK_USD_ADDRESS, ZERO_ADDRESS } from '../utils/constants';
-import { genericPriceUpdate, usdEthPriceUpdate } from '../helpers/price-updates';
+import {
+  genericPriceUpdate,
+  updateDependentAssets,
+  usdEthPriceUpdate,
+} from '../helpers/price-updates';
 import { PriceOracle, PriceOracleAsset, WETHReserve } from '../../generated/schema';
+import { IERC20Detailed } from '../../generated/templates/LendingPoolConfigurator/IERC20Detailed';
 
 export function handleWethSet(event: WethSet): void {
   let wethAddress = event.params.weth;
@@ -115,72 +121,127 @@ function priceProviderUpdated(
   priceOracle: PriceOracle
 ): void {
   // Check that oracle address exists
-  if (!assetOracleAddress.equals(zeroAddress())) {
-    let priceAggregatorInstance = IExtendedPriceAggregator.bind(assetOracleAddress);
+  let priceAggregatorInstance = IExtendedPriceAggregator.bind(assetOracleAddress);
 
-    // By checking getTokenPrice, we can know if oracle is custom, or is a chainlink one
-    let tokenType = priceAggregatorInstance.try_getTokenType();
-    // its custom oracle
-    if (!tokenType.reverted) {
+  // // check is it composite or simple asset
+  let tokenTypeCall = priceAggregatorInstance.try_getTokenType();
+  if (!tokenTypeCall.reverted) {
+    priceOracleAsset.type = getPriceOracleAssetType(tokenTypeCall.value);
+    if (priceOracleAsset.type == PRICE_ORACLE_ASSET_TYPE_SIMPLE) {
+      updateChainlinkAggregator(event);
+    } else {
+      priceOracleAsset.isFallbackRequired = false;
+
+      // call contract and check on which assets we're dependent
+      let dependencies = priceAggregatorInstance.getSubTokens();
+      // add asset to all dependencies
+      for (let i = 0; i < dependencies.length; i += 1) {
+        let dependencyAddress = dependencies[i].toHexString();
+        if (dependencyAddress == MOCK_USD_ADDRESS) {
+          let usdDependentAssets = priceOracle.usdDependentAssets;
+          if (!usdDependentAssets.includes(assetAddress.toHexString())) {
+            usdDependentAssets.push(assetAddress.toHexString());
+            priceOracle.usdDependentAssets = usdDependentAssets;
+          }
+        } else {
+          let dependencyOracleAsset = getPriceOracleAsset(dependencyAddress);
+          let dependentAssets = dependencyOracleAsset.dependentAssets;
+          if (!dependentAssets.includes(assetAddress.toHexString())) {
+            dependentAssets.push(assetAddress.toHexString());
+            dependencyOracleAsset.dependentAssets = dependentAssets;
+            dependencyOracleAsset.save();
+          }
+        }
+      }
     }
-    // If we want to still use the chainlinkSourceRegistry contract to operate with chainlink sources
-    // the below logic would go to the chainlinkSourceRegistry AggregatorUpdated event handler
-    // its a chainlink oracle
-    else {
-    }
+  } else {
+    log.error(`Couldn't get type from custom contract: {} | for token: {}`, [
+      assetOracleAddress.toHexString(),
+      assetAddress.toHexString(),
+    ]);
+    // TODO: maybe go directly to updateChainlinkAggregator? or leave as error?
   }
-  // TODO: steps:
-  // 1- if direct chainlink
-  //    - execute chainlink ens registry logic
-  // 2- if custom:
-  //   check if source is simple or complex. Do that by checking if can execute getTokenType
+
   //   2.1- if simple
   //      - it means its direct chainlink. Execute chainlink ens registry logic
   //   2.2- if complex
   //      - get dependant proxyies on and use this to listen to events / chainlink ens logic
 }
 
+// In charge of registering
 function updateChainlinkAggregator(
   event: ethereum.Event,
   assetAddress: Address,
-  assetOracleAddress: Address,
-  priceOracleAsset: PriceOracleAsset,
-  priceOracle: PriceOracle
-): void {}
-
-// In charge of registering
-function chainlinkEnsRegistry(
-  event: ethereum.Event,
-  assetAddress: Address,
-  assetOracleAddress: Address,
+  aggregatorAddress: Address,
   priceOracleAsset: PriceOracleAsset
 ): void {
-  // Ask for the SYMBOL and if I don't get it from the EVENT.
-  // let Asset = IERC20Detailed.bind(assetAddress);
-  // let symbol = Asset.try_symbol();
-  let symbol = ''; // TODO: Ver de donde lo sacamos.
-  // if (!symbol.reverted) {
+  // we can get the reserve as aave oracle is in the contractToPoolMapping as proxyPriceProvider
+  let reserve = getOrInitReserve(assetAddress, event);
+  let aToken = reserve.aToken;
+  let ERC20ATokenContract = IERC20Detailed.bind(Bytes.fromHexString(aToken) as Address);
+  let symbol = ERC20ATokenContract.symbol().slice(1); // TODO: remove slice if we change
+
   // Hash the ENS to generate the node and create the ENS register in the schema.
   let node = crypto
     .keccak256(byteArrayFromHex('aggregator.' + symbol + '-eth.data.eth'))
     .toHexString();
-  // ASk to the ChainlinkENSResolver.assr(node)to get the aggregated
-  // const chainlinkENSResolver = ChainlinkENSResolver.bind()
-  // let address = ChainlinkENSResolver.(node);
-  // Check if the contract is it a proxy and try to get the correct address asking for try_aggregator()
 
   // Create the ENS or update
   let ens = getOrInitENS(node);
-  ens.address = assetOracleAddress;
-
+  ens.aggregatorAddress = aggregatorAddress;
+  ens.underlyingAddress = assetAddress;
+  ens.symbol = symbol;
   ens.save();
   // Create watch for the new Chainlink aggregator
-  ChainlinkAggregatorContract.create(assetOracleAddress);
+  ChainlinkAggregatorContract.create(aggregatorAddress);
 
-  log.error('>>> FOUND NODE: {} - A :{}', [ens.id, ens.address.toHexString()]);
-  // } else {
-  //   log.error('ERROR GET SYMBOL FROM ASSET {} ', [assetAddress.toHexString()]);
-  // }
+  // update price oracle asset
+  priceOracleAsset.priceSource = aggregatorAddress;
+  priceOracleAsset.lastUpdateTimestamp = event.block.timestamp;
+
+  // update the price from latestAnswer of new aggregator
+  let priceAggregatorInstance = IExtendedPriceAggregator.bind(aggregatorAddress);
+  let latestAnswerCall = priceAggregatorInstance.try_latestAnswer();
+  if (!latestAnswerCall.reverted && latestAnswerCall.value.gt(zeroBI())) {
+    priceOracleAsset.priceInEth = latestAnswerCall.value;
+    // update dependants
+    updateDependentAssets(priceOracleAsset.dependentAssets, event);
+  } else {
+    log.error(`Latest answer call failed on aggregator:: {} | for node:: {}`, [
+      aggregatorAddress.toHexString(),
+      node,
+    ]);
+    // TODO: Do I need to add fallback here?
+    priceOracleAsset.isFallbackRequired = true;
+  }
+
+  priceOracleAsset.save();
+
+  // create chainlinkAggregator entity with new aggregator to be able to match asset and oracle after
+  let chainlinkAggregator = getChainlinkAggregator(aggregatorAddress.toHexString());
+  chainlinkAggregator.oracleAsset = assetAddress.toHexString();
+  chainlinkAggregator.save();
+}
+
+export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void {
+  let assetAddress = event.params.token;
+  let assetOracleAddress = event.params.aggregator;
+
+  let priceOracle = getOrInitPriceOracle();
+  let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
+  priceOracleAsset.fromChainlinkSourcesRegistry = true;
+  let oracleMigrated = OracleSystemMigrated.load('1');
+  if (oracleMigrated.activated == false) {
+    chainLinkAggregatorUpdated(
+      event,
+      assetAddress,
+      assetOracleAddress,
+      priceOracleAsset,
+      priceOracle
+    );
+  } else {
+    updateChainlinkAggregator(event, assetAddress, assetOracleAddress, priceOracleAsset);
+  }
 }
 
 export function handleAssetSourceUpdated(event: AssetSourceUpdated): void {
@@ -200,7 +261,7 @@ export function handleAssetSourceUpdated(event: AssetSourceUpdated): void {
   let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
 
   let oracleMigrated = OracleSystemMigrated.load('1');
-  if (oracleMigrated) {
+  if (oracleMigrated.activated) {
     priceProviderUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
   } else {
     if (!priceOracleAsset.fromChainlinkSourcesRegistry) {
@@ -212,33 +273,6 @@ export function handleAssetSourceUpdated(event: AssetSourceUpdated): void {
         priceOracle
       );
     }
-  }
-}
-
-export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void {
-  let assetAddress = event.params.token;
-  let assetOracleAddress = event.params.aggregator;
-
-  let priceOracle = getOrInitPriceOracle();
-  let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
-  priceOracleAsset.fromChainlinkSourcesRegistry = true;
-  let oracleMigrated = OracleSystemMigrated.load('1');
-  if (oracleMigrated == null) {
-    chainLinkAggregatorUpdated(
-      event,
-      assetAddress,
-      assetOracleAddress,
-      priceOracleAsset,
-      priceOracle
-    );
-  } else {
-    updateChainlinkAggregator(
-      event,
-      assetAddress,
-      assetOracleAddress,
-      priceOracleAsset,
-      priceOracle
-    );
   }
 }
 

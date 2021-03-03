@@ -74,10 +74,15 @@ type UsdEthPriceHistoryItem @entity {
   timestamp: Int!
 }
 
-type ENS @entity {
+type ChainlinkENS @entity {
+  "id is the node hash"
   id: ID!
-  address: Bytes
-  name: String
+  "address of the aggregator"
+  aggregatorAddress: Bytes!
+  "token address represented with this aggregator"
+  underlyingAddress: Bytes!
+  "symbol of the token represented on the aggregator"
+  symbol: String!
 }
 
 type ChainlinkAggregator @entity {

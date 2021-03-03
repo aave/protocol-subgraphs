@@ -14,7 +14,7 @@ import {
   ChainlinkAggregator,
   ContractToPoolMapping,
   Protocol,
-  ENS,
+  ChainlinkENS,
 } from '../../generated/schema';
 import {
   PRICE_ORACLE_ASSET_PLATFORM_SIMPLE,
@@ -54,14 +54,14 @@ export function getOrInitUser(address: Address): User {
   return user as User;
 }
 
-export function getOrInitENS(node: string): ENS {
-  let ens = ENS.load(node);
+export function getOrInitENS(node: string): ChainlinkENS {
+  let ens = ChainlinkENS.load(node);
   if (!ens) {
-    ens = new ENS(node);
+    ens = new ChainlinkENS(node);
 
     ens.save();
   }
-  return ens as ENS;
+  return ens as ChainlinkENS;
 }
 
 export function getOrInitUserReserve(
@@ -97,6 +97,41 @@ export function getOrInitUserReserve(
     userReserve.reserve = poolReserve.id;
   }
   return userReserve as UserReserve;
+}
+
+export function getOrInitPriceOracle(): PriceOracle {
+  let priceOracle = PriceOracle.load('1');
+  if (!priceOracle) {
+    priceOracle = new PriceOracle('1');
+    priceOracle.proxyPriceProvider = zeroAddress();
+    priceOracle.usdPriceEth = zeroBI();
+    priceOracle.usdPriceEthMainSource = zeroAddress();
+    priceOracle.usdPriceEthFallbackRequired = false;
+    priceOracle.fallbackPriceOracle = zeroAddress();
+    priceOracle.tokensWithFallback = [];
+    priceOracle.lastUpdateTimestamp = 0;
+    priceOracle.usdDependentAssets = [];
+    priceOracle.save();
+  }
+  return priceOracle as PriceOracle;
+}
+
+export function getPriceOracleAsset(id: string): PriceOracleAsset {
+  let priceOracleReserve = PriceOracleAsset.load(id);
+  if (!priceOracleReserve) {
+    priceOracleReserve = new PriceOracleAsset(id);
+    priceOracleReserve.oracle = getOrInitPriceOracle().id;
+    priceOracleReserve.priceSource = zeroAddress();
+    priceOracleReserve.dependentAssets = [];
+    priceOracleReserve.type = PRICE_ORACLE_ASSET_TYPE_SIMPLE;
+    priceOracleReserve.platform = PRICE_ORACLE_ASSET_PLATFORM_SIMPLE;
+    priceOracleReserve.priceInEth = zeroBI();
+    priceOracleReserve.isFallbackRequired = false;
+    priceOracleReserve.lastUpdateTimestamp = 0;
+    priceOracleReserve.fromChainlinkSourcesRegistry = false;
+    priceOracleReserve.save();
+  }
+  return priceOracleReserve as PriceOracleAsset;
 }
 
 export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event): Reserve {
@@ -185,41 +220,6 @@ export function getChainlinkAggregator(id: string): ChainlinkAggregator {
     chainlinkAggregator.oracleAsset = '';
   }
   return chainlinkAggregator as ChainlinkAggregator;
-}
-
-export function getPriceOracleAsset(id: string): PriceOracleAsset {
-  let priceOracleReserve = PriceOracleAsset.load(id);
-  if (!priceOracleReserve) {
-    priceOracleReserve = new PriceOracleAsset(id);
-    priceOracleReserve.oracle = getOrInitPriceOracle().id;
-    priceOracleReserve.priceSource = zeroAddress();
-    priceOracleReserve.dependentAssets = [];
-    priceOracleReserve.type = PRICE_ORACLE_ASSET_TYPE_SIMPLE;
-    priceOracleReserve.platform = PRICE_ORACLE_ASSET_PLATFORM_SIMPLE;
-    priceOracleReserve.priceInEth = zeroBI();
-    priceOracleReserve.isFallbackRequired = false;
-    priceOracleReserve.lastUpdateTimestamp = 0;
-    priceOracleReserve.fromChainlinkSourcesRegistry = false;
-    priceOracleReserve.save();
-  }
-  return priceOracleReserve as PriceOracleAsset;
-}
-
-export function getOrInitPriceOracle(): PriceOracle {
-  let priceOracle = PriceOracle.load('1');
-  if (!priceOracle) {
-    priceOracle = new PriceOracle('1');
-    priceOracle.proxyPriceProvider = zeroAddress();
-    priceOracle.usdPriceEth = zeroBI();
-    priceOracle.usdPriceEthMainSource = zeroAddress();
-    priceOracle.usdPriceEthFallbackRequired = false;
-    priceOracle.fallbackPriceOracle = zeroAddress();
-    priceOracle.tokensWithFallback = [];
-    priceOracle.lastUpdateTimestamp = 0;
-    priceOracle.usdDependentAssets = [];
-    priceOracle.save();
-  }
-  return priceOracle as PriceOracle;
 }
 
 export function getOrInitSToken(sTokenAddress: Address): SToken {
