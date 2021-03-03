@@ -31,6 +31,8 @@ dataSources:
           file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
         - name: IERC20Detailed
           file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
+        - name: EACAggregatorProxy
+          file: ./constant-abis/EACAggregatorProxy.json
       eventHandlers:
         - event: AssetSourceUpdated(indexed address,indexed address)
           handler: handleAssetSourceUpdated

@@ -107,6 +107,82 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
   }
 }
 
+function priceProviderUpdated(
+  event: ethereum.Event,
+  assetAddress: Address,
+  assetOracleAddress: Address,
+  priceOracleAsset: PriceOracleAsset,
+  priceOracle: PriceOracle
+): void {
+  // Check that oracle address exists
+  if (!assetOracleAddress.equals(zeroAddress())) {
+    let priceAggregatorInstance = IExtendedPriceAggregator.bind(assetOracleAddress);
+
+    // By checking getTokenPrice, we can know if oracle is custom, or is a chainlink one
+    let tokenType = priceAggregatorInstance.try_getTokenType();
+    // its custom oracle
+    if (!tokenType.reverted) {
+    }
+    // If we want to still use the chainlinkSourceRegistry contract to operate with chainlink sources
+    // the below logic would go to the chainlinkSourceRegistry AggregatorUpdated event handler
+    // its a chainlink oracle
+    else {
+    }
+  }
+  // TODO: steps:
+  // 1- if direct chainlink
+  //    - execute chainlink ens registry logic
+  // 2- if custom:
+  //   check if source is simple or complex. Do that by checking if can execute getTokenType
+  //   2.1- if simple
+  //      - it means its direct chainlink. Execute chainlink ens registry logic
+  //   2.2- if complex
+  //      - get dependant proxyies on and use this to listen to events / chainlink ens logic
+}
+
+function updateChainlinkAggregator(
+  event: ethereum.Event,
+  assetAddress: Address,
+  assetOracleAddress: Address,
+  priceOracleAsset: PriceOracleAsset,
+  priceOracle: PriceOracle
+): void {}
+
+// In charge of registering
+function chainlinkEnsRegistry(
+  event: ethereum.Event,
+  assetAddress: Address,
+  assetOracleAddress: Address,
+  priceOracleAsset: PriceOracleAsset
+): void {
+  // Ask for the SYMBOL and if I don't get it from the EVENT.
+  // let Asset = IERC20Detailed.bind(assetAddress);
+  // let symbol = Asset.try_symbol();
+  let symbol = ''; // TODO: Ver de donde lo sacamos.
+  // if (!symbol.reverted) {
+  // Hash the ENS to generate the node and create the ENS register in the schema.
+  let node = crypto
+    .keccak256(byteArrayFromHex('aggregator.' + symbol + '-eth.data.eth'))
+    .toHexString();
+  // ASk to the ChainlinkENSResolver.assr(node)to get the aggregated
+  // const chainlinkENSResolver = ChainlinkENSResolver.bind()
+  // let address = ChainlinkENSResolver.(node);
+  // Check if the contract is it a proxy and try to get the correct address asking for try_aggregator()
+
+  // Create the ENS or update
+  let ens = getOrInitENS(node);
+  ens.address = assetOracleAddress;
+
+  ens.save();
+  // Create watch for the new Chainlink aggregator
+  ChainlinkAggregatorContract.create(assetOracleAddress);
+
+  log.error('>>> FOUND NODE: {} - A :{}', [ens.id, ens.address.toHexString()]);
+  // } else {
+  //   log.error('ERROR GET SYMBOL FROM ASSET {} ', [assetAddress.toHexString()]);
+  // }
+}
+
 export function handleAssetSourceUpdated(event: AssetSourceUpdated): void {
   let assetAddress = event.params.asset;
   let sAssetAddress = assetAddress.toHexString();
@@ -125,13 +201,7 @@ export function handleAssetSourceUpdated(event: AssetSourceUpdated): void {
 
   let oracleMigrated = OracleSystemMigrated.load('1');
   if (oracleMigrated) {
-    chainLinkEnsAggregatorUpdated(
-      event,
-      assetAddress,
-      assetOracleAddress,
-      priceOracleAsset,
-      priceOracle
-    );
+    priceProviderUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
   } else {
     if (!priceOracleAsset.fromChainlinkSourcesRegistry) {
       chainLinkAggregatorUpdated(
@@ -162,58 +232,14 @@ export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void
       priceOracle
     );
   } else {
-    log.error(`This event should not have been called. || asset: {} | source: {}`, [
-      event.params.token.toHexString(),
-      event.params.aggregator.toHexString(),
-    ]);
+    updateChainlinkAggregator(
+      event,
+      assetAddress,
+      assetOracleAddress,
+      priceOracleAsset,
+      priceOracle
+    );
   }
-}
-
-function chainLinkEnsAggregatorUpdated(
-  event: ethereum.Event,
-  assetAddress: Address,
-  assetOracleAddress: Address,
-  priceOracleAsset: PriceOracleAsset,
-  priceOracle: PriceOracle
-): void {
-  // TODO: steps:
-  // 1- if direct chainlink
-  //    - execute chainlink ens registry logic
-  // 2- if custom:
-  //   check if source is simple or complex. Do that by checking if can execute getTokenType
-  //   2.1- if simple
-  //      - it means its direct chainlink. Execute chainlink ens registry logic
-  //   2.2- if complex
-  //      - get dependant proxyies on and use this to listen to events / chainlink ens logic
-}
-
-function chainlinkEnsRegistry(): void {
-  // Ask for the SYMBOL and if I don't get it from the EVENT.
-  // let Asset = IERC20Detailed.bind(assetAddress);
-  // let symbol = Asset.try_symbol();
-  let symbol = ''; // TODO: Ver de donde lo sacamos.
-  // if (!symbol.reverted) {
-  // Hash the ENS to generate the node and create the ENS register in the schema.
-  let node = crypto
-    .keccak256(byteArrayFromHex('aggregator.' + symbol + '-eth.data.eth'))
-    .toHexString();
-  // ASk to the ChainlinkENSResolver.assr(node)to get the aggregated
-  // const chainlinkENSResolver = ChainlinkENSResolver.bind()
-  // let address = ChainlinkENSResolver.(node);
-  // Check if the contract is it a proxy and try to get the correct address asking for try_aggregator()
-
-  // Create the ENS or update
-  let ens = getOrInitENS(node);
-  ens.address = assetOracleAddress;
-
-  ens.save();
-  // Create watch for the new Chainlink aggregator
-  ChainlinkAggregatorContract.create(assetOracleAddress);
-
-  log.error('>>> FOUND NODE: {} - A :{}', [ens.id, ens.address.toHexString()]);
-  // } else {
-  //   log.error('ERROR GET SYMBOL FROM ASSET {} ', [assetAddress.toHexString()]);
-  // }
 }
 
 function chainLinkAggregatorUpdated(
