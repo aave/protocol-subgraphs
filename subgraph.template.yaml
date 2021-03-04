@@ -43,6 +43,31 @@ dataSources:
       file: src/mapping/proxy-price-provider.ts
 
   - kind: ethereum/contract
+    name: OracleAnchor
+    network: {{network}}
+    source:
+      address: '{{OracleAnchorAddress}}'
+      startBlock: {{OracleAnchorStartBlock}}
+      abi: OracleAnchor
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - OracleSystemMigrated
+      abis:
+        - name: OracleAnchor
+          file: ./constant-abis/OracleAnchor.json
+      eventHandlers:
+        - event: OracleSystemMigrated()
+          handler: handleOracleSystemMigrated
+        - event: AssetSourceUpdated(indexed address,indexed address)
+          handler: handleAssetSourceUpdated
+        - event: ChainlinkAggregatorUpdated(indexed address,indexed address)
+          handler: handleChainlinkAggregatorUpdated
+      file: src/mapping/proxy-price-provider.ts
+
+  - kind: ethereum/contract
     name: ChainlinkSourcesRegistry
     network: {{network}}
     source:

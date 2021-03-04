@@ -51,13 +51,3 @@ export function handleAddressesChanged(event: AddrChanged): void {
     chainlinkAggregator.save();
   } // if the schema for ENS are not created ignore
 }
-
-// Event that will get triggered when new chainlink ens system gets activated
-// if flag is activated means we need to stop listening to old events
-// TODO: deprecate old events on this trigger
-export function handleOracleSystemMigrated(event: any): void {
-  // Update the value migrated
-  let oracleSystem = new OracleSystemMigrated('1');
-  oracleSystem.activated = true;
-  oracleSystem.save();
-}
