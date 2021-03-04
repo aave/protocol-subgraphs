@@ -6,7 +6,7 @@ import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../genera
 import { ChainlinkENS, OracleSystemMigrated } from '../../generated/schema';
 import { IExtendedPriceAggregator } from '../../generated/ChainlinkENSResolver/IExtendedPriceAggregator';
 import { zeroBI } from '../utils/converters';
-import { updateDependentAssets } from '../helpers/price-updates';
+import { genericPriceUpdate } from '../helpers/price-updates';
 
 // Event that gets triggered when an aggregator of chainlink change gets triggered
 // updates the ens entity with new aggregator address
@@ -30,9 +30,7 @@ export function handleAddressesChanged(event: AddrChanged): void {
     let priceAggregatorInstance = IExtendedPriceAggregator.bind(priceSource);
     let latestAnswerCall = priceAggregatorInstance.try_latestAnswer();
     if (!latestAnswerCall.reverted && latestAnswerCall.value.gt(zeroBI())) {
-      assetOracle.priceInEth = latestAnswerCall.value;
-      // update dependants
-      updateDependentAssets(assetOracle.dependentAssets, event);
+      genericPriceUpdate(assetOracle, latestAnswerCall.value, event);
     } else {
       log.error(`Latest answer call failed on aggregator:: {} | for node:: {}`, [
         priceSource.toHexString(),
@@ -40,9 +38,9 @@ export function handleAddressesChanged(event: AddrChanged): void {
       ]);
       // TODO: Do I need to add fallback here?
       assetOracle.isFallbackRequired = true;
+      assetOracle.lastUpdateTimestamp = event.block.timestamp;
+      assetOracle.save();
     }
-    assetOracle.lastUpdateTimestamp = event.block.timestamp;
-    assetOracle.save();
 
     // start listening to events from new price source
     ChainlinkAggregatorContract.create(priceSource);
