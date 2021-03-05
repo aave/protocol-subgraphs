@@ -111,14 +111,15 @@ export function getOrInitPriceOracle(): PriceOracle {
     priceOracle.tokensWithFallback = [];
     priceOracle.lastUpdateTimestamp = 0;
     priceOracle.usdDependentAssets = [];
+    priceOracle.version = 1;
     priceOracle.save();
   }
   return priceOracle as PriceOracle;
 }
 
-export function getPriceOracleAsset(id: string): PriceOracleAsset {
+export function getPriceOracleAsset(id: string, save: boolean = true): PriceOracleAsset {
   let priceOracleReserve = PriceOracleAsset.load(id);
-  if (!priceOracleReserve) {
+  if (!priceOracleReserve && save) {
     priceOracleReserve = new PriceOracleAsset(id);
     priceOracleReserve.oracle = getOrInitPriceOracle().id;
     priceOracleReserve.priceSource = zeroAddress();

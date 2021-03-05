@@ -3,7 +3,7 @@ import { getChainlinkAggregator, getPriceOracleAsset } from '../helpers/initiali
 import { AddrChanged } from '../../generated/ChainlinkENSResolver/ChainlinkENSResolver';
 import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../generated/templates';
 
-import { ChainlinkENS, OracleSystemMigrated } from '../../generated/schema';
+import { ChainlinkENS } from '../../generated/schema';
 import { IExtendedPriceAggregator } from '../../generated/ChainlinkENSResolver/IExtendedPriceAggregator';
 import { zeroBI } from '../utils/converters';
 import { genericPriceUpdate } from '../helpers/price-updates';

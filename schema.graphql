@@ -129,6 +129,7 @@ type PriceOracle @entity {
   usdPriceEthHistory: [UsdEthPriceHistoryItem!]! @derivedFrom(field: "oracle")
   tokensWithFallback: [PriceOracleAsset!]!
   lastUpdateTimestamp: Int!
+  version: Int!
 }
 
 type SToken @entity {
@@ -653,9 +654,4 @@ type SwapHistory @entity {
   fromAmount: BigInt!
   receivedAmount: BigInt!
   swapType: String!
-}
-
-type OracleSystemMigrated @entity {
-  id: ID!
-  activated: Boolean
 }

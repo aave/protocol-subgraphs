@@ -12,6 +12,6 @@
   "UniswapRepayAdapterStartBlock": 22703050,
   "ChainlinkENSResolver": "0x0000000000000000000000000000000000000000",
   "ChainlinkENSResolverBlock": 22703050,
-  "OracleAnchorAddress": "0x2c33e2Efe3d6e405a7507367bD186B270601228A",
-  "OracleAnchorStartBlock": 23758670
+  "OracleAnchorAddress": "0xf166468976738131756Ad6d134632A0dFaA6A5Cc",
+  "OracleAnchorStartBlock": 23771565
 }
