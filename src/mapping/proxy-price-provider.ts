@@ -9,7 +9,6 @@ import {
 import { IExtendedPriceAggregator } from '../../generated/AaveOracle/IExtendedPriceAggregator';
 import { GenericOracleI as FallbackPriceOracle } from '../../generated/AaveOracle/GenericOracleI';
 import { AggregatorUpdated } from '../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
-import { OracleSystemMigrated } from '../../generated/schema';
 import {
   ChainlinkAggregator as ChainlinkAggregatorContract,
   FallbackPriceOracle as FallbackPriceOracleContract,
@@ -106,57 +105,6 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
     ) {
       usdEthPriceUpdate(priceOracle, ethUsdPrice, event);
     }
-  }
-}
-
-function updatePriceOracleFallbacks(
-  priceOracle: PriceOracle,
-  priceOracleAsset: PriceOracleAsset,
-  assetAddress: Address,
-  aggregatorAddress: Address
-): void {
-  let stringAssetAddress = assetAddress.toHexString();
-  if (
-    !aggregatorAddress.equals(zeroAddress()) &&
-    priceOracle.tokensWithFallback.includes(stringAssetAddress) &&
-    !priceOracleAsset.isFallbackRequired
-  ) {
-    priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-      token => token != assetAddress.toHexString()
-    );
-  }
-
-  if (
-    !priceOracle.tokensWithFallback.includes(stringAssetAddress) &&
-    (aggregatorAddress.equals(zeroAddress()) || priceOracleAsset.isFallbackRequired)
-  ) {
-    let updatedTokensWithFallback = priceOracle.tokensWithFallback;
-    updatedTokensWithFallback.push(stringAssetAddress);
-    priceOracle.tokensWithFallback = updatedTokensWithFallback;
-  }
-  priceOracle.save();
-}
-
-export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void {
-  let assetAddress = event.params.token;
-  let assetOracleAddress = event.params.aggregator;
-
-  let priceOracle = getOrInitPriceOracle();
-  let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
-  priceOracleAsset.fromChainlinkSourcesRegistry = true;
-  if (priceOracle.version == 1) {
-    chainLinkAggregatorUpdated(
-      event,
-      assetAddress,
-      assetOracleAddress,
-      priceOracleAsset,
-      priceOracle
-    );
-  } else {
-    log.error(
-      `Event should not have been called for version > 1 || asset: {} | oracleAddress: {}`,
-      [assetAddress.toHexString(), assetOracleAddress.toHexString()]
-    );
   }
 }
 
@@ -305,6 +253,29 @@ export function priceFeedUpdated(
 
       genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
     }
+  }
+}
+
+export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void {
+  let assetAddress = event.params.token;
+  let assetOracleAddress = event.params.aggregator;
+
+  let priceOracle = getOrInitPriceOracle();
+  let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
+  priceOracleAsset.fromChainlinkSourcesRegistry = true;
+  if (priceOracle.version == 1) {
+    chainLinkAggregatorUpdated(
+      event,
+      assetAddress,
+      assetOracleAddress,
+      priceOracleAsset,
+      priceOracle
+    );
+  } else {
+    log.error(
+      `Event should not have been called for version > 1 || asset: {} | oracleAddress: {}`,
+      [assetAddress.toHexString(), assetOracleAddress.toHexString()]
+    );
   }
 }
 

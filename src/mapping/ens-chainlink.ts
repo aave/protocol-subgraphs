@@ -38,7 +38,7 @@ export function handleAddressesChanged(event: AddrChanged): void {
       ]);
       // TODO: Do I need to add fallback here?
       assetOracle.isFallbackRequired = true;
-      assetOracle.lastUpdateTimestamp = event.block.timestamp;
+      assetOracle.lastUpdateTimestamp = event.block.timestamp.toI32();
       assetOracle.save();
     }
 
