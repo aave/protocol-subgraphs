@@ -4,7 +4,7 @@ import { AddrChanged } from '../../generated/ChainlinkENSResolver/ChainlinkENSRe
 import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../generated/templates';
 
 import { ChainlinkENS } from '../../generated/schema';
-import { IExtendedPriceAggregator } from '../../generated/ChainlinkENSResolver/IExtendedPriceAggregator';
+import { IExtendedPriceAggregator } from '../../generated/AaveOracle/IExtendedPriceAggregator';
 import { zeroBI } from '../utils/converters';
 import { genericPriceUpdate } from '../helpers/price-updates';
 

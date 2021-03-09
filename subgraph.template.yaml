@@ -62,7 +62,7 @@ dataSources:
         - event: OracleSystemMigrated()
           handler: handleOracleSystemMigrated
         - event: AssetSourceUpdated(indexed address,indexed address)
-          handler: handleAssetSourceUpdated
+          handler: handleAssetSourceUpdatedAnchor
       file: src/mapping/proxy-price-provider.ts
 
   - kind: ethereum/contract
@@ -108,8 +108,8 @@ dataSources:
       abis:
         - name: ChainlinkENSResolver
           file: ./constant-abis/ENSResolverChainlink.json
-        - name: IExtendedPriceAggregator
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
+        # - name: IExtendedPriceAggregator
+        #   file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
       eventHandlers:
         - event: AddrChanged(indexed bytes32,address)
           handler: handleAddressesChanged

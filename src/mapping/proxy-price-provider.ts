@@ -6,6 +6,10 @@ import {
   AaveOracle,
   WethSet,
 } from '../../generated/AaveOracle/AaveOracle';
+import {
+  AssetSourceUpdated as AssetSourceUpdatedAnchor,
+  OracleSystemMigrated,
+} from '../../generated/OracleAnchor/OracleAnchor';
 import { IExtendedPriceAggregator } from '../../generated/AaveOracle/IExtendedPriceAggregator';
 import { GenericOracleI as FallbackPriceOracle } from '../../generated/AaveOracle/GenericOracleI';
 import { AggregatorUpdated } from '../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
@@ -429,9 +433,33 @@ function chainLinkAggregatorUpdated(
 // Event that will get triggered when new chainlink ens system gets activated
 // if flag is activated means we need to stop listening to old events
 // TODO: deprecate old events on this trigger
-export function handleOracleSystemMigrated(): void {
+export function handleOracleSystemMigrated(event: OracleSystemMigrated): void {
   // Update the value migrated
+  log.error(`oracle migrator started: {}`, [event.block.number.toString()]);
   let priceOracle = getOrInitPriceOracle();
   priceOracle.version = 2;
   priceOracle.save();
+}
+
+export function handleAssetSourceUpdatedAnchor(event: AssetSourceUpdatedAnchor): void {
+  let assetAddress = event.params.token;
+  let sAssetAddress = assetAddress.toHexString();
+  let assetOracleAddress = event.params.source;
+  // because of the bug with wrong assets addresses submission
+  if (sAssetAddress.split('0').length > 38) {
+    log.warning('skipping wrong asset registration {}', [sAssetAddress]);
+    return;
+  }
+  let priceOracle = getOrInitPriceOracle();
+  if (priceOracle.proxyPriceProvider.equals(zeroAddress())) {
+    log.error(`aave oracle should already have been deployed : {}`, [event.address.toHexString()]);
+  }
+
+  let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
+
+  if (priceOracle.version > 1) {
+    priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
+  } else {
+    log.error(`version should be 2`, []);
+  }
 }
