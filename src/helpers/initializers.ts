@@ -57,6 +57,7 @@ export function getOrInitUser(address: Address): User {
 export function getOrInitENS(node: string): ChainlinkENS {
   let ens = ChainlinkENS.load(node);
   if (!ens) {
+    log.error(`new node:::: {}`, [node]);
     ens = new ChainlinkENS(node);
 
     ens.save();

@@ -1,4 +1,4 @@
-import { BigInt, BigDecimal, Bytes, ByteArray } from '@graphprotocol/graph-ts';
+import { BigInt, BigDecimal, Bytes, ByteArray, crypto, log } from '@graphprotocol/graph-ts';
 
 export function zeroBD(): BigDecimal {
   return BigDecimal.fromString('0');
@@ -117,3 +117,43 @@ export function byteArrayFromHex(s: string): ByteArray {
   }
   return out as ByteArray;
 }
+
+// Helper for concatenating two byte arrays
+export function concat(a: ByteArray, b: ByteArray): ByteArray {
+  let out = new Uint8Array(a.length + b.length);
+  for (let i = 0; i < a.length; i++) {
+    out[i] = a[i];
+  }
+  for (let j = 0; j < b.length; j++) {
+    out[a.length + j] = b[j];
+  }
+  return out as ByteArray;
+}
+
+const Zeros = new ByteArray(32);
+Zeros.fill(0);
+
+export function namehash(partition: Array<string>): string {
+  log.warning('namehash method::: {} || length::: {}', [
+    partition.toString(),
+    BigInt.fromI32(partition.length).toString(),
+  ]);
+  let result: ByteArray = Zeros;
+  while (partition.length > 0) {
+    log.warning('--------------', []);
+    const label = byteArrayFromHex(partition[partition.length - 1]);
+    log.warning('LABEL:: {}', [label.toHexString()]);
+    result = crypto.keccak256(concat(result, crypto.keccak256(label)));
+
+    partition.pop();
+  }
+
+  return result.toHexString();
+}
+
+// export function namehash(ensDomain: Array) {
+//   let namehash = crypto.keccak256(namehash(…), keccak256(label))
+//   return namehash;
+// }
+// namehash([]) = 0x0000000000000000000000000000000000000000000000000000000000000000
+// namehash([label, …]) = keccak256(namehash(…), keccak256(label))

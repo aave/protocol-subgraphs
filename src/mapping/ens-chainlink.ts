@@ -1,11 +1,12 @@
-import { log } from '@graphprotocol/graph-ts';
+import { log, crypto, ens as graphENS } from '@graphprotocol/graph-ts';
 import { getChainlinkAggregator, getPriceOracleAsset } from '../helpers/initializers';
 import { AddrChanged } from '../../generated/ChainlinkENSResolver/ChainlinkENSResolver';
-import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../generated/templates';
+// import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../generated/templates';
 
 import { ChainlinkENS } from '../../generated/schema';
-import { IExtendedPriceAggregator } from '../../generated/AaveOracle/IExtendedPriceAggregator';
-import { zeroBI } from '../utils/converters';
+// import { IExtendedPriceAggregator } from '../../generated/AaveOracle/IExtendedPriceAggregator';
+import { IExtendedPriceAggregator } from '../../generated/ChainlinkENSResolver/IExtendedPriceAggregator';
+import { byteArrayFromHex, concat, zeroBI } from '../utils/converters';
 import { genericPriceUpdate } from '../helpers/price-updates';
 
 // Event that gets triggered when an aggregator of chainlink change gets triggered
@@ -16,9 +17,12 @@ export function handleAddressesChanged(event: AddrChanged): void {
   let priceSource = event.params.a;
   let node = event.params.node.toHexString();
 
+  // log.error(`load node:::: {}`, [node]);
+
   let ens = ChainlinkENS.load(node);
   // Check if we watching this ENS asset
   if (ens) {
+    log.error('node existed -------------------------> {}', [node]);
     ens.aggregatorAddress = priceSource;
     ens.save();
 
@@ -43,11 +47,14 @@ export function handleAddressesChanged(event: AddrChanged): void {
     }
 
     // start listening to events from new price source
-    ChainlinkAggregatorContract.create(priceSource);
+    // ChainlinkAggregatorContract.create(priceSource);
 
     // create chainlinkAggregator entity with new aggregator to be able to match asset and oracle after
     let chainlinkAggregator = getChainlinkAggregator(priceSource.toHexString());
     chainlinkAggregator.oracleAsset = oracleAssetAddress.toHexString();
     chainlinkAggregator.save();
   } // if the schema for ENS are not created ignore
+  else {
+    // log.error(`Ens not created`, []);
+  }
 }

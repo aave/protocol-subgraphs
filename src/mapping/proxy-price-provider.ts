@@ -1,4 +1,4 @@
-import { Bytes, Address, log, ethereum, crypto } from '@graphprotocol/graph-ts';
+import { Bytes, Address, log, ethereum, crypto, ens as graphENS } from '@graphprotocol/graph-ts';
 
 import {
   AssetSourceUpdated,
@@ -14,7 +14,7 @@ import { IExtendedPriceAggregator } from '../../generated/AaveOracle/IExtendedPr
 import { GenericOracleI as FallbackPriceOracle } from '../../generated/AaveOracle/GenericOracleI';
 import { AggregatorUpdated } from '../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
 import {
-  ChainlinkAggregator as ChainlinkAggregatorContract,
+  // ChainlinkAggregator as ChainlinkAggregatorContract,
   FallbackPriceOracle as FallbackPriceOracleContract,
   // UniswapExchange as UniswapExchangeContract,
 } from '../../generated/templates';
@@ -168,7 +168,7 @@ export function priceFeedUpdated(
       let aggregatorAddress = aggregatorAddressCall.value;
       priceOracleAsset.priceSource = aggregatorAddress;
       // create ChainLink aggregator template entity
-      ChainlinkAggregatorContract.create(aggregatorAddress);
+      // ChainlinkAggregatorContract.create(aggregatorAddress);
 
       // Register the aggregator address to the ens registry
       // we can get the reserve as aave oracle is in the contractToPoolMapping as proxyPriceProvider
@@ -178,11 +178,13 @@ export function priceFeedUpdated(
       // TODO: not entirely sure if this solution will be useful for all the cases!!!!
       let symbol = ERC20ATokenContract.symbol().slice(1); // TODO: remove slice if we change
 
+      //  namehash("aggregator.aave-eth.data.eth")
+      // let node = graphENS.nameByHash('aggregator.' + symbol + '-eth.data.eth');
       // Hash the ENS to generate the node and create the ENS register in the schema.
       let node = crypto
         .keccak256(byteArrayFromHex('aggregator.' + symbol + '-eth.data.eth'))
         .toHexString();
-
+      log.error(`node construction is ::: {}`, [node]);
       // Create the ENS or update
       let ens = getOrInitENS(node);
       ens.aggregatorAddress = aggregatorAddress;
@@ -350,7 +352,7 @@ function chainLinkAggregatorUpdated(
 
     if (priceOracleAsset.type == PRICE_ORACLE_ASSET_TYPE_SIMPLE) {
       // create ChainLink aggregator template entity
-      ChainlinkAggregatorContract.create(assetOracleAddress);
+      // ChainlinkAggregatorContract.create(assetOracleAddress);
 
       // fallback is not required if oracle works fine
       let priceAggregatorlatestAnswerCall = priceAggregatorInstance.try_latestAnswer();
@@ -458,6 +460,7 @@ export function handleAssetSourceUpdatedAnchor(event: AssetSourceUpdatedAnchor):
   let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
 
   if (priceOracle.version > 1) {
+    log.error('here i am', []);
     priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
   } else {
     log.error(`version should be 2`, []);
