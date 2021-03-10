@@ -33,7 +33,7 @@ export function updateAssetPriceFromAaveOracle(event: ethereum.Event): void {
     // save price to history
     savePriceToHistory(priceOracleAsset, event);
   } else {
-    log.error('Error in getting price from uniswap price feed for asset: {}', [
+    log.error('Error in getting price from Liquidity Pool price feed for asset: {}', [
       assetAddress.toHexString(),
     ]);
   }
