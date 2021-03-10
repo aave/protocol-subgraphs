@@ -140,10 +140,13 @@ export function namehash(partition: Array<string>): string {
   ]);
   let result: ByteArray = Zeros;
   while (partition.length > 0) {
-    log.warning('--------------', []);
-    const label = byteArrayFromHex(partition[partition.length - 1]);
-    log.warning('LABEL:: {}', [label.toHexString()]);
-    result = crypto.keccak256(concat(result, crypto.keccak256(label)));
+    let label = partition[partition.length - 1];
+    if (partition[partition.length - 1].length % 2 == 1) {
+      label = 0 + partition[partition.length - 1];
+    }
+    log.warning('LABEL:: {}', [label]);
+    let labelBytes = byteArrayFromHex(partition[partition.length - 1]);
+    result = crypto.keccak256(concat(result, crypto.keccak256(labelBytes)));
 
     partition.pop();
   }
