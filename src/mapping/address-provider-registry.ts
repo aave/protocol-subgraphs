@@ -37,6 +37,7 @@ export function handleAddressesProviderRegistered(event: AddressesProviderRegist
     let pool = new Pool(address);
     pool.protocol = protocol.id;
     pool.active = true;
+    pool.paused = false;
     pool.lastUpdateTimestamp = event.block.timestamp.toI32();
     pool.save();
 
