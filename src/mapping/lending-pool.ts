@@ -37,6 +37,7 @@ import {
   FlashLoan as FlashLoanAction,
   LiquidationCall as LiquidationCallAction,
   OriginationFeeLiquidation as OriginationFeeLiquidationAction,
+  Pool,
   RebalanceStableBorrowRate as RebalanceStableBorrowRateAction,
   RedeemUnderlying as RedeemUnderlyingAction,
   Repay as RepayAction,
@@ -114,17 +115,17 @@ export function handleBorrow(event: Borrow): void {
 }
 
 export function handlePaused(event: Paused): void {
-  let poolReserve = getOrInitReserve(event.address, event);
+  let lendingPool = Pool.load(event.address.toHexString());
 
-  poolReserve.paused = true;
-  poolReserve.save();
+  lendingPool.paused = true;
+  lendingPool.save();
 }
 
 export function handleUnpaused(event: Unpaused): void {
-  let poolReserve = getOrInitReserve(event.address, event);
+  let lendingPool = Pool.load(event.address.toHexString());
 
-  poolReserve.paused = false;
-  poolReserve.save();
+  lendingPool.paused = false;
+  lendingPool.save();
 }
 
 export function handleSwap(event: Swap): void {
