@@ -400,3 +400,27 @@ templates:
         - event: ReserveDataUpdated(indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleReserveDataUpdated
       file: src/mapping/lending-pool.ts
+
+  # --------------------------------------
+  #       CONFIGURATIONS
+  # --------------------------------------
+  - kind: ethereum/contract
+    name: UniswapExchange
+    network: {{network}}
+    source:
+      abi: IUniswapExchange
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - PriceOracleReserve
+      abis:
+        - name: IUniswapExchange
+          file: ./constant-abis/IUniswapExchange.json
+        - name: AaveOracle
+          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+      eventHandlers:
+        - event: Sync(uint112,uint112)
+          handler: updateUniswapAssetPrice
+      file: ./src/mapping/uniswap-exchange.ts
