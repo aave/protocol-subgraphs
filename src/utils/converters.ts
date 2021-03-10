@@ -151,6 +151,29 @@ export function namehash(partition: Array<string>): string {
   return result.toHexString();
 }
 
+export function convertToLowerCase(str: string): string {
+  // create a result variable
+  let result = '';
+
+  for (let i = 0; i < str.length; i++) {
+    // get the code of the current character
+    let code = str.charCodeAt(i);
+
+    // check if it's within the range of capital letters
+    if (code > 64 && code < 91) {
+      // if so, add a new character to the result string
+      // of the character from our code, plus 32
+      result += String.fromCharCode(code + 32);
+    } else {
+      // otherwise, just add the current character
+      result += str.charAt(i);
+    }
+  }
+
+  // return the result
+  return result;
+}
+
 // export function namehash(ensDomain: Array) {
 //   let namehash = crypto.keccak256(namehash(…), keccak256(label))
 //   return namehash;

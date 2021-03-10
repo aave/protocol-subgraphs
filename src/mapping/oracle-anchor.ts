@@ -28,6 +28,7 @@ import { MOCK_USD_ADDRESS } from '../utils/constants';
 import {
   byteArrayFromHex,
   concat,
+  convertToLowerCase,
   formatUsdEthChainlinkPrice,
   getPriceOracleAssetType,
   namehash,
@@ -97,18 +98,25 @@ export function priceFeedUpdated(
 
       // Register the aggregator address to the ens registry
       // we can get the reserve as aave oracle is in the contractToPoolMapping as proxyPriceProvider
-      let symbol = 'dai';
-      // if (
-      //   assetAddress.toHexString().toLowerCase() == '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'
-      // ) {
-      //   symbol = 'MKR';
-      // } else {
-      //   // we need to use the underlying, as the anchor address is not mapped to the lending pool
-      //   let ERC20ATokenContract = IERC20Detailed.bind(assetAddress);
-      //   symbol = ERC20ATokenContract.symbol().slice(1); // TODO: remove slice if we change
-      // }
+      let symbol = '';
+      if (
+        convertToLowerCase(assetAddress.toHexString()) ==
+        '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'
+      ) {
+        symbol = 'MKR';
+      } else {
+        // we need to use the underlying, as the anchor address is not mapped to the lending pool
+        let ERC20ATokenContract = IERC20Detailed.bind(assetAddress);
+        symbol = ERC20ATokenContract.symbol().slice(1); // TODO: remove slice if we change
+      }
 
-      let domain: Array<string> = ['aggregator', symbol + '-eth', 'data', 'eth'];
+      let domain: Array<string> = [
+        'aggregator',
+        convertToLowerCase(symbol) + '-eth',
+        'data',
+        'eth',
+      ];
+      log.warning('domain is ====> {}', [domain.toString()]);
       // let node = crypto
       //   .keccak256(
       //     concat(
