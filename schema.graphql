@@ -58,6 +58,7 @@ type Pool @entity {
   originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "pool")
 
   active: Boolean!
+  paused: Boolean!
 }
 
 type PriceHistoryItem @entity {
@@ -407,7 +408,6 @@ type Reserve @entity {
   id: ID!
   underlyingAsset: Bytes!
   pool: Pool!
-  paused: Boolean!
   symbol: String!
   name: String!
   #uiColor: String! #TODO MOVE: move to the frontend
