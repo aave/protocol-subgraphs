@@ -11,6 +11,7 @@ import { GenericOracleI as FallbackPriceOracle } from '../../generated/AaveOracl
 import { AggregatorUpdated } from '../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
 
 import {
+  BalancerPool,
   ChainlinkAggregator as ChainlinkAggregatorContract,
   FallbackPriceOracle as FallbackPriceOracleContract,
   UniswapExchange,
@@ -26,6 +27,7 @@ import {
   formatUsdEthChainlinkPrice,
   getPriceOracleAssetPlatform,
   getPriceOracleAssetType,
+  PRICE_ORACLE_ASSET_PLATFORM_BALANCER,
   PRICE_ORACLE_ASSET_PLATFORM_UNISWAP,
   PRICE_ORACLE_ASSET_TYPE_SIMPLE,
   zeroAddress,
@@ -217,20 +219,19 @@ function chainLinkAggregatorUpdated(
         }
       }
 
-      // if it's first oracle connected to this asset
-      // commented until uniswap
-      // if (priceOracleAsset.priceSource.equals(zeroAddress())) {
       // check platform
       let platformIdCall = priceAggregatorInstance.try_getPlatformId();
       if (!platformIdCall.reverted) {
         let platformId = getPriceOracleAssetPlatform(platformIdCall.value);
         if (platformId == PRICE_ORACLE_ASSET_PLATFORM_UNISWAP) {
           UniswapExchange.create(assetAddress);
+        } else if (platformId == PRICE_ORACLE_ASSET_PLATFORM_BALANCER) {
+          BalancerPool.create(assetAddress);
         } else {
           log.error('Platform not supported: {}', [platformIdCall.value.toString()]);
         }
       } else {
-        log.error('Platform id reverted for asset: {} || and source: {}', [
+        log.error('Platform id method reverted for asset: {} || and source: {}', [
           sAssetAddress,
           assetOracleAddress.toHexString(),
         ]);

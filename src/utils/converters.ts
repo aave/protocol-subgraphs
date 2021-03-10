@@ -95,6 +95,7 @@ export function getPriceOracleAssetType(_type: BigInt): string {
 
 export const PRICE_ORACLE_ASSET_PLATFORM_SIMPLE = 'Simple';
 export const PRICE_ORACLE_ASSET_PLATFORM_UNISWAP = 'Uniswap';
+export const PRICE_ORACLE_ASSET_PLATFORM_BALANCER = 'Balancer';
 
 export function getPriceOracleAssetPlatform(_type: BigInt): string {
   let type = _type.toI32();
@@ -103,6 +104,8 @@ export function getPriceOracleAssetPlatform(_type: BigInt): string {
     return PRICE_ORACLE_ASSET_PLATFORM_SIMPLE;
   } else if (type == 2) {
     return PRICE_ORACLE_ASSET_PLATFORM_UNISWAP;
+  } else if (type == 3) {
+    return PRICE_ORACLE_ASSET_PLATFORM_BALANCER;
   }
   throw new Error('invalid price oracle asset platform');
 }
