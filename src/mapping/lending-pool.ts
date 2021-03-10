@@ -123,7 +123,7 @@ export function handlePaused(event: Paused): void {
 export function handleUnpaused(event: Unpaused): void {
   let lendingPool = Pool.load(event.address.toHexString());
 
-  lendingPool.paused = true;
+  lendingPool.paused = false;
   lendingPool.save();
 }
 

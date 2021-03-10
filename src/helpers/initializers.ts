@@ -97,7 +97,6 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
     reserve = new Reserve(reserveId);
     reserve.underlyingAsset = underlyingAsset;
     reserve.pool = poolId;
-    reserve.paused = false;
     reserve.symbol = '';
     reserve.name = '';
     reserve.decimals = 0;
