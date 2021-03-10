@@ -7,7 +7,7 @@ import {
   Bytes,
   ByteArray,
 } from '@graphprotocol/graph-ts';
-import { IERC20Detailed } from '../../generated/AaveOracle/IERC20Detailed';
+import { IERC20Detailed } from '../../generated/OracleAnchor/IERC20Detailed';
 import { AaveOracle } from '../../generated/OracleAnchor/AaveOracle';
 import { EACAggregatorProxy } from '../../generated/OracleAnchor/EACAggregatorProxy';
 import { IExtendedPriceAggregator } from '../../generated/OracleAnchor/IExtendedPriceAggregator';
@@ -45,7 +45,6 @@ export function priceFeedUpdated(
   priceOracle: PriceOracle
 ): void {
   let sAssetAddress = assetAddress.toHexString();
-  log.warning('-------------------------------------------------------------', []);
   // We get the current price from the oracle. Valid for chainlink source and custom oracle
   let proxyPriceProvider = AaveOracle.bind(
     Address.fromString(priceOracle.proxyPriceProvider.toHexString())
@@ -98,6 +97,7 @@ export function priceFeedUpdated(
 
       // Register the aggregator address to the ens registry
       // we can get the reserve as aave oracle is in the contractToPoolMapping as proxyPriceProvider
+
       let symbol = '';
       if (
         convertToLowerCase(assetAddress.toHexString()) ==
@@ -134,86 +134,87 @@ export function priceFeedUpdated(
       // let ensDomain = 'aggregator.' + symbol.toLowerCase() + '-eth.data.eth';
 
       // Hash the ENS to generate the node and create the ENS register in the schema.
-      let node = namehash(domain);
-      // let node = crypto
-      //   .keccak256(byteArrayFromHex('aggregator.' + symbol + '-eth.data.eth'))
-      //   .toHexString();
-      log.error(`node construction is ::: {}`, [node]);
+      // let node = namehash(domain);
+      // // let node = crypto
+      // //   .keccak256(byteArrayFromHex('aggregator.' + symbol + '-eth.data.eth'))
+      // //   .toHexString();
+      // log.error(`node construction is ::: {}`, [node]);
 
-      // Create the ENS or update
-      let ens = getOrInitENS(node);
-      ens.aggregatorAddress = aggregatorAddress;
-      ens.underlyingAddress = assetAddress;
-      ens.symbol = symbol;
-      ens.save();
+      // // Create the ENS or update
+      // let ens = getOrInitENS(node);
+      // ens.aggregatorAddress = aggregatorAddress;
+      // ens.underlyingAddress = assetAddress;
+      // ens.symbol = symbol;
+      // ens.save();
 
-      // Need to check latestAnswer and not use priceFromOracle because priceFromOracle comes from the oracle
-      // and the value could be from the fallback already. So we need to check if we can get latestAnswer from the
-      // chainlink aggregator
-      let priceAggregatorlatestAnswerCall = priceAggregatorInstance.try_latestAnswer();
-      priceOracleAsset.isFallbackRequired =
-        priceAggregatorlatestAnswerCall.reverted || priceAggregatorlatestAnswerCall.value.isZero();
+      // // Need to check latestAnswer and not use priceFromOracle because priceFromOracle comes from the oracle
+      // // and the value could be from the fallback already. So we need to check if we can get latestAnswer from the
+      // // chainlink aggregator
+      // let priceAggregatorlatestAnswerCall = priceAggregatorInstance.try_latestAnswer();
+      // priceOracleAsset.isFallbackRequired =
+      //   priceAggregatorlatestAnswerCall.reverted || priceAggregatorlatestAnswerCall.value.isZero();
 
-      // create chainlinkAggregator entity with new aggregator to be able to match asset and oracle after
-      let chainlinkAggregator = getChainlinkAggregator(aggregatorAddress.toHexString());
-      chainlinkAggregator.oracleAsset = assetAddress.toHexString();
-      chainlinkAggregator.save();
-    } else {
-      // composite assets don't need fallback, it will work out of the box
-      priceOracleAsset.isFallbackRequired = false;
-      priceOracleAsset.priceSource = assetOracleAddress;
-
-      // call contract and check on which assets we're dependent
-      let dependencies = priceAggregatorInstance.getSubTokens();
-      // add asset to all dependencies
-      for (let i = 0; i < dependencies.length; i += 1) {
-        let dependencyAddress = dependencies[i].toHexString();
-        if (dependencyAddress == MOCK_USD_ADDRESS) {
-          let usdDependentAssets = priceOracle.usdDependentAssets;
-          if (!usdDependentAssets.includes(sAssetAddress)) {
-            usdDependentAssets.push(sAssetAddress);
-            priceOracle.usdDependentAssets = usdDependentAssets;
-          }
-        } else {
-          let dependencyOracleAsset = getPriceOracleAsset(dependencyAddress);
-          let dependentAssets = dependencyOracleAsset.dependentAssets;
-          if (!dependentAssets.includes(sAssetAddress)) {
-            dependentAssets.push(sAssetAddress);
-            dependencyOracleAsset.dependentAssets = dependentAssets;
-            dependencyOracleAsset.save();
-          }
-        }
-      }
+      // // create chainlinkAggregator entity with new aggregator to be able to match asset and oracle after
+      // let chainlinkAggregator = getChainlinkAggregator(aggregatorAddress.toHexString());
+      // chainlinkAggregator.oracleAsset = assetAddress.toHexString();
+      // chainlinkAggregator.save();
     }
+    // else {
+    //   // composite assets don't need fallback, it will work out of the box
+    //   priceOracleAsset.isFallbackRequired = false;
+    //   priceOracleAsset.priceSource = assetOracleAddress;
 
-    if (sAssetAddress == MOCK_USD_ADDRESS) {
-      priceOracle.usdPriceEthFallbackRequired = priceOracleAsset.isFallbackRequired;
-      priceOracle.usdPriceEthMainSource = priceOracleAsset.priceSource;
-      usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(priceFromOracle), event);
-    } else {
-      // if chainlink was invalid before and valid now, remove from tokensWithFallback array
-      if (
-        !assetOracleAddress.equals(zeroAddress()) &&
-        priceOracle.tokensWithFallback.includes(sAssetAddress) &&
-        !priceOracleAsset.isFallbackRequired
-      ) {
-        priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-          token => token != assetAddress.toHexString()
-        );
-      }
+    //   // call contract and check on which assets we're dependent
+    //   let dependencies = priceAggregatorInstance.getSubTokens();
+    //   // add asset to all dependencies
+    //   for (let i = 0; i < dependencies.length; i += 1) {
+    //     let dependencyAddress = dependencies[i].toHexString();
+    //     if (dependencyAddress == MOCK_USD_ADDRESS) {
+    //       let usdDependentAssets = priceOracle.usdDependentAssets;
+    //       if (!usdDependentAssets.includes(sAssetAddress)) {
+    //         usdDependentAssets.push(sAssetAddress);
+    //         priceOracle.usdDependentAssets = usdDependentAssets;
+    //       }
+    //     } else {
+    //       let dependencyOracleAsset = getPriceOracleAsset(dependencyAddress);
+    //       let dependentAssets = dependencyOracleAsset.dependentAssets;
+    //       if (!dependentAssets.includes(sAssetAddress)) {
+    //         dependentAssets.push(sAssetAddress);
+    //         dependencyOracleAsset.dependentAssets = dependentAssets;
+    //         dependencyOracleAsset.save();
+    //       }
+    //     }
+    //   }
+    // }
 
-      if (
-        !priceOracle.tokensWithFallback.includes(sAssetAddress) &&
-        (assetOracleAddress.equals(zeroAddress()) || priceOracleAsset.isFallbackRequired)
-      ) {
-        let updatedTokensWithFallback = priceOracle.tokensWithFallback;
-        updatedTokensWithFallback.push(sAssetAddress);
-        priceOracle.tokensWithFallback = updatedTokensWithFallback;
-      }
-      priceOracle.save();
+    // if (sAssetAddress == MOCK_USD_ADDRESS) {
+    //   priceOracle.usdPriceEthFallbackRequired = priceOracleAsset.isFallbackRequired;
+    //   priceOracle.usdPriceEthMainSource = priceOracleAsset.priceSource;
+    //   usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(priceFromOracle), event);
+    // } else {
+    //   // if chainlink was invalid before and valid now, remove from tokensWithFallback array
+    //   if (
+    //     !assetOracleAddress.equals(zeroAddress()) &&
+    //     priceOracle.tokensWithFallback.includes(sAssetAddress) &&
+    //     !priceOracleAsset.isFallbackRequired
+    //   ) {
+    //     priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
+    //       token => token != assetAddress.toHexString()
+    //     );
+    //   }
 
-      genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
-    }
+    //   if (
+    //     !priceOracle.tokensWithFallback.includes(sAssetAddress) &&
+    //     (assetOracleAddress.equals(zeroAddress()) || priceOracleAsset.isFallbackRequired)
+    //   ) {
+    //     let updatedTokensWithFallback = priceOracle.tokensWithFallback;
+    //     updatedTokensWithFallback.push(sAssetAddress);
+    //     priceOracle.tokensWithFallback = updatedTokensWithFallback;
+    //   }
+    //   priceOracle.save();
+
+    //   genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
+    // }
   }
 }
 

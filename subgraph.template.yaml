@@ -58,6 +58,8 @@ dataSources:
       abis:
         - name: OracleAnchor
           file: ./constant-abis/OracleAnchor.json
+        - name: IERC20Detailed
+          file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
         - name: AaveOracle
           file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
         - name: IExtendedPriceAggregator
