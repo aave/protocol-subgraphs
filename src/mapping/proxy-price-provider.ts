@@ -1,4 +1,4 @@
-import { Bytes, Address, log, ethereum, crypto, ens as graphENS } from '@graphprotocol/graph-ts';
+import { Bytes, Address, log, ethereum } from '@graphprotocol/graph-ts';
 
 import {
   AssetSourceUpdated,
@@ -6,19 +6,14 @@ import {
   AaveOracle,
   WethSet,
 } from '../../generated/AaveOracle/AaveOracle';
-import {
-  AssetSourceUpdated as AssetSourceUpdatedAnchor,
-  OracleSystemMigrated,
-} from '../../generated/OracleAnchor/OracleAnchor';
 import { IExtendedPriceAggregator } from '../../generated/AaveOracle/IExtendedPriceAggregator';
 import { GenericOracleI as FallbackPriceOracle } from '../../generated/AaveOracle/GenericOracleI';
 import { AggregatorUpdated } from '../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
 import {
-  // ChainlinkAggregator as ChainlinkAggregatorContract,
+  ChainlinkAggregator as ChainlinkAggregatorContract,
   FallbackPriceOracle as FallbackPriceOracleContract,
-  // UniswapExchange as UniswapExchangeContract,
 } from '../../generated/templates';
-import { byteArrayFromHex } from '../utils/converters';
+import { convertToLowerCase, namehash } from '../utils/converters';
 import {
   getChainlinkAggregator,
   getOrInitPriceOracle,
@@ -168,7 +163,7 @@ export function priceFeedUpdated(
       let aggregatorAddress = aggregatorAddressCall.value;
       priceOracleAsset.priceSource = aggregatorAddress;
       // create ChainLink aggregator template entity
-      // ChainlinkAggregatorContract.create(aggregatorAddress);
+      ChainlinkAggregatorContract.create(aggregatorAddress);
 
       // Register the aggregator address to the ens registry
       // we can get the reserve as aave oracle is in the contractToPoolMapping as proxyPriceProvider
@@ -178,13 +173,30 @@ export function priceFeedUpdated(
       // TODO: not entirely sure if this solution will be useful for all the cases!!!!
       let symbol = ERC20ATokenContract.symbol().slice(1); // TODO: remove slice if we change
 
-      //  namehash("aggregator.aave-eth.data.eth")
-      // let node = graphENS.nameByHash('aggregator.' + symbol + '-eth.data.eth');
       // Hash the ENS to generate the node and create the ENS register in the schema.
-      let node = crypto
-        .keccak256(byteArrayFromHex('aggregator.' + symbol + '-eth.data.eth'))
-        .toHexString();
-      log.error(`node construction is ::: {}`, [node]);
+      if (
+        convertToLowerCase(assetAddress.toHexString()) ==
+        '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'
+      ) {
+        symbol = 'MKR';
+      } else {
+        // we need to use the underlying, as the anchor address is not mapped to the lending pool
+        let ERC20ATokenContract = IERC20Detailed.bind(assetAddress);
+        symbol = ERC20ATokenContract.symbol().slice(1); // TODO: remove slice if we change
+      }
+
+      let domain: Array<string> = [
+        'aggregator',
+        convertToLowerCase(symbol) + '-eth',
+        'data',
+        'eth',
+      ];
+
+      // Hash the ENS to generate the node and create the ENS register in the schema.
+      let node = namehash(domain);
+
+      log.warning(`Proxy node construction is ::: {}`, [node]);
+
       // Create the ENS or update
       let ens = getOrInitENS(node);
       ens.aggregatorAddress = aggregatorAddress;
@@ -429,40 +441,5 @@ function chainLinkAggregatorUpdated(
     priceOracle.save();
 
     genericPriceUpdate(priceOracleAsset, priceFromProxy, event);
-  }
-}
-
-// Event that will get triggered when new chainlink ens system gets activated
-// if flag is activated means we need to stop listening to old events
-// TODO: deprecate old events on this trigger
-export function handleOracleSystemMigrated(event: OracleSystemMigrated): void {
-  // Update the value migrated
-  log.error(`oracle migrator started: {}`, [event.block.number.toString()]);
-  let priceOracle = getOrInitPriceOracle();
-  priceOracle.version = 2;
-  priceOracle.save();
-}
-
-export function handleAssetSourceUpdatedAnchor(event: AssetSourceUpdatedAnchor): void {
-  let assetAddress = event.params.token;
-  let sAssetAddress = assetAddress.toHexString();
-  let assetOracleAddress = event.params.source;
-  // because of the bug with wrong assets addresses submission
-  if (sAssetAddress.split('0').length > 38) {
-    log.warning('skipping wrong asset registration {}', [sAssetAddress]);
-    return;
-  }
-  let priceOracle = getOrInitPriceOracle();
-  if (priceOracle.proxyPriceProvider.equals(zeroAddress())) {
-    log.error(`aave oracle should already have been deployed : {}`, [event.address.toHexString()]);
-  }
-
-  let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
-
-  if (priceOracle.version > 1) {
-    log.error('here i am', []);
-    priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
-  } else {
-    log.error(`version should be 2`, []);
   }
 }

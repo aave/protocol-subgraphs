@@ -23,24 +23,19 @@ import {
 import { Swapped as SwappedRepay } from '../../generated/UniswapRepayAdapter/UniswapRepayAdapter';
 import { Swapped as SwappedLiquidity } from '../../generated/UniswapLiquiditySwapAdapter/UniswapLiquiditySwapAdapter';
 import {
-  getOrInitPriceOracle,
   getOrInitReferrer,
   getOrInitReserve,
-  getOrInitReserveParamsHistoryItem,
   getOrInitUser,
   getOrInitUserReserve,
-  getPriceOracleAsset,
 } from '../helpers/initializers';
 import {
   Borrow as BorrowAction,
   Deposit as DepositAction,
   FlashLoan as FlashLoanAction,
   LiquidationCall as LiquidationCallAction,
-  OriginationFeeLiquidation as OriginationFeeLiquidationAction,
   RebalanceStableBorrowRate as RebalanceStableBorrowRateAction,
   RedeemUnderlying as RedeemUnderlyingAction,
   Repay as RepayAction,
-  Reserve,
   Swap as SwapAction,
   SwapHistory,
   UsageAsCollateral as UsageAsCollateralAction,

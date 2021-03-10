@@ -1,4 +1,4 @@
-import { BigInt, BigDecimal, Bytes, ByteArray, crypto, log } from '@graphprotocol/graph-ts';
+import { BigInt, BigDecimal, Bytes, ByteArray, crypto, log, Value } from '@graphprotocol/graph-ts';
 
 export function zeroBD(): BigDecimal {
   return BigDecimal.fromString('0');
@@ -134,19 +134,15 @@ const Zeros = new ByteArray(32);
 Zeros.fill(0);
 
 export function namehash(partition: Array<string>): string {
-  log.warning('namehash method::: {} || length::: {}', [
-    partition.toString(),
-    BigInt.fromI32(partition.length).toString(),
-  ]);
   let result: ByteArray = Zeros;
   while (partition.length > 0) {
-    let label = partition[partition.length - 1];
-    if (partition[partition.length - 1].length % 2 == 1) {
-      label = 0 + partition[partition.length - 1];
-    }
-    log.warning('LABEL:: {}', [label]);
-    let labelBytes = byteArrayFromHex(partition[partition.length - 1]);
-    result = crypto.keccak256(concat(result, crypto.keccak256(labelBytes)));
+    let data = partition[partition.length - 1];
+    let label = ByteArray.fromUTF8(data);
+    log.warning('==== LABEL ==== previous: {} || after: {}', [
+      partition[partition.length - 1],
+      label.toString(),
+    ]);
+    result = crypto.keccak256(concat(result, crypto.keccak256(label)));
 
     partition.pop();
   }
@@ -176,10 +172,3 @@ export function convertToLowerCase(str: string): string {
   // return the result
   return result;
 }
-
-// export function namehash(ensDomain: Array) {
-//   let namehash = crypto.keccak256(namehash(…), keccak256(label))
-//   return namehash;
-// }
-// namehash([]) = 0x0000000000000000000000000000000000000000000000000000000000000000
-// namehash([label, …]) = keccak256(namehash(…), keccak256(label))
