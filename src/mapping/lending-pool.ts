@@ -1,9 +1,8 @@
-import { ethereum, BigInt } from '@graphprotocol/graph-ts';
+import { BigInt } from '@graphprotocol/graph-ts';
 import {
   BORROW_MODE_STABLE,
   BORROW_MODE_VARIABLE,
   getBorrowRateMode,
-  zeroBI,
 } from '../utils/converters';
 import {
   Borrow,
@@ -23,13 +22,11 @@ import {
 import { Swapped as SwappedRepay } from '../../generated/UniswapRepayAdapter/UniswapRepayAdapter';
 import { Swapped as SwappedLiquidity } from '../../generated/UniswapLiquiditySwapAdapter/UniswapLiquiditySwapAdapter';
 import {
-  getOrInitPriceOracle,
   getOrInitReferrer,
   getOrInitReserve,
-  getOrInitReserveParamsHistoryItem,
   getOrInitUser,
   getOrInitUserReserve,
-  getPriceOracleAsset,
+  getPoolByContract,
 } from '../helpers/initializers';
 import {
   Borrow as BorrowAction,
@@ -115,14 +112,16 @@ export function handleBorrow(event: Borrow): void {
 }
 
 export function handlePaused(event: Paused): void {
-  let lendingPool = Pool.load(event.address.toHexString());
+  let poolId = getPoolByContract(event);
+  let lendingPool = Pool.load(poolId);
 
   lendingPool.paused = true;
   lendingPool.save();
 }
 
 export function handleUnpaused(event: Unpaused): void {
-  let lendingPool = Pool.load(event.address.toHexString());
+  let poolId = getPoolByContract(event);
+  let lendingPool = Pool.load(poolId);
 
   lendingPool.paused = false;
   lendingPool.save();
