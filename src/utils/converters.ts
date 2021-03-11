@@ -138,10 +138,7 @@ export function namehash(partition: Array<string>): string {
   while (partition.length > 0) {
     let data = partition[partition.length - 1];
     let label = ByteArray.fromUTF8(data);
-    log.warning('==== LABEL ==== previous: {} || after: {}', [
-      partition[partition.length - 1],
-      label.toString(),
-    ]);
+
     result = crypto.keccak256(concat(result, crypto.keccak256(label)));
 
     partition.pop();

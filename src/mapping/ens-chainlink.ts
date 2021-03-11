@@ -1,12 +1,17 @@
 import { log } from '@graphprotocol/graph-ts';
-import { getChainlinkAggregator, getPriceOracleAsset } from '../helpers/initializers';
+import {
+  getChainlinkAggregator,
+  getOrInitPriceOracle,
+  getPriceOracleAsset,
+} from '../helpers/initializers';
 import { AddrChanged } from '../../generated/ChainlinkENSResolver/ChainlinkENSResolver';
-import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../generated/templates';
+// import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../generated/templates';
 
 import { ChainlinkENS } from '../../generated/schema';
 import { IExtendedPriceAggregator } from '../../generated/ChainlinkENSResolver/IExtendedPriceAggregator';
-import { zeroBI } from '../utils/converters';
-import { genericPriceUpdate } from '../helpers/price-updates';
+import { formatUsdEthChainlinkPrice, zeroBI } from '../utils/converters';
+import { genericPriceUpdate, usdEthPriceUpdate } from '../helpers/price-updates';
+import { MOCK_USD_ADDRESS } from '../utils/constants';
 
 // Event that gets triggered when an aggregator of chainlink change gets triggered
 // updates the ens entity with new aggregator address
@@ -16,12 +21,16 @@ export function handleAddressesChanged(event: AddrChanged): void {
   let priceSource = event.params.a;
   let node = event.params.node.toHexString();
 
-  log.warning(`ENS NODE:::: {}`, [node]);
+  // log.warning(`ENS NODE:::: {}`, [node]);
 
   let ens = ChainlinkENS.load(node);
   // Check if we watching this ENS asset
   if (ens) {
-    log.error('node existed -------------------------> {}', [node]);
+    // log.error('ENS UPDATE: prev aggregator:: {} || new agg: {} || node:: {}', [
+    //   ens.aggregatorAddress.toHexString(),
+    //   priceSource.toHexString(),
+    //   node,
+    // ]);
     ens.aggregatorAddress = priceSource;
     ens.save();
 
@@ -34,19 +43,24 @@ export function handleAddressesChanged(event: AddrChanged): void {
     let latestAnswerCall = priceAggregatorInstance.try_latestAnswer();
     if (!latestAnswerCall.reverted && latestAnswerCall.value.gt(zeroBI())) {
       genericPriceUpdate(assetOracle, latestAnswerCall.value, event);
+
+      // update usd
+      if (oracleAssetAddress.toHexString() == MOCK_USD_ADDRESS) {
+        let priceOracle = getOrInitPriceOracle();
+        priceOracle.usdPriceEthFallbackRequired = assetOracle.isFallbackRequired;
+        priceOracle.usdPriceEthMainSource = priceSource;
+        usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(latestAnswerCall.value), event);
+      }
     } else {
       log.error(`Latest answer call failed on aggregator:: {} | for node:: {}`, [
         priceSource.toHexString(),
         node,
       ]);
-      // TODO: Do I need to add fallback here?
-      assetOracle.isFallbackRequired = true;
-      assetOracle.lastUpdateTimestamp = event.block.timestamp.toI32();
-      assetOracle.save();
+      return;
     }
 
     // start listening to events from new price source
-    ChainlinkAggregatorContract.create(priceSource);
+    // ChainlinkAggregatorContract.create(priceSource);
 
     // create chainlinkAggregator entity with new aggregator to be able to match asset and oracle after
     let chainlinkAggregator = getChainlinkAggregator(priceSource.toHexString());
@@ -54,6 +68,6 @@ export function handleAddressesChanged(event: AddrChanged): void {
     chainlinkAggregator.save();
   } // if the schema for ENS are not created ignore
   else {
-    log.error(`Ens not created`, []);
+    // log.error(`Ens not created`, []);
   }
 }

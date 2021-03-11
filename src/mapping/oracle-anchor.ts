@@ -23,7 +23,7 @@ import {
   zeroBI,
 } from '../utils/converters';
 
-import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../generated/templates';
+// import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../generated/templates';
 
 // Only for chainlink proxy price provider
 export function priceFeedUpdated(
@@ -44,29 +44,35 @@ export function priceFeedUpdated(
     // If we can't get the aggregator, it means that the source address is not a chainlink proxy
     // so it has been registered badly.
     if (aggregatorAddressCall.reverted) {
-      log.error(`Simple Type must be a chainlink proxy. || asset: {} | assetOracleAddress: {}`, [
-        sAssetAddress,
-        assetOracleAddress.toHexString(),
-      ]);
+      log.error(
+        `ANCHOR: Simple Type must be a chainlink proxy. || asset: {} | assetOracleAddress: {}`,
+        [sAssetAddress, assetOracleAddress.toHexString()]
+      );
       return;
     }
     let aggregatorAddress = aggregatorAddressCall.value;
     priceOracleAsset.priceSource = aggregatorAddress;
     // create ChainLink aggregator template entity
-    ChainlinkAggregatorContract.create(aggregatorAddress);
+    // ChainlinkAggregatorContract.create(aggregatorAddress);
 
     // Register the aggregator address to the ens registry
+    log.warning('asset: {}', [assetAddress.toHexString()]);
     let symbol = '';
     if (
       convertToLowerCase(assetAddress.toHexString()) == '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'
     ) {
-      symbol = 'MKR';
+      symbol = 'mkr-eth';
+    } else if (
+      convertToLowerCase(assetAddress.toHexString()) == '0x10f7fc1f91ba351f9c629c5947ad69bd03c05b96'
+    ) {
+      log.warning('ANCHOR -------------------------------------------------', []);
+      symbol = 'eth-usd';
     } else {
       // we need to use the underlying, as the anchor address is not mapped to the lending pool
       let ERC20ATokenContract = IERC20Detailed.bind(assetAddress);
       let symbolCall = ERC20ATokenContract.try_symbol(); //.slice(1); // TODO: remove slice if we change
       if (!symbolCall.reverted) {
-        symbol = symbolCall.value;
+        symbol = convertToLowerCase(symbolCall.value) + '-eth';
       } else {
         log.warning('NO SYMBOL ::==:: Aggregator {} has no symbol for token: {}', [
           assetOracleAddress.toHexString(),
@@ -76,12 +82,17 @@ export function priceFeedUpdated(
       }
     }
 
-    let domain: Array<string> = ['aggregator', convertToLowerCase(symbol) + '-eth', 'data', 'eth'];
+    let domain: Array<string> = ['aggregator', symbol, 'data', 'eth'];
 
     // Hash the ENS to generate the node and create the ENS register in the schema.
     let node = namehash(domain);
 
-    log.warning(`Anchor node construction is ::: {}`, [node]);
+    // log.warning(`ENS CREATED ANCHOR: agg:: {} || symbol:: {} || underlaying:: {}`, [
+    //   aggregatorAddress.toHexString(),
+    //   symbol,
+    //   assetAddress.toHexString(),
+    //   node,
+    // ]);
 
     // Create the ENS or update
     let ens = getOrInitENS(node);

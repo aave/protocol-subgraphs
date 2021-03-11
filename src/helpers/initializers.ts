@@ -59,7 +59,9 @@ export function getOrInitENS(node: string): ChainlinkENS {
   if (!ens) {
     log.error(`new node:::: {}`, [node]);
     ens = new ChainlinkENS(node);
-
+    ens.aggregatorAddress = zeroAddress();
+    ens.underlyingAddress = zeroAddress();
+    ens.symbol = '';
     ens.save();
   }
   return ens as ChainlinkENS;

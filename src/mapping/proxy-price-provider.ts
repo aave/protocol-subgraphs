@@ -10,7 +10,7 @@ import { IExtendedPriceAggregator } from '../../generated/AaveOracle/IExtendedPr
 import { GenericOracleI as FallbackPriceOracle } from '../../generated/AaveOracle/GenericOracleI';
 import { AggregatorUpdated } from '../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
 import {
-  ChainlinkAggregator as ChainlinkAggregatorContract,
+  // ChainlinkAggregator as ChainlinkAggregatorContract,
   FallbackPriceOracle as FallbackPriceOracleContract,
 } from '../../generated/templates';
 import { convertToLowerCase, namehash } from '../utils/converters';
@@ -154,48 +154,51 @@ export function priceFeedUpdated(
       // If we can't get the aggregator, it means that the source address is not a chainlink proxy
       // so it has been registered badly.
       if (aggregatorAddressCall.reverted) {
-        log.error(`Simple Type must be a chainlink proxy. || asset: {} | assetOracleAddress: {}`, [
-          sAssetAddress,
-          assetOracleAddress.toHexString(),
-        ]);
+        log.error(
+          `PROXY: Simple Type must be a chainlink proxy. || asset: {} | assetOracleAddress: {}`,
+          [sAssetAddress, assetOracleAddress.toHexString()]
+        );
         return;
       }
       let aggregatorAddress = aggregatorAddressCall.value;
       priceOracleAsset.priceSource = aggregatorAddress;
       // create ChainLink aggregator template entity
-      ChainlinkAggregatorContract.create(aggregatorAddress);
+      // ChainlinkAggregatorContract.create(aggregatorAddress);
 
       // Register the aggregator address to the ens registry
-      // we can get the reserve as aave oracle is in the contractToPoolMapping as proxyPriceProvider
-      let reserve = getOrInitReserve(assetAddress, event);
-      let aToken = reserve.aToken;
-      let ERC20ATokenContract = IERC20Detailed.bind(Bytes.fromHexString(aToken) as Address);
-      // TODO: not entirely sure if this solution will be useful for all the cases!!!!
-      let symbol = ERC20ATokenContract.symbol().slice(1); // TODO: remove slice if we change
-
       // Hash the ENS to generate the node and create the ENS register in the schema.
+      let symbol = '';
       if (
         convertToLowerCase(assetAddress.toHexString()) ==
         '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'
       ) {
-        symbol = 'MKR';
+        symbol = 'mkr-eth';
+      } else if (
+        convertToLowerCase(assetAddress.toHexString()) ==
+        '0x10f7fc1f91ba351f9c629c5947ad69bd03c05b96'
+      ) {
+        log.warning('PROXY -------------------------------------------------', []);
+        symbol = 'eth-usd';
       } else {
-        // we need to use the underlying, as the anchor address is not mapped to the lending pool
-        let ERC20ATokenContract = IERC20Detailed.bind(assetAddress);
-        symbol = ERC20ATokenContract.symbol().slice(1); // TODO: remove slice if we change
+        // we can get the reserve as aave oracle is in the contractToPoolMapping as proxyPriceProvider
+        let reserve = getOrInitReserve(assetAddress, event);
+        let aToken = reserve.aToken;
+        let ERC20ATokenContract = IERC20Detailed.bind(Bytes.fromHexString(aToken) as Address);
+        // TODO: not entirely sure if this solution will be useful for all the cases!!!!
+        symbol = convertToLowerCase(ERC20ATokenContract.symbol().slice(1)) + '-eth'; // TODO: remove slice if we change
       }
 
-      let domain: Array<string> = [
-        'aggregator',
-        convertToLowerCase(symbol) + '-eth',
-        'data',
-        'eth',
-      ];
+      let domain: Array<string> = ['aggregator', symbol, 'data', 'eth'];
 
       // Hash the ENS to generate the node and create the ENS register in the schema.
       let node = namehash(domain);
 
-      log.warning(`Proxy node construction is ::: {}`, [node]);
+      // log.warning(`ENS CREATED PROXY: agg:: {} || symbol:: {} || underlaying:: {}`, [
+      //   aggregatorAddress.toHexString(),
+      //   symbol,
+      //   assetAddress.toHexString(),
+      //   node,
+      // ]);
 
       // Create the ENS or update
       let ens = getOrInitENS(node);
