@@ -393,10 +393,10 @@ templates:
           handler: handleFlashLoan
         - event: LiquidationCall(indexed address,indexed address,indexed address,uint256,uint256,address,bool)
           handler: handleLiquidationCall
-        - event: Paused()
-          handler: handlePaused
-        - event: Unpaused()
-          handler: handleUnpaused
+        #- event: Paused()
+        #  handler: handlePaused
+        #- event: Unpaused()
+        #  handler: handleUnpaused
         - event: ReserveDataUpdated(indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleReserveDataUpdated
       file: src/mapping/lending-pool.ts
