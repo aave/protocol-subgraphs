@@ -150,46 +150,46 @@ dataSources:
   # --------------------------------------
   #             ADAPTERS
   # --------------------------------------
-  # - kind: ethereum/contract
-  #   name: UniswapLiquiditySwapAdapter
-  #   network: {{network}}
-  #   source:
-  #     address: '{{UniswapLiquiditySwapAdapterAddress}}'
-  #     abi: UniswapLiquiditySwapAdapter
-  #     startBlock: {{UniswapLiquiditySwapAdapterStartBlock}}
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.4
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - UniswapLiquiditySwapAdapter
-  #     abis:
-  #       - name: UniswapLiquiditySwapAdapter
-  #         file: ./externals/protocol-v2/artifacts/contracts/adapters/UniswapLiquiditySwapAdapter.sol/UniswapLiquiditySwapAdapter.json
-  #     eventHandlers:
-  #       - event: Swapped(address,address,uint256,uint256)
-  #         handler: handleSwappedLiquidity
-  #     file: src/mapping/lending-pool.ts
-  # - kind: ethereum/contract
-  #   name: UniswapRepayAdapter
-  #   network: {{network}}
-  #   source:
-  #     address: '{{UniswapRepayAdapterAddress}}'
-  #     abi: UniswapRepayAdapter
-  #     startBlock: {{UniswapRepayAdapterStartBlock}}
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.4
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - UniswapRepayAdapter
-  #     abis:
-  #       - name: UniswapRepayAdapter
-  #         file: ./externals/protocol-v2/artifacts/contracts/adapters/UniswapRepayAdapter.sol/UniswapRepayAdapter.json
-  #     eventHandlers:
-  #       - event: Swapped(address,address,uint256,uint256)
-  #         handler: handleSwappedRepay
-  #     file: src/mapping/lending-pool.ts
+  - kind: ethereum/contract
+    name: UniswapLiquiditySwapAdapter
+    network: {{network}}
+    source:
+      address: '{{UniswapLiquiditySwapAdapterAddress}}'
+      abi: UniswapLiquiditySwapAdapter
+      startBlock: {{UniswapLiquiditySwapAdapterStartBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - UniswapLiquiditySwapAdapter
+      abis:
+        - name: UniswapLiquiditySwapAdapter
+          file: ./externals/protocol-v2/artifacts/contracts/adapters/UniswapLiquiditySwapAdapter.sol/UniswapLiquiditySwapAdapter.json
+      eventHandlers:
+        - event: Swapped(address,address,uint256,uint256)
+          handler: handleSwappedLiquidity
+      file: src/mapping/lending-pool.ts
+  - kind: ethereum/contract
+    name: UniswapRepayAdapter
+    network: {{network}}
+    source:
+      address: '{{UniswapRepayAdapterAddress}}'
+      abi: UniswapRepayAdapter
+      startBlock: {{UniswapRepayAdapterStartBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - UniswapRepayAdapter
+      abis:
+        - name: UniswapRepayAdapter
+          file: ./externals/protocol-v2/artifacts/contracts/adapters/UniswapRepayAdapter.sol/UniswapRepayAdapter.json
+      eventHandlers:
+        - event: Swapped(address,address,uint256,uint256)
+          handler: handleSwappedRepay
+      file: src/mapping/lending-pool.ts
   # --------------------------------------
   #
   # --------------------------------------
@@ -221,99 +221,99 @@ templates:
           handler: handleProphecySubmitted
       file: src/mapping/price-oracle.ts
 
-  # - kind: ethereum/contract
-  #   name: ChainlinkAggregator
-  #   network: {{network}}
-  #   source:
-  #     abi: IExtendedPriceAggregator
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.4
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - PriceOracleReserve
-  #     abis:
-  #       - name: IExtendedPriceAggregator
-  #         file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
-  #       - name: AaveOracle
-  #         file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
-  #     eventHandlers:
-  #       - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
-  #         handler: handleChainlinkAnswerUpdated
-  #     file: src/mapping/price-oracle.ts
+  - kind: ethereum/contract
+    name: ChainlinkAggregator
+    network: {{network}}
+    source:
+      abi: IExtendedPriceAggregator
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - PriceOracleReserve
+      abis:
+        - name: IExtendedPriceAggregator
+          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
+        - name: AaveOracle
+          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+      eventHandlers:
+        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+          handler: handleChainlinkAnswerUpdated
+      file: src/mapping/price-oracle.ts
 
   # --------------------------------------
   #      AToken / Stable / Variable
   # --------------------------------------
-  # - kind: ethereum/contract
-  #   name: AToken
-  #   network: {{network}}
-  #   source:
-  #     abi: AToken
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.4
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - AToken
-  #       - UserReserve
-  #     abis:
-  #       - name: AToken
-  #         file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/AToken.sol/AToken.json
-  #     eventHandlers:
-  #       - event: Burn(indexed address,indexed address,uint256,uint256)
-  #         handler: handleATokenBurn
-  #       - event: BalanceTransfer(indexed address,indexed address,uint256,uint256)
-  #         handler: handleATokenTransfer
-  #       - event: Mint(indexed address,uint256,uint256)
-  #         handler: handleATokenMint
-  #     file: src/mapping/tokenization.ts
-  # - kind: ethereum/contract
-  #   name: StableDebtToken
-  #   network: {{network}}
-  #   source:
-  #     abi: StableDebtToken
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.4
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - StableDebtToken
-  #       - UserReserve
-  #     abis:
-  #       - name: StableDebtToken
-  #         file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/StableDebtToken.sol/StableDebtToken.json
-  #     eventHandlers:
-  #       - event: Burn(indexed address,uint256,uint256,uint256,uint256,uint256)
-  #         handler: handleStableTokenBurn
-  #       - event: Mint(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256)
-  #         handler: handleStableTokenMint
-  #       - event: BorrowAllowanceDelegated(indexed address,indexed address,address,uint256)
-  #         handler: handleStableTokenBorrowAllowanceDelegated
-  #     file: src/mapping/tokenization.ts
-  # - kind: ethereum/contract
-  #   name: VariableDebtToken
-  #   network: {{network}}
-  #   source:
-  #     abi: VariableDebtToken
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.4
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - StableDebtToken
-  #       - UserReserve
-  #     abis:
-  #       - name: VariableDebtToken
-  #         file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/VariableDebtToken.sol/VariableDebtToken.json
-  #     eventHandlers:
-  #       - event: Burn(indexed address,uint256,uint256)
-  #         handler: handleVariableTokenBurn
-  #       - event: Mint(indexed address,indexed address,uint256,uint256)
-  #         handler: handleVariableTokenMint
-  #       - event: BorrowAllowanceDelegated(indexed address,indexed address,address,uint256)
-  #         handler: handleVariableTokenBorrowAllowanceDelegated
-  #     file: src/mapping/tokenization.ts
+  - kind: ethereum/contract
+    name: AToken
+    network: {{network}}
+    source:
+      abi: AToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - AToken
+        - UserReserve
+      abis:
+        - name: AToken
+          file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/AToken.sol/AToken.json
+      eventHandlers:
+        - event: Burn(indexed address,indexed address,uint256,uint256)
+          handler: handleATokenBurn
+        - event: BalanceTransfer(indexed address,indexed address,uint256,uint256)
+          handler: handleATokenTransfer
+        - event: Mint(indexed address,uint256,uint256)
+          handler: handleATokenMint
+      file: src/mapping/tokenization.ts
+  - kind: ethereum/contract
+    name: StableDebtToken
+    network: {{network}}
+    source:
+      abi: StableDebtToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - StableDebtToken
+        - UserReserve
+      abis:
+        - name: StableDebtToken
+          file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/StableDebtToken.sol/StableDebtToken.json
+      eventHandlers:
+        - event: Burn(indexed address,uint256,uint256,uint256,uint256,uint256)
+          handler: handleStableTokenBurn
+        - event: Mint(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleStableTokenMint
+        - event: BorrowAllowanceDelegated(indexed address,indexed address,address,uint256)
+          handler: handleStableTokenBorrowAllowanceDelegated
+      file: src/mapping/tokenization.ts
+  - kind: ethereum/contract
+    name: VariableDebtToken
+    network: {{network}}
+    source:
+      abi: VariableDebtToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - StableDebtToken
+        - UserReserve
+      abis:
+        - name: VariableDebtToken
+          file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/VariableDebtToken.sol/VariableDebtToken.json
+      eventHandlers:
+        - event: Burn(indexed address,uint256,uint256)
+          handler: handleVariableTokenBurn
+        - event: Mint(indexed address,indexed address,uint256,uint256)
+          handler: handleVariableTokenMint
+        - event: BorrowAllowanceDelegated(indexed address,indexed address,address,uint256)
+          handler: handleVariableTokenBorrowAllowanceDelegated
+      file: src/mapping/tokenization.ts
 
   # --------------------------------------
   #       CONFIGURATIONS
@@ -411,49 +411,98 @@ templates:
         - event: VariableDebtTokenUpgraded(indexed address,indexed address,indexed address)
           handler: handleVariableDebtTokenUpgraded
       file: src/mapping/lending-pool-configurator.ts
-  # - kind: ethereum/contract
-  #   name: LendingPool
-  #   network: {{network}}
-  #   source:
-  #     abi: LendingPool
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.4
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - ReserveOperation
-  #       - InterestRateHistory
-  #       - Reserve
-  #       - UserReserve
-  #       - User
-  #     abis:
-  #       - name: LendingPool
-  #         file: ./externals/protocol-v2/artifacts/contracts/protocol/lendingpool/LendingPool.sol/LendingPool.json
-  #     eventHandlers:
-  #       - event: Deposit(indexed address,address,indexed address,uint256,indexed uint16)
-  #         handler: handleDeposit
-  #       - event: Withdraw(indexed address,indexed address,indexed address,uint256)
-  #         handler: handleWithdraw
-  #       - event: Borrow(indexed address,address,indexed address,uint256,uint256,uint256,indexed uint16)
-  #         handler: handleBorrow
-  #       - event: Repay(indexed address,indexed address,indexed address,uint256)
-  #         handler: handleRepay
-  #       - event: Swap(indexed address,indexed address,uint256)
-  #         handler: handleSwap
-  #       - event: ReserveUsedAsCollateralEnabled(indexed address,indexed address)
-  #         handler: handleReserveUsedAsCollateralEnabled
-  #       - event: ReserveUsedAsCollateralDisabled(indexed address,indexed address)
-  #         handler: handleReserveUsedAsCollateralDisabled
-  #       - event: RebalanceStableBorrowRate(indexed address,indexed address)
-  #         handler: handleRebalanceStableBorrowRate
-  #       - event: FlashLoan(indexed address,indexed address,indexed address,uint256,uint256,uint16)
-  #         handler: handleFlashLoan
-  #       - event: LiquidationCall(indexed address,indexed address,indexed address,uint256,uint256,address,bool)
-  #         handler: handleLiquidationCall
-  #       - event: Paused()
-  #         handler: handlePaused
-  #       - event: Unpaused()
-  #         handler: handleUnpaused
-  #       - event: ReserveDataUpdated(indexed address,uint256,uint256,uint256,uint256,uint256)
-  #         handler: handleReserveDataUpdated
-  #     file: src/mapping/lending-pool.ts
+  - kind: ethereum/contract
+    name: LendingPool
+    network: {{network}}
+    source:
+      abi: LendingPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - ReserveOperation
+        - InterestRateHistory
+        - Reserve
+        - UserReserve
+        - User
+      abis:
+        - name: LendingPool
+          file: ./externals/protocol-v2/artifacts/contracts/protocol/lendingpool/LendingPool.sol/LendingPool.json
+      eventHandlers:
+        - event: Deposit(indexed address,address,indexed address,uint256,indexed uint16)
+          handler: handleDeposit
+        - event: Withdraw(indexed address,indexed address,indexed address,uint256)
+          handler: handleWithdraw
+        - event: Borrow(indexed address,address,indexed address,uint256,uint256,uint256,indexed uint16)
+          handler: handleBorrow
+        - event: Repay(indexed address,indexed address,indexed address,uint256)
+          handler: handleRepay
+        - event: Swap(indexed address,indexed address,uint256)
+          handler: handleSwap
+        - event: ReserveUsedAsCollateralEnabled(indexed address,indexed address)
+          handler: handleReserveUsedAsCollateralEnabled
+        - event: ReserveUsedAsCollateralDisabled(indexed address,indexed address)
+          handler: handleReserveUsedAsCollateralDisabled
+        - event: RebalanceStableBorrowRate(indexed address,indexed address)
+          handler: handleRebalanceStableBorrowRate
+        - event: FlashLoan(indexed address,indexed address,indexed address,uint256,uint256,uint16)
+          handler: handleFlashLoan
+        - event: LiquidationCall(indexed address,indexed address,indexed address,uint256,uint256,address,bool)
+          handler: handleLiquidationCall
+        - event: Paused()
+          handler: handlePaused
+        - event: Unpaused()
+          handler: handleUnpaused
+        - event: ReserveDataUpdated(indexed address,uint256,uint256,uint256,uint256,uint256)
+          handler: handleReserveDataUpdated
+      file: src/mapping/lending-pool.ts
+
+  # --------------------------------------
+  #       CONFIGURATIONS
+  # --------------------------------------
+  - kind: ethereum/contract
+    name: UniswapExchange
+    network: {{network}}
+    source:
+      abi: IUniswapExchange
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - PriceOracleAsset
+        - PriceOracle
+      abis:
+        - name: IUniswapExchange
+          file: ./constant-abis/IUniswapExchange.json
+        - name: AaveOracle
+          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+      eventHandlers:
+        - event: Sync(uint112,uint112)
+          handler: updateAssetPriceFromAaveOracle
+      file: ./src/helpers/price-updates.ts
+
+  - kind: ethereum/contract
+    name: BalancerPool
+    network: {{network}}
+    source:
+      abi: IBalancerPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - PriceOracleAsset
+        - PriceOracle
+      abis:
+        - name: IBalancerPool
+          file: ./constant-abis/IBalancerPool.json
+        - name: AaveOracle
+          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+      eventHandlers:
+        - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: updateAssetPriceFromAaveOracle
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: updateAssetPriceFromAaveOracle
+      file: ./src/helpers/price-updates.ts

@@ -57,7 +57,6 @@ export function getOrInitUser(address: Address): User {
 export function getOrInitENS(node: string): ChainlinkENS {
   let ens = ChainlinkENS.load(node);
   if (!ens) {
-    log.error(`new node:::: {}`, [node]);
     ens = new ChainlinkENS(node);
     ens.aggregatorAddress = zeroAddress();
     ens.underlyingAddress = zeroAddress();
@@ -147,7 +146,6 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
     reserve = new Reserve(reserveId);
     reserve.underlyingAsset = underlyingAsset;
     reserve.pool = poolId;
-    reserve.paused = false;
     reserve.symbol = '';
     reserve.name = '';
     reserve.decimals = 0;

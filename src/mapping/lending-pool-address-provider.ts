@@ -13,7 +13,7 @@ import {
   EmergencyAdminUpdated,
 } from '../../generated/templates/LendingPoolAddressesProvider/LendingPoolAddressesProvider';
 import {
-  // LendingPool as LendingPoolContract,
+  LendingPool as LendingPoolContract,
   LendingPoolConfigurator as LendingPoolConfiguratorContract,
 } from '../../generated/templates';
 import { createMapContractToPool, getOrInitPriceOracle } from '../helpers/initializers';
@@ -87,7 +87,7 @@ export function handleProxyCreated(event: ProxyCreated): void {
     LendingPoolConfiguratorContract.create(newProxyAddress);
   } else if (contactId == 'LENDING_POOL') {
     poolComponent = 'lendingPool';
-    // LendingPoolContract.create(newProxyAddress);
+    LendingPoolContract.create(newProxyAddress);
   } else {
     return;
   }

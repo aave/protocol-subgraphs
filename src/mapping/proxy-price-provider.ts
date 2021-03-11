@@ -10,8 +10,10 @@ import { IExtendedPriceAggregator } from '../../generated/AaveOracle/IExtendedPr
 import { GenericOracleI as FallbackPriceOracle } from '../../generated/AaveOracle/GenericOracleI';
 import { AggregatorUpdated } from '../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
 import {
-  // ChainlinkAggregator as ChainlinkAggregatorContract,
+  BalancerPool,
+  ChainlinkAggregator as ChainlinkAggregatorContract,
   FallbackPriceOracle as FallbackPriceOracleContract,
+  UniswapExchange,
 } from '../../generated/templates';
 import { convertToLowerCase, namehash } from '../utils/converters';
 import {
@@ -23,7 +25,9 @@ import {
 } from '../helpers/initializers';
 import {
   formatUsdEthChainlinkPrice,
+  getPriceOracleAssetPlatform,
   getPriceOracleAssetType,
+  PRICE_ORACLE_ASSET_PLATFORM_BALANCER,
   PRICE_ORACLE_ASSET_PLATFORM_UNISWAP,
   PRICE_ORACLE_ASSET_TYPE_SIMPLE,
   zeroAddress,
@@ -163,7 +167,7 @@ export function priceFeedUpdated(
       let aggregatorAddress = aggregatorAddressCall.value;
       priceOracleAsset.priceSource = aggregatorAddress;
       // create ChainLink aggregator template entity
-      // ChainlinkAggregatorContract.create(aggregatorAddress);
+      ChainlinkAggregatorContract.create(aggregatorAddress);
 
       // Register the aggregator address to the ens registry
       // Hash the ENS to generate the node and create the ENS register in the schema.
@@ -177,7 +181,6 @@ export function priceFeedUpdated(
         convertToLowerCase(assetAddress.toHexString()) ==
         '0x10f7fc1f91ba351f9c629c5947ad69bd03c05b96'
       ) {
-        log.warning('PROXY -------------------------------------------------', []);
         symbol = 'eth-usd';
       } else {
         // we can get the reserve as aave oracle is in the contractToPoolMapping as proxyPriceProvider
@@ -192,13 +195,6 @@ export function priceFeedUpdated(
 
       // Hash the ENS to generate the node and create the ENS register in the schema.
       let node = namehash(domain);
-
-      // log.warning(`ENS CREATED PROXY: agg:: {} || symbol:: {} || underlaying:: {}`, [
-      //   aggregatorAddress.toHexString(),
-      //   symbol,
-      //   assetAddress.toHexString(),
-      //   node,
-      // ]);
 
       // Create the ENS or update
       let ens = getOrInitENS(node);
@@ -244,12 +240,32 @@ export function priceFeedUpdated(
           }
         }
       }
+
+      // check platform
+      let platformIdCall = priceAggregatorInstance.try_getPlatformId();
+      if (!platformIdCall.reverted) {
+        let platformId = getPriceOracleAssetPlatform(platformIdCall.value);
+        if (platformId == PRICE_ORACLE_ASSET_PLATFORM_UNISWAP) {
+          UniswapExchange.create(assetAddress);
+        } else if (platformId == PRICE_ORACLE_ASSET_PLATFORM_BALANCER) {
+          BalancerPool.create(assetAddress);
+        } else {
+          log.error('Platform not supported: {}', [platformIdCall.value.toString()]);
+        }
+      } else {
+        log.error('Platform id method reverted for asset: {} || and source: {}', [
+          sAssetAddress,
+          assetOracleAddress.toHexString(),
+        ]);
+      }
     }
 
     if (sAssetAddress == MOCK_USD_ADDRESS) {
       priceOracle.usdPriceEthFallbackRequired = priceOracleAsset.isFallbackRequired;
       priceOracle.usdPriceEthMainSource = priceOracleAsset.priceSource;
       usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(priceFromOracle), event);
+      // this is so we also save the assetOracle for usd chainlink
+      genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
     } else {
       // if chainlink was invalid before and valid now, remove from tokensWithFallback array
       if (
@@ -367,7 +383,7 @@ function chainLinkAggregatorUpdated(
 
     if (priceOracleAsset.type == PRICE_ORACLE_ASSET_TYPE_SIMPLE) {
       // create ChainLink aggregator template entity
-      // ChainlinkAggregatorContract.create(assetOracleAddress);
+      ChainlinkAggregatorContract.create(assetOracleAddress);
 
       // fallback is not required if oracle works fine
       let priceAggregatorlatestAnswerCall = priceAggregatorInstance.try_latestAnswer();
@@ -398,14 +414,24 @@ function chainLinkAggregatorUpdated(
           }
         }
       }
-      // if it's first oracle connected to this asset
-      // commented until uniswap
-      // if (priceOracleAsset.priceSource.equals(zeroAddress())) {
-      //   // start listening on the platform updates
-      //   if (priceOracleAsset.platform === PRICE_ORACLE_ASSET_PLATFORM_UNISWAP) {
-      //     UniswapExchangeContract.create(assetAddress);
-      //   }
-      // }
+
+      // check platform
+      let platformIdCall = priceAggregatorInstance.try_getPlatformId();
+      if (!platformIdCall.reverted) {
+        let platformId = getPriceOracleAssetPlatform(platformIdCall.value);
+        if (platformId == PRICE_ORACLE_ASSET_PLATFORM_UNISWAP) {
+          UniswapExchange.create(assetAddress);
+        } else if (platformId == PRICE_ORACLE_ASSET_PLATFORM_BALANCER) {
+          BalancerPool.create(assetAddress);
+        } else {
+          log.error('Platform not supported: {}', [platformIdCall.value.toString()]);
+        }
+      } else {
+        log.error('Platform id method reverted for asset: {} || and source: {}', [
+          sAssetAddress,
+          assetOracleAddress.toHexString(),
+        ]);
+      }
     }
 
     // add entity to be able to match asset and oracle after

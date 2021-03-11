@@ -5,7 +5,7 @@ import {
   getPriceOracleAsset,
 } from '../helpers/initializers';
 import { AddrChanged } from '../../generated/ChainlinkENSResolver/ChainlinkENSResolver';
-// import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../generated/templates';
+import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../generated/templates';
 
 import { ChainlinkENS } from '../../generated/schema';
 import { IExtendedPriceAggregator } from '../../generated/ChainlinkENSResolver/IExtendedPriceAggregator';
@@ -21,16 +21,9 @@ export function handleAddressesChanged(event: AddrChanged): void {
   let priceSource = event.params.a;
   let node = event.params.node.toHexString();
 
-  // log.warning(`ENS NODE:::: {}`, [node]);
-
   let ens = ChainlinkENS.load(node);
   // Check if we watching this ENS asset
   if (ens) {
-    // log.error('ENS UPDATE: prev aggregator:: {} || new agg: {} || node:: {}', [
-    //   ens.aggregatorAddress.toHexString(),
-    //   priceSource.toHexString(),
-    //   node,
-    // ]);
     ens.aggregatorAddress = priceSource;
     ens.save();
 
@@ -60,7 +53,7 @@ export function handleAddressesChanged(event: AddrChanged): void {
     }
 
     // start listening to events from new price source
-    // ChainlinkAggregatorContract.create(priceSource);
+    ChainlinkAggregatorContract.create(priceSource);
 
     // create chainlinkAggregator entity with new aggregator to be able to match asset and oracle after
     let chainlinkAggregator = getChainlinkAggregator(priceSource.toHexString());

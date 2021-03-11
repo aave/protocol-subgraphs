@@ -22,8 +22,7 @@ import {
   zeroAddress,
   zeroBI,
 } from '../utils/converters';
-
-// import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../generated/templates';
+import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../generated/templates';
 
 // Only for chainlink proxy price provider
 export function priceFeedUpdated(
@@ -53,10 +52,9 @@ export function priceFeedUpdated(
     let aggregatorAddress = aggregatorAddressCall.value;
     priceOracleAsset.priceSource = aggregatorAddress;
     // create ChainLink aggregator template entity
-    // ChainlinkAggregatorContract.create(aggregatorAddress);
+    ChainlinkAggregatorContract.create(aggregatorAddress);
 
     // Register the aggregator address to the ens registry
-    log.warning('asset: {}', [assetAddress.toHexString()]);
     let symbol = '';
     if (
       convertToLowerCase(assetAddress.toHexString()) == '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'
@@ -65,7 +63,6 @@ export function priceFeedUpdated(
     } else if (
       convertToLowerCase(assetAddress.toHexString()) == '0x10f7fc1f91ba351f9c629c5947ad69bd03c05b96'
     ) {
-      log.warning('ANCHOR -------------------------------------------------', []);
       symbol = 'eth-usd';
     } else {
       // we need to use the underlying, as the anchor address is not mapped to the lending pool
@@ -86,13 +83,6 @@ export function priceFeedUpdated(
 
     // Hash the ENS to generate the node and create the ENS register in the schema.
     let node = namehash(domain);
-
-    // log.warning(`ENS CREATED ANCHOR: agg:: {} || symbol:: {} || underlaying:: {}`, [
-    //   aggregatorAddress.toHexString(),
-    //   symbol,
-    //   assetAddress.toHexString(),
-    //   node,
-    // ]);
 
     // Create the ENS or update
     let ens = getOrInitENS(node);
@@ -120,6 +110,8 @@ export function priceFeedUpdated(
       priceOracle.usdPriceEthFallbackRequired = priceOracleAsset.isFallbackRequired;
       priceOracle.usdPriceEthMainSource = priceOracleAsset.priceSource;
       usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(priceFromOracle), event);
+      // this is so we also save the assetOracle for usd chainlink
+      genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
     } else {
       // if chainlink was invalid before and valid now, remove from tokensWithFallback array
       if (
