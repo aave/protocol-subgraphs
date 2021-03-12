@@ -4,6 +4,6 @@
   "AaveOracleStartBlock": 11526440,
   "ChainlinkSourcesRegistryAddress": "0xf64DF7Ea0bc2D2499FCd94b0a9D4D42F5713CCB9",
   "ChainlinkSourcesRegistryStartBlock": 11188970,
-  "LendingPoolAddressesProviderRegistryAddress": "0x28334e4791860a0c1eCF89a62B973ba04a5d643F",
-  "LendingPoolAddressesProviderRegistryStartBlock": 11182150
+  "LendingPoolAddressesProviderRegistryAddress": "0x5572463B58087f2849309E863C63b7beb10f812D",
+  "LendingPoolAddressesProviderRegistryStartBlock": 11928090
 }
