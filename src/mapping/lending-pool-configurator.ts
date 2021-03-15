@@ -100,7 +100,7 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
       reserve.name = nameStringCall.value;
     }
 
-    reserve.symbol = ERC20ATokenContract.symbol().slice(1);
+    reserve.symbol = ERC20ATokenContract.symbol();
 
     reserve.decimals = ERC20ReserveContract.decimals();
   } else {
