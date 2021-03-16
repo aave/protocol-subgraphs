@@ -18,6 +18,7 @@ import { MOCK_USD_ADDRESS } from '../utils/constants';
 import {
   convertToLowerCase,
   formatUsdEthChainlinkPrice,
+  generateSymbol,
   namehash,
   zeroAddress,
   zeroBI,
@@ -56,28 +57,17 @@ export function priceFeedUpdated(
 
     // Register the aggregator address to the ens registry
     let symbol = '';
-    if (
-      convertToLowerCase(assetAddress.toHexString()) == '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'
-    ) {
-      symbol = 'mkr-eth';
-    } else if (
-      convertToLowerCase(assetAddress.toHexString()) == '0x10f7fc1f91ba351f9c629c5947ad69bd03c05b96'
-    ) {
-      symbol = 'eth-usd';
-    } else {
-      // we need to use the underlying, as the anchor address is not mapped to the lending pool
-      let ERC20ATokenContract = IERC20Detailed.bind(assetAddress);
-      let symbolCall = ERC20ATokenContract.try_symbol(); //.slice(1); // TODO: remove slice if we change
-      if (!symbolCall.reverted) {
-        symbol = convertToLowerCase(symbolCall.value) + '-eth';
-      } else {
-        log.warning('NO SYMBOL ::==:: Aggregator {} has no symbol for token: {}', [
-          assetOracleAddress.toHexString(),
-          sAssetAddress,
-        ]);
-        return;
-      }
+    let descriptionCall = chainlinkProxyInstance.try_description();
+    if (descriptionCall.reverted) {
+      log.warning('No description in proxy: {} for asset: {}', [
+        assetOracleAddress.toHexString(),
+        assetAddress.toHexString(),
+      ]);
+      return;
     }
+    let description = descriptionCall.value;
+    symbol = generateSymbol(description);
+    log.warning(`description: {} || symbol: {}`, [description, symbol]);
 
     let domain: Array<string> = ['aggregator', symbol, 'data', 'eth'];
 

@@ -59,6 +59,8 @@ export function handleAddressesChanged(event: AddrChanged): void {
     let chainlinkAggregator = getChainlinkAggregator(priceSource.toHexString());
     chainlinkAggregator.oracleAsset = oracleAssetAddress.toHexString();
     chainlinkAggregator.save();
+
+    log.warning('ENS updated: {}', [node]);
   } // if the schema for ENS are not created ignore
   else {
     // log.error(`Ens not created`, []);

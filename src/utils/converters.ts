@@ -172,3 +172,8 @@ export function convertToLowerCase(str: string): string {
   // return the result
   return result;
 }
+
+export function generateSymbol(description: string): string {
+  let symbolArr = description.split(' / ');
+  return convertToLowerCase(symbolArr[0] + '-' + symbolArr[1]);
+}
