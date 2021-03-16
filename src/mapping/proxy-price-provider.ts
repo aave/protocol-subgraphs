@@ -184,11 +184,17 @@ export function priceFeedUpdated(
         symbol = 'eth-usd';
       } else {
         // we can get the reserve as aave oracle is in the contractToPoolMapping as proxyPriceProvider
-        let reserve = getOrInitReserve(assetAddress, event);
-        let aToken = reserve.aToken;
-        let ERC20ATokenContract = IERC20Detailed.bind(Bytes.fromHexString(aToken) as Address);
-        // TODO: not entirely sure if this solution will be useful for all the cases!!!!
-        symbol = convertToLowerCase(ERC20ATokenContract.symbol().slice(1)) + '-eth'; // TODO: remove slice if we change
+        let ERC20ATokenContract = IERC20Detailed.bind(assetAddress);
+        let symbolCall = ERC20ATokenContract.try_symbol(); //.slice(1); // TODO: remove slice if we change
+        if (!symbolCall.reverted) {
+          symbol = convertToLowerCase(symbolCall.value) + '-eth';
+        } else {
+          log.warning('NO SYMBOL ::==:: Aggregator {} has no symbol for token: {}', [
+            assetOracleAddress.toHexString(),
+            sAssetAddress,
+          ]);
+          return;
+        }
       }
 
       let domain: Array<string> = ['aggregator', symbol, 'data', 'eth'];
