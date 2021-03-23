@@ -9,5 +9,7 @@
   "UniswapLiquiditySwapAdapterAddress": "0x0000000000000000000000000000000000000000",
   "UniswapLiquiditySwapAdapterStartBlock": 0,
   "UniswapRepayAdapterAddress": "0x0000000000000000000000000000000000000000",
-  "UniswapRepayAdapterStartBlock": 0
+  "UniswapRepayAdapterStartBlock": 0,
+  "OracleAnchorAddress": "0x0000000000000000000000000000000000000000",
+  "OracleAnchorStartBlock": 0
 }

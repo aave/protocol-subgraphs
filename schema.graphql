@@ -75,6 +75,17 @@ type UsdEthPriceHistoryItem @entity {
   timestamp: Int!
 }
 
+type ChainlinkENS @entity {
+  "id is the node hash"
+  id: ID!
+  "address of the aggregator"
+  aggregatorAddress: Bytes!
+  "token address represented with this aggregator"
+  underlyingAddress: Bytes!
+  "symbol of the token represented on the aggregator"
+  symbol: String!
+}
+
 type ChainlinkAggregator @entity {
   # aggregator address
   id: ID!
@@ -119,6 +130,7 @@ type PriceOracle @entity {
   usdPriceEthHistory: [UsdEthPriceHistoryItem!]! @derivedFrom(field: "oracle")
   tokensWithFallback: [PriceOracleAsset!]!
   lastUpdateTimestamp: Int!
+  version: Int!
 }
 
 type SToken @entity {

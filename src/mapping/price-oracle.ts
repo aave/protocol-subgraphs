@@ -59,7 +59,7 @@ function genericHandleChainlinkUSDETHPrice(
 ): void {
   if (price.gt(zeroBI())) {
     priceOracle.usdPriceEthFallbackRequired = false;
-    usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(price), event);  
+    usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(price), event);
   } else {
     priceOracle.usdPriceEthFallbackRequired = true;
     usdEthPriceUpdate(
@@ -79,7 +79,7 @@ export function handleChainlinkAnswerUpdated(event: AnswerUpdated): void {
 
   if (priceOracle.usdPriceEthMainSource.equals(event.address)) {
     let proxyPriceProvider = AaveOracle.bind(priceOracle.proxyPriceProvider as Address);
-    genericHandleChainlinkUSDETHPrice(event.params.current, event, priceOracle, proxyPriceProvider);   
+    genericHandleChainlinkUSDETHPrice(event.params.current, event, priceOracle, proxyPriceProvider);
   } else {
     let oracleAsset = getPriceOracleAsset(chainlinkAggregator.oracleAsset);
 

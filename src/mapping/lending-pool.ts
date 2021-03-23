@@ -1,9 +1,5 @@
 import { BigInt } from '@graphprotocol/graph-ts';
-import {
-  BORROW_MODE_STABLE,
-  BORROW_MODE_VARIABLE,
-  getBorrowRateMode,
-} from '../utils/converters';
+import { BORROW_MODE_STABLE, BORROW_MODE_VARIABLE, getBorrowRateMode } from '../utils/converters';
 import {
   Borrow,
   Deposit,
@@ -33,12 +29,10 @@ import {
   Deposit as DepositAction,
   FlashLoan as FlashLoanAction,
   LiquidationCall as LiquidationCallAction,
-  OriginationFeeLiquidation as OriginationFeeLiquidationAction,
   Pool,
   RebalanceStableBorrowRate as RebalanceStableBorrowRateAction,
   RedeemUnderlying as RedeemUnderlyingAction,
   Repay as RepayAction,
-  Reserve,
   Swap as SwapAction,
   SwapHistory,
   UsageAsCollateral as UsageAsCollateralAction,
