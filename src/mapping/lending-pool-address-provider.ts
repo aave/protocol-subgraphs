@@ -9,7 +9,6 @@ import {
   LendingRateOracleUpdated,
   PriceOracleUpdated,
   ProxyCreated,
-  OwnershipTransferred,
   EmergencyAdminUpdated,
 } from '../../generated/templates/LendingPoolAddressesProvider/LendingPoolAddressesProvider';
 import {
@@ -19,7 +18,6 @@ import {
 import { createMapContractToPool, getOrInitPriceOracle } from '../helpers/initializers';
 import { Pool, PoolConfigurationHistoryItem } from '../../generated/schema';
 import { EventTypeRef, getHistoryId } from '../utils/id-generation';
-import { zeroAddress } from '../utils/converters';
 
 let POOL_COMPONENTS = [
   'lendingPoolConfigurator',
@@ -170,11 +168,3 @@ export function handleLendingPoolCollateralManagerUpdated(
 export function handleEmergencyAdminUpdated(event: EmergencyAdminUpdated): void {
   genericAddressProviderUpdate('emergencyAdmin', event.params.newAddress, event, false);
 }
-
-// export function handleEthereumAddressUpdated(event: EthereumAddressUpdated): void {
-//   genericAddressProviderUpdate('ethereumAddress', event.params.newAddress, event, false);
-// }
-
-// export function handleOwnershipTransferred(event: OwnershipTransferred): void {
-//   genericAddressProviderUpdate('owner', event.params.newOwner, event, false);
-// }

@@ -38,33 +38,6 @@ dataSources:
           handler: handleWethSet
       file: src/mapping/proxy-price-provider/matic.ts
 
-  - kind: ethereum/contract
-    name: ChainlinkSourcesRegistry
-    network: {{network}}
-    source:
-      address: '{{ChainlinkSourcesRegistryAddress}}'
-      startBlock: {{ChainlinkSourcesRegistryStartBlock}}
-      abi: ChainlinkSourcesRegistry
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - PriceOracle
-      abis:
-        - name: ChainlinkSourcesRegistry
-          file: ./constant-abis/ChainlinkSourcesRegistry.json
-        - name: AaveOracle
-          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
-        - name: GenericOracleI
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/GenericOracleI.sol/GenericOracleI.json
-        - name: IExtendedPriceAggregator
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
-      eventHandlers:
-        - event: AggregatorUpdated(address,address)
-          handler: handleChainlinkAggregatorUpdated
-      file: src/mapping/proxy-price-provider/matic.ts
-
   # --------------------------------------
   #           CONFIGURATIONS
   # --------------------------------------
@@ -167,7 +140,7 @@ templates:
           handler: handleATokenTransfer
         - event: Mint(indexed address,uint256,uint256)
           handler: handleATokenMint
-      file: src/mapping/tokenization-matic.ts
+      file: src/mapping/tokenization.ts
   - kind: ethereum/contract
     name: StableDebtToken
     network: {{network}}
@@ -190,7 +163,7 @@ templates:
           handler: handleStableTokenMint
         - event: BorrowAllowanceDelegated(indexed address,indexed address,address,uint256)
           handler: handleStableTokenBorrowAllowanceDelegated
-      file: src/mapping/tokenization-matic.ts
+      file: src/mapping/tokenization.ts
   - kind: ethereum/contract
     name: VariableDebtToken
     network: {{network}}
@@ -213,7 +186,7 @@ templates:
           handler: handleVariableTokenMint
         - event: BorrowAllowanceDelegated(indexed address,indexed address,address,uint256)
           handler: handleVariableTokenBorrowAllowanceDelegated
-      file: src/mapping/tokenization-matic.ts
+      file: src/mapping/tokenization.ts
 
   # --------------------------------------
   #       CONFIGURATIONS
@@ -310,7 +283,7 @@ templates:
           handler: handleStableDebtTokenUpgraded
         - event: VariableDebtTokenUpgraded(indexed address,indexed address,indexed address)
           handler: handleVariableDebtTokenUpgraded
-      file: src/mapping/lending-pool-configurator.ts
+      file: src/mapping/lending-pool-configurator/matic.ts
   - kind: ethereum/contract
     name: LendingPool
     network: {{network}}

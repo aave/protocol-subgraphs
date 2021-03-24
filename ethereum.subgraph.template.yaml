@@ -29,6 +29,10 @@ dataSources:
           file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/GenericOracleI.sol/GenericOracleI.json
         - name: IExtendedPriceAggregator
           file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
+        - name: IERC20Detailed
+          file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
+        - name: EACAggregatorProxy
+          file: ./constant-abis/EACAggregatorProxy.json
       eventHandlers:
         - event: AssetSourceUpdated(indexed address,indexed address)
           handler: handleAssetSourceUpdated
@@ -36,7 +40,38 @@ dataSources:
           handler: handleFallbackOracleUpdated
         - event: WethSet(indexed address)
           handler: handleWethSet
-      file: src/mapping/proxy-price-provider.ts
+      file: src/mapping/proxy-price-provider/ethereum.ts
+
+  - kind: ethereum/contract
+    name: OracleAnchor
+    network: {{network}}
+    source:
+      address: '{{OracleAnchorAddress}}'
+      startBlock: {{OracleAnchorStartBlock}}
+      abi: OracleAnchor
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - OracleSystemMigrated
+      abis:
+        - name: OracleAnchor
+          file: ./constant-abis/OracleAnchor.json
+        - name: IERC20Detailed
+          file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
+        - name: AaveOracle
+          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+        - name: IExtendedPriceAggregator
+          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
+        - name: EACAggregatorProxy
+          file: ./constant-abis/EACAggregatorProxy.json
+      eventHandlers:
+        - event: OracleSystemMigrated()
+          handler: handleOracleSystemMigrated
+        - event: AssetSourceUpdated(indexed address,indexed address)
+          handler: handleAssetSourceUpdatedAnchor
+      file: src/mapping/oracle-anchor.ts
 
   - kind: ethereum/contract
     name: ChainlinkSourcesRegistry
@@ -65,6 +100,30 @@ dataSources:
           handler: handleChainlinkAggregatorUpdated
       file: src/mapping/proxy-price-provider/ethereum.ts
 
+  - kind: ethereum/contract
+    name: ChainlinkENSResolver
+    network: {{network}}
+    source:
+      address: '{{ChainlinkENSResolver}}'
+      startBlock: {{ChainlinkENSResolverBlock}}
+      abi: ChainlinkENSResolver
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - ENS
+      abis:
+        - name: ChainlinkENSResolver
+          file: ./constant-abis/ENSResolverChainlink.json
+        - name: IExtendedPriceAggregator
+          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
+        - name: AaveOracle
+          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+      eventHandlers:
+        - event: AddrChanged(indexed bytes32,address)
+          handler: handleAddressesChanged
+      file: src/mapping/ens-chainlink.ts
   # --------------------------------------
   #           CONFIGURATIONS
   # --------------------------------------
@@ -89,7 +148,7 @@ dataSources:
           handler: handleAddressesProviderRegistered
         - event: AddressesProviderUnregistered(indexed address)
           handler: handleAddressesProviderUnregistered
-      file: src/mapping/address-provider-registry/ethereum.ts
+      file: src/mapping/address-provider-registry.ts
   # --------------------------------------
   #             ADAPTERS
   # --------------------------------------
@@ -155,6 +214,8 @@ templates:
       abis:
         - name: GenericOracleI
           file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/GenericOracleI.sol/GenericOracleI.json
+        - name: AaveOracle
+          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
       eventHandlers:
         - event: AssetPriceUpdated(address,uint256,uint256)
           handler: handleAssetPriceUpdated
@@ -353,7 +414,7 @@ templates:
           handler: handleStableDebtTokenUpgraded
         - event: VariableDebtTokenUpgraded(indexed address,indexed address,indexed address)
           handler: handleVariableDebtTokenUpgraded
-      file: src/mapping/lending-pool-configurator.ts
+      file: src/mapping/lending-pool-configurator/ethereum.ts
   - kind: ethereum/contract
     name: LendingPool
     network: {{network}}
@@ -400,3 +461,52 @@ templates:
         - event: ReserveDataUpdated(indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleReserveDataUpdated
       file: src/mapping/lending-pool.ts
+
+  # --------------------------------------
+  #       CONFIGURATIONS
+  # --------------------------------------
+  - kind: ethereum/contract
+    name: UniswapExchange
+    network: {{network}}
+    source:
+      abi: IUniswapExchange
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - PriceOracleAsset
+        - PriceOracle
+      abis:
+        - name: IUniswapExchange
+          file: ./constant-abis/IUniswapExchange.json
+        - name: AaveOracle
+          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+      eventHandlers:
+        - event: Sync(uint112,uint112)
+          handler: updateAssetPriceFromAaveOracle
+      file: ./src/helpers/price-updates.ts
+
+  - kind: ethereum/contract
+    name: BalancerPool
+    network: {{network}}
+    source:
+      abi: IBalancerPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - PriceOracleAsset
+        - PriceOracle
+      abis:
+        - name: IBalancerPool
+          file: ./constant-abis/IBalancerPool.json
+        - name: AaveOracle
+          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+      eventHandlers:
+        - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: updateAssetPriceFromAaveOracle
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: updateAssetPriceFromAaveOracle
+      file: ./src/helpers/price-updates.ts

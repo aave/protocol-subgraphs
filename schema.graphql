@@ -58,6 +58,7 @@ type Pool @entity {
   originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "pool")
 
   active: Boolean!
+  paused: Boolean!
 }
 
 type PriceHistoryItem @entity {
@@ -72,6 +73,17 @@ type UsdEthPriceHistoryItem @entity {
   oracle: PriceOracle!
   price: BigInt!
   timestamp: Int!
+}
+
+type ChainlinkENS @entity {
+  "id is the node hash"
+  id: ID!
+  "address of the aggregator"
+  aggregatorAddress: Bytes!
+  "token address represented with this aggregator"
+  underlyingAddress: Bytes!
+  "symbol of the token represented on the aggregator"
+  symbol: String!
 }
 
 type ChainlinkAggregator @entity {
@@ -118,6 +130,7 @@ type PriceOracle @entity {
   usdPriceEthHistory: [UsdEthPriceHistoryItem!]! @derivedFrom(field: "oracle")
   tokensWithFallback: [PriceOracleAsset!]!
   lastUpdateTimestamp: Int!
+  version: Int!
 }
 
 type SToken @entity {
@@ -407,7 +420,6 @@ type Reserve @entity {
   id: ID!
   underlyingAsset: Bytes!
   pool: Pool!
-  paused: Boolean!
   symbol: String!
   name: String!
   #uiColor: String! #TODO MOVE: move to the frontend

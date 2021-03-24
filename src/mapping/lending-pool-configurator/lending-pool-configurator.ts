@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { Bytes, Address, ethereum, log } from '@graphprotocol/graph-ts';
+import { Bytes, Address, ethereum } from '@graphprotocol/graph-ts';
 
 import {
   BorrowingDisabledOnReserve,
@@ -9,35 +9,23 @@ import {
   ReserveActivated,
   ReserveDeactivated,
   CollateralConfigurationChanged,
-  ReserveInitialized,
   ReserveInterestRateStrategyChanged,
   ReserveFactorChanged,
   ReserveDecimalsChanged,
   ATokenUpgraded,
   StableDebtTokenUpgraded,
   VariableDebtTokenUpgraded,
-} from '../../generated/templates/LendingPoolConfigurator/LendingPoolConfigurator';
-import { IERC20Detailed } from '../../generated/templates/LendingPoolConfigurator/IERC20Detailed';
-import { IERC20DetailedBytes } from '../../generated/templates/LendingPoolConfigurator/IERC20DetailedBytes';
-import { DefaultReserveInterestRateStrategy } from '../../generated/templates/LendingPoolConfigurator/DefaultReserveInterestRateStrategy';
+} from '../../../generated/templates/LendingPoolConfigurator/LendingPoolConfigurator';
+import { DefaultReserveInterestRateStrategy } from '../../../generated/templates/LendingPoolConfigurator/DefaultReserveInterestRateStrategy';
 import {
-  AToken as ATokenContract,
-  StableDebtToken as STokenContract,
-  VariableDebtToken as VTokenContract,
-} from '../../generated/templates';
-import {
-  createMapContractToPool,
   getOrInitAToken,
-  getOrInitSToken,
-  getOrInitVToken,
   getOrInitReserve,
   getOrInitReserveConfigurationHistoryItem,
-  getPriceOracleAsset,
-} from '../helpers/initializers';
-import { Reserve, WETHReserve } from '../../generated/schema';
-import { exponentToBigInt, zeroAddress, zeroBI } from '../utils/converters';
+} from '../../helpers/initializers';
+import { Reserve } from '../../../generated/schema';
+import { zeroAddress, zeroBI } from '../../utils/converters';
 
-function saveReserve(reserve: Reserve, event: ethereum.Event): void {
+export function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   let timestamp = event.block.timestamp.toI32();
   let txHash = event.transaction.hash;
 
@@ -58,7 +46,7 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   configurationHistoryItem.save();
 }
 
-function updateInterestRateStrategy(
+export function updateInterestRateStrategy(
   reserve: Reserve,
   strategy: Bytes,
   init: boolean = false
@@ -75,76 +63,6 @@ function updateInterestRateStrategy(
   reserve.variableRateSlope2 = interestRateStrategyContract.variableRateSlope2();
   reserve.stableRateSlope1 = interestRateStrategyContract.stableRateSlope1();
   reserve.stableRateSlope2 = interestRateStrategyContract.stableRateSlope2();
-}
-
-export function handleReserveInitialized(event: ReserveInitialized): void {
-  let underlyingAssetAddress = event.params.asset; //_reserve;
-  let reserve = getOrInitReserve(underlyingAssetAddress, event);
-
-  let weth = WETHReserve.load('weth');
-
-  if (weth == null || weth.address.toHexString() != reserve.underlyingAsset.toHexString()) {
-    // let ERC20ATokenContract = IERC20Detailed.bind(event.params.aToken);
-    let ERC20ReserveContract = IERC20Detailed.bind(underlyingAssetAddress);
-    let ERC20DetailedBytesContract = IERC20DetailedBytes.bind(underlyingAssetAddress);
-
-    let nameStringCall = ERC20ReserveContract.try_name();
-    if (nameStringCall.reverted) {
-      let bytesNameCall = ERC20DetailedBytesContract.try_name();
-      if (bytesNameCall.reverted) {
-        reserve.name = '';
-      } else {
-        reserve.name = bytesNameCall.value.toString();
-      }
-    } else {
-      reserve.name = nameStringCall.value;
-    }
-
-    reserve.symbol = ERC20ReserveContract.symbol(); //.slice(1);
-
-    reserve.decimals = ERC20ReserveContract.decimals();
-  } else {
-    reserve.name = weth.name;
-    reserve.symbol = weth.symbol;
-    reserve.decimals = weth.decimals;
-
-    let oracleAsset = getPriceOracleAsset(reserve.underlyingAsset.toHexString());
-    oracleAsset.priceInEth = exponentToBigInt(18);
-    oracleAsset.lastUpdateTimestamp = event.block.timestamp.toI32();
-    oracleAsset.save();
-  }
-
-  updateInterestRateStrategy(reserve, event.params.interestRateStrategyAddress, true);
-
-  ATokenContract.create(event.params.aToken);
-  createMapContractToPool(event.params.aToken, reserve.pool);
-  let aToken = getOrInitAToken(event.params.aToken);
-  aToken.underlyingAssetAddress = reserve.underlyingAsset;
-  aToken.underlyingAssetDecimals = reserve.decimals;
-  aToken.pool = reserve.pool;
-  aToken.save();
-
-  STokenContract.create(event.params.stableDebtToken);
-  createMapContractToPool(event.params.stableDebtToken, reserve.pool);
-  let sToken = getOrInitSToken(event.params.stableDebtToken);
-  sToken.underlyingAssetAddress = reserve.underlyingAsset;
-  sToken.underlyingAssetDecimals = reserve.decimals;
-  sToken.pool = reserve.pool;
-  sToken.save();
-
-  VTokenContract.create(event.params.variableDebtToken);
-  createMapContractToPool(event.params.variableDebtToken, reserve.pool);
-  let vToken = getOrInitVToken(event.params.variableDebtToken);
-  vToken.underlyingAssetAddress = reserve.underlyingAsset;
-  vToken.underlyingAssetDecimals = reserve.decimals;
-  vToken.pool = reserve.pool;
-  vToken.save();
-
-  reserve.aToken = aToken.id;
-  reserve.sToken = sToken.id;
-  reserve.vToken = vToken.id;
-  reserve.isActive = true;
-  saveReserve(reserve, event);
 }
 
 export function handleReserveInterestRateStrategyChanged(

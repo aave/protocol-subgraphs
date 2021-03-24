@@ -2,8 +2,6 @@
   "network": "matic",
   "AaveOracleAddress": "0x9447F83C0309FB62F2013e9752Ecf9B2C507652C",
   "AaveOracleStartBlock": 11526440,
-  "ChainlinkSourcesRegistryAddress": "0xf64DF7Ea0bc2D2499FCd94b0a9D4D42F5713CCB9",
-  "ChainlinkSourcesRegistryStartBlock": 11188970,
   "LendingPoolAddressesProviderRegistryAddress": "0x5572463B58087f2849309E863C63b7beb10f812D",
   "LendingPoolAddressesProviderRegistryStartBlock": 11928090
 }
