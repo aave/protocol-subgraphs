@@ -413,6 +413,18 @@ type ReserveParamsHistoryItem @entity {
   # lifetimeVariableDebtFeeCollected: BigInt!
 }
 
+type IncentivesController @entity {
+  """
+  address of the incentives controller
+  """
+  id: ID!
+  pool: Pool!
+  reserves: [Reserve!]! @derivedFrom(field: "incentivesController")
+  rewardToken: Bytes!
+  rewardTokenDecimals: BigInt!
+  rewardTokenSymbol: String!
+}
+
 type Reserve @entity {
   """
   Reserve address
@@ -462,6 +474,12 @@ type Reserve @entity {
   reserveFactor: BigInt! #default 0
   lastUpdateTimestamp: Int!
   stableDebtLastUpdateTimestamp: Int!
+
+  # incentives
+  incentivesController: IncentivesController!
+  aEmissionPerSecond: BigInt!
+  vEmissionPerSecond: BigInt!
+  sEmissionPerSecond: BigInt!
 
   lifetimeLiquidity: BigInt! # default: 0
   lifetimePrincipalStableDebt: BigInt! # default: 0
@@ -600,6 +618,9 @@ type UserReserve @entity {
   liquidityRate: BigInt!
   stableBorrowLastUpdateTimestamp: Int!
   variableBorrowIndex: BigInt!
+
+  #incentives
+  incentiveRewardsAccrued: BigInt!
 
   """
   Amount in currency units included as fee
