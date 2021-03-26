@@ -93,6 +93,8 @@ templates:
           handler: handleAssetConfigUpdated
         - event: RewardsAccrued(indexed address,uint256)
           handler: handleRewardsAccrued
+        - event: RewardsClaimed(indexed address,indexed address,uint256)
+          handler: handleRewardsClaimed
       file: src/mapping/incentives-controller.ts
   # --------------------------------------
   #      ORACLES / PRICE PROVIDERS

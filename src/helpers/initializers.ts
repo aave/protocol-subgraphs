@@ -15,6 +15,7 @@ import {
   ContractToPoolMapping,
   Protocol,
   ChainlinkENS,
+  UserIncentives,
 } from '../../generated/schema';
 import {
   PRICE_ORACLE_ASSET_PLATFORM_SIMPLE,
@@ -64,6 +65,23 @@ export function getOrInitENS(node: string): ChainlinkENS {
     ens.save();
   }
   return ens as ChainlinkENS;
+}
+
+export function getOrInitUserIncentives(
+  user: Address,
+  incentivesController: Address
+): UserIncentives {
+  let id = user.toHexString() + incentivesController.toHexString();
+  let userIncentives = UserIncentives.load(id);
+
+  if (!userIncentives) {
+    userIncentives = new UserIncentives(id);
+    userIncentives.user = user.toHexString();
+    userIncentives.incentivesController = incentivesController.toHexString();
+    userIncentives.incentivesAccrued = zeroBI();
+  }
+
+  return userIncentives as UserIncentives;
 }
 
 export function getOrInitUserReserve(

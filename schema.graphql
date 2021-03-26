@@ -45,6 +45,7 @@ type Pool @entity {
   history: [PoolConfigurationHistoryItem!]! @derivedFrom(field: "pool")
   lastUpdateTimestamp: Int!
 
+  incentivesController: [IncentivesController!]! @derivedFrom(field: "pool")
   reserves: [Reserve!]! @derivedFrom(field: "pool")
   depositHistory: [Deposit!]! @derivedFrom(field: "pool")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "pool")
@@ -419,10 +420,43 @@ type IncentivesController @entity {
   """
   id: ID!
   pool: Pool!
-  reserves: [Reserve!]! @derivedFrom(field: "incentivesController")
   rewardToken: Bytes!
-  rewardTokenDecimals: BigInt!
+  rewardTokenDecimals: Int!
   rewardTokenSymbol: String!
+
+  reserves: [Reserve!]! @derivedFrom(field: "incentivesController")
+  incentivizedActions: [IncentivizedAction!]! @derivedFrom(field: "incentivesController")
+  claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "incentivesController")
+}
+
+type UserIncentives @entity {
+  """
+  wallet address + incentivesController
+  """
+  id: ID!
+  user: User!
+  incentivesController: IncentivesController!
+  incentivesAccrued: BigInt!
+}
+
+type IncentivizedAction @entity {
+  """
+  txHash
+  """
+  id: ID!
+  incentivesController: IncentivesController!
+  user: User!
+  amount: BigInt!
+}
+
+type ClaimIncentiveCall @entity {
+  """
+  txHash
+  """
+  id: ID!
+  incentivesController: IncentivesController!
+  user: User!
+  amount: BigInt!
 }
 
 type Reserve @entity {
@@ -619,9 +653,6 @@ type UserReserve @entity {
   stableBorrowLastUpdateTimestamp: Int!
   variableBorrowIndex: BigInt!
 
-  #incentives
-  incentiveRewardsAccrued: BigInt!
-
   """
   Amount in currency units included as fee
   """
@@ -663,6 +694,9 @@ type User @entity {
   repayHistory: [Repay!]! @derivedFrom(field: "user")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "user")
   originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "user")
+  incentives: [UserIncentives!]! @derivedFrom(field: "user")
+  incentivizedActions: [IncentivizedAction!]! @derivedFrom(field: "user")
+  claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "user")
 }
 
 type SwapHistory @entity {

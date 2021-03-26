@@ -2,6 +2,7 @@ import { Initialized as ATokenInitialized } from '../../../generated/templates/A
 import { Initialized as VTokenInitialized } from '../../../generated/templates/VariableDebtToken/VariableDebtToken';
 import { Initialized as STokenInitialized } from '../../../generated/templates/StableDebtToken/StableDebtToken';
 import { AaveIncentivesController } from '../../../generated/templates';
+import { AaveIncentivesController as AaveIncentivesControllerC } from '../../../generated/AaveIncentivesController/AaveIncentivesController';
 import { IncentivesController, Reserve } from '../../../generated/schema';
 import { Address, log } from '@graphprotocol/graph-ts';
 import { IERC20Detailed } from '../../../generated/templates/AToken/IERC20Detailed';
@@ -27,7 +28,7 @@ function createIncentivesController(
     iController = new IncentivesController(incentivesController.toHexString());
 
     // get incentive reward info
-    let AaveIncentivesControllerContract = AaveIncentivesController.bind(incentivesController);
+    let AaveIncentivesControllerContract = AaveIncentivesControllerC.bind(incentivesController);
     let rewardToken = AaveIncentivesControllerContract.REWARD_TOKEN();
 
     let IERC20DetailedContract = IERC20Detailed.bind(rewardToken);
