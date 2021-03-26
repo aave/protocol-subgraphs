@@ -162,6 +162,8 @@ templates:
         #   file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/AToken.sol/AToken.json
         - name: AToken
           file: ./constant-abis/AToken.json
+        - name: IERC20Detailed
+          file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
       eventHandlers:
         - event: Burn(indexed address,indexed address,uint256,uint256)
           handler: handleATokenBurn
@@ -189,6 +191,8 @@ templates:
         #   file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/StableDebtToken.sol/StableDebtToken.json
         - name: StableDebtToken
           file: ./constant-abis/StableDebtToken.json
+        - name: IERC20Detailed
+          file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
       eventHandlers:
         - event: Burn(indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleStableTokenBurn
@@ -216,6 +220,8 @@ templates:
         #   file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/VariableDebtToken.sol/VariableDebtToken.json
         - name: VariableDebtToken
           file: ./constant-abis/VariableDebtToken.json
+        - name: IERC20Detailed
+          file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
       eventHandlers:
         - event: Burn(indexed address,uint256,uint256)
           handler: handleVariableTokenBurn

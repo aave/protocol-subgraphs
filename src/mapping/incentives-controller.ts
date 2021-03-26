@@ -13,14 +13,6 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let asset = event.params.asset; // a / v / s token
   let incentivesController = event.address;
 
-  // get incentive reward info
-  let AaveIncentivesControllerContract = AaveIncentivesController.bind(incentivesController);
-  let incentivesRewardToken = AaveIncentivesControllerContract.REWARD_TOKEN();
-
-  let IERC20DetailedContract = IERC20Detailed.bind(incentivesRewardToken);
-  let incentivesRewardTokenDecimals = IERC20DetailedContract.decimals();
-  let incentivesRewardTokenSymbol = IERC20DetailedContract.symbol();
-
   // get pool and underlying asset
   // we use the atoken contract abi, as we only need the POOL accessor, so it will still work
   // for the vtokens and stokens
