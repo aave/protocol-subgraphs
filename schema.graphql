@@ -45,7 +45,6 @@ type Pool @entity {
   history: [PoolConfigurationHistoryItem!]! @derivedFrom(field: "pool")
   lastUpdateTimestamp: Int!
 
-  incentivesController: [IncentivesController!]! @derivedFrom(field: "pool")
   reserves: [Reserve!]! @derivedFrom(field: "pool")
   depositHistory: [Deposit!]! @derivedFrom(field: "pool")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "pool")
@@ -419,24 +418,12 @@ type IncentivesController @entity {
   address of the incentives controller
   """
   id: ID!
-  pool: Pool!
   rewardToken: Bytes!
   rewardTokenDecimals: Int!
   rewardTokenSymbol: String!
 
-  reserves: [Reserve!]! @derivedFrom(field: "incentivesController")
   incentivizedActions: [IncentivizedAction!]! @derivedFrom(field: "incentivesController")
   claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "incentivesController")
-}
-
-type UserIncentives @entity {
-  """
-  wallet address + incentivesController
-  """
-  id: ID!
-  user: User!
-  incentivesController: IncentivesController!
-  incentivesAccrued: BigInt!
 }
 
 type IncentivizedAction @entity {
@@ -457,6 +444,15 @@ type ClaimIncentiveCall @entity {
   incentivesController: IncentivesController!
   user: User!
   amount: BigInt!
+}
+
+type MapAssetPool @entity {
+  """
+  address of a /s /v token
+  """
+  id: ID!
+  pool: Pool!
+  underlyingAsset: Bytes!
 }
 
 type Reserve @entity {
@@ -510,10 +506,11 @@ type Reserve @entity {
   stableDebtLastUpdateTimestamp: Int!
 
   # incentives
-  incentivesController: IncentivesController!
   aEmissionPerSecond: BigInt!
   vEmissionPerSecond: BigInt!
   sEmissionPerSecond: BigInt!
+  incentiveAssetIndex: BigInt!
+  incentiveAssetIndexLastUpdated: Int!
 
   lifetimeLiquidity: BigInt! # default: 0
   lifetimePrincipalStableDebt: BigInt! # default: 0
@@ -653,6 +650,10 @@ type UserReserve @entity {
   stableBorrowLastUpdateTimestamp: Int!
   variableBorrowIndex: BigInt!
 
+  # incentives
+  incentivesAccrued: BigInt!
+  incentivesUserIndex: BigInt!
+  incentivesUserIndexLastUpdated: Int!
   """
   Amount in currency units included as fee
   """
@@ -684,6 +685,11 @@ type User @entity {
   """
   id: ID!
   borrowedReservesCount: Int!
+
+  #incentives
+  incentivesRewardsAccrued: BigInt!
+  incentivesLastUpdated: Int!
+
   reserves: [UserReserve!]! @derivedFrom(field: "user")
   depositHistory: [Deposit!]! @derivedFrom(field: "user")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "user")
@@ -694,7 +700,6 @@ type User @entity {
   repayHistory: [Repay!]! @derivedFrom(field: "user")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "user")
   originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "user")
-  incentives: [UserIncentives!]! @derivedFrom(field: "user")
   incentivizedActions: [IncentivizedAction!]! @derivedFrom(field: "user")
   claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "user")
 }

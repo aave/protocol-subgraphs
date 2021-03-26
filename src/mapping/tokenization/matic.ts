@@ -3,7 +3,7 @@ import { Initialized as VTokenInitialized } from '../../../generated/templates/V
 import { Initialized as STokenInitialized } from '../../../generated/templates/StableDebtToken/StableDebtToken';
 import { AaveIncentivesController } from '../../../generated/templates';
 import { AaveIncentivesController as AaveIncentivesControllerC } from '../../../generated/AaveIncentivesController/AaveIncentivesController';
-import { IncentivesController, Reserve } from '../../../generated/schema';
+import { IncentivesController, MapAssetPool, Reserve } from '../../../generated/schema';
 import { Address, log } from '@graphprotocol/graph-ts';
 import { IERC20Detailed } from '../../../generated/templates/AToken/IERC20Detailed';
 export {
@@ -19,6 +19,7 @@ export {
 } from './tokenization';
 
 function createIncentivesController(
+  asset: Address,
   incentivesController: Address,
   underlyingAsset: Address,
   pool: Address
@@ -44,24 +45,16 @@ function createIncentivesController(
     AaveIncentivesController.create(incentivesController);
   }
 
-  // reserve
-  let reserveId = underlyingAsset.toHexString() + pool.toHexString();
-  let reserve = Reserve.load(reserveId);
-
-  if (!reserve) {
-    log.error('Error getting the pool. pool: {} | underlying: {}', [
-      pool.toHexString(),
-      underlyingAsset.toHexString(),
-    ]);
-    return;
-  }
-
-  reserve.incentivesController = iController.id;
-  reserve.save();
+  // save asset pool mapping
+  let mapAssetPool = new MapAssetPool(asset.toHexString());
+  mapAssetPool.pool = pool.toHexString();
+  mapAssetPool.underlyingAsset = underlyingAsset;
+  mapAssetPool.save();
 }
 
 export function handleATokenInitialized(event: ATokenInitialized): void {
   createIncentivesController(
+    event.address,
     event.params.incentivesController,
     event.params.underlyingAsset,
     event.params.pool
@@ -70,6 +63,7 @@ export function handleATokenInitialized(event: ATokenInitialized): void {
 
 export function handleSTokenInitialized(event: STokenInitialized): void {
   createIncentivesController(
+    event.address,
     event.params.incentivesController,
     event.params.underlyingAsset,
     event.params.pool
@@ -78,6 +72,7 @@ export function handleSTokenInitialized(event: STokenInitialized): void {
 
 export function handleVTokenInitialized(event: VTokenInitialized): void {
   createIncentivesController(
+    event.address,
     event.params.incentivesController,
     event.params.underlyingAsset,
     event.params.pool

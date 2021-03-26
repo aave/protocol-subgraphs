@@ -15,7 +15,6 @@ import {
   ContractToPoolMapping,
   Protocol,
   ChainlinkENS,
-  UserIncentives,
 } from '../../generated/schema';
 import {
   PRICE_ORACLE_ASSET_PLATFORM_SIMPLE,
@@ -50,6 +49,8 @@ export function getOrInitUser(address: Address): User {
   if (!user) {
     user = new User(address.toHexString());
     user.borrowedReservesCount = 0;
+    user.incentivesRewardsAccrued = zeroBI();
+    user.incentivesLastUpdated = 0;
     user.save();
   }
   return user as User;
@@ -65,23 +66,6 @@ export function getOrInitENS(node: string): ChainlinkENS {
     ens.save();
   }
   return ens as ChainlinkENS;
-}
-
-export function getOrInitUserIncentives(
-  user: Address,
-  incentivesController: Address
-): UserIncentives {
-  let id = user.toHexString() + incentivesController.toHexString();
-  let userIncentives = UserIncentives.load(id);
-
-  if (!userIncentives) {
-    userIncentives = new UserIncentives(id);
-    userIncentives.user = user.toHexString();
-    userIncentives.incentivesController = incentivesController.toHexString();
-    userIncentives.incentivesAccrued = zeroBI();
-  }
-
-  return userIncentives as UserIncentives;
 }
 
 export function getOrInitUserReserve(
@@ -109,6 +93,11 @@ export function getOrInitUserReserve(
     userReserve.lastUpdateTimestamp = 0;
     userReserve.liquidityRate = zeroBI();
     userReserve.stableBorrowLastUpdateTimestamp = 0;
+
+    // incentives
+    userReserve.incentivesAccrued = zeroBI();
+    userReserve.incentivesUserIndex = zeroBI();
+    userReserve.incentivesUserIndexLastUpdated = 0;
 
     let user = getOrInitUser(_user);
     userReserve.user = user.id;
@@ -197,6 +186,13 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
     reserve.aToken = zeroAddress().toHexString();
     reserve.vToken = zeroAddress().toHexString();
     reserve.sToken = zeroAddress().toHexString();
+
+    // incentives
+    reserve.aEmissionPerSecond = zeroBI();
+    reserve.vEmissionPerSecond = zeroBI();
+    reserve.sEmissionPerSecond = zeroBI();
+    reserve.incentiveAssetIndex = zeroBI();
+    reserve.incentiveAssetIndexLastUpdated = 0;
 
     reserve.totalScaledVariableDebt = zeroBI();
     reserve.totalCurrentVariableDebt = zeroBI();
