@@ -18,6 +18,7 @@ import {
 } from '../../helpers/initializers';
 import { MOCK_USD_ADDRESS } from '../../utils/constants';
 import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
+import { AggregatorUpdated } from '../../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
 export { handleFallbackOracleUpdated } from './proxy-price-provider';
 
 export function handleWethSet(event: WethSet): void {
@@ -180,6 +181,17 @@ export function handleAssetSourceUpdated(event: AssetSourceUpdated): void {
   }
 
   let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
+  priceOracleAsset.fromChainlinkSourcesRegistry = false;
 
+  priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
+}
+
+export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void {
+  let assetAddress = event.params.token;
+  let assetOracleAddress = event.params.aggregator; // its proxy . Wrong naming
+
+  let priceOracle = getOrInitPriceOracle();
+  let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
+  priceOracleAsset.fromChainlinkSourcesRegistry = true;
   priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
 }
