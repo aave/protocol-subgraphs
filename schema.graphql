@@ -451,7 +451,7 @@ type MapAssetPool @entity {
   address of a /s /v token
   """
   id: ID!
-  pool: Pool!
+  pool: Bytes!
   underlyingAsset: Bytes!
 }
 

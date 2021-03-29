@@ -38,12 +38,12 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let underlyingAsset = mapAssetPool.underlyingAsset;
 
   // get reserve
-  let reserveId = underlyingAsset.toHexString() + pool;
+  let reserveId = underlyingAsset.toHexString() + pool.toHexString();
   let reserve = Reserve.load(reserveId);
 
   if (!reserve) {
     log.error('Error getting the reserve. pool: {} | underlying: {}', [
-      pool,
+      pool.toHexString(),
       underlyingAsset.toHexString(),
     ]);
     return;
@@ -105,12 +105,12 @@ export function handleAssetIndexUpdated(event: AssetIndexUpdated): void {
   let pool = mapAssetPool.pool;
   let underlyingAsset = mapAssetPool.underlyingAsset;
   // get reserve
-  let reserveId = underlyingAsset.toHexString() + pool;
+  let reserveId = underlyingAsset.toHexString() + pool.toHexString();
   let reserve = Reserve.load(reserveId);
 
   if (!reserve) {
     log.error('Error getting the reserve. pool: {} | underlying: {}', [
-      pool,
+      pool.toHexString(),
       underlyingAsset.toHexString(),
     ]);
     return;
@@ -134,10 +134,10 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
   let pool = mapAssetPool.pool;
   let underlyingAsset = mapAssetPool.underlyingAsset;
 
-  let reserveId = underlyingAsset.toHexString() + pool;
+  let reserveId = underlyingAsset.toHexString() + pool.toHexString();
   let userReserveId = user.toHexString() + reserveId;
   let userReserve = UserReserve.load(userReserveId);
   userReserve.incentivesUserIndex = index;
-  userReserve.incentivesUserIndexLastUpdated = incentivesUserIndexLastUpdated.toI32();
+  userReserve.incentivesUserIndexLastUpdated = incentivesUserIndexLastUpdated;
   userReserve.save();
 }

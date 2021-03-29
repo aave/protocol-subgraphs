@@ -3,7 +3,7 @@ import { Initialized as VTokenInitialized } from '../../../generated/templates/V
 import { Initialized as STokenInitialized } from '../../../generated/templates/StableDebtToken/StableDebtToken';
 import { AaveIncentivesController } from '../../../generated/templates';
 import { AaveIncentivesController as AaveIncentivesControllerC } from '../../../generated/AaveIncentivesController/AaveIncentivesController';
-import { IncentivesController, MapAssetPool, Reserve } from '../../../generated/schema';
+import { IncentivesController, MapAssetPool, Pool, Reserve } from '../../../generated/schema';
 import { Address, log } from '@graphprotocol/graph-ts';
 import { IERC20Detailed } from '../../../generated/templates/AToken/IERC20Detailed';
 export {
@@ -47,7 +47,7 @@ function createIncentivesController(
 
   // save asset pool mapping
   let mapAssetPool = new MapAssetPool(asset.toHexString());
-  mapAssetPool.pool = pool.toHexString();
+  mapAssetPool.pool = pool;
   mapAssetPool.underlyingAsset = underlyingAsset;
   mapAssetPool.save();
 }
