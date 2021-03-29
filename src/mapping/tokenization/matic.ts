@@ -31,6 +31,7 @@ function createIncentivesController(
     // get incentive reward info
     let AaveIncentivesControllerContract = AaveIncentivesControllerC.bind(incentivesController);
     let rewardToken = AaveIncentivesControllerContract.REWARD_TOKEN();
+    let precision = AaveIncentivesControllerContract.PRECISION();
 
     let IERC20DetailedContract = IERC20Detailed.bind(rewardToken);
     let rewardTokenDecimals = IERC20DetailedContract.decimals();
@@ -39,6 +40,7 @@ function createIncentivesController(
     iController.rewardToken = rewardToken;
     iController.rewardTokenDecimals = rewardTokenDecimals;
     iController.rewardTokenSymbol = rewardTokenSymbol;
+    iController.precision = precision;
 
     iController.save();
 

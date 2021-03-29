@@ -421,6 +421,7 @@ type IncentivesController @entity {
   rewardToken: Bytes!
   rewardTokenDecimals: Int!
   rewardTokenSymbol: String!
+  precision: Int!
 
   incentivizedActions: [IncentivizedAction!]! @derivedFrom(field: "incentivesController")
   claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "incentivesController")
@@ -509,8 +510,12 @@ type Reserve @entity {
   aEmissionPerSecond: BigInt!
   vEmissionPerSecond: BigInt!
   sEmissionPerSecond: BigInt!
-  incentiveAssetIndex: BigInt!
-  incentiveAssetIndexLastUpdated: Int!
+  aTokenIncentivesIndex: BigInt!
+  vTokenIncentivesIndex: BigInt!
+  sTokenIncentivesIndex: BigInt!
+  aIncentivesLastUpdateTimestamp: Int!
+  vIncentivesLastUpdateTimestamp: Int!
+  sIncentivesLastUpdateTimestamp: Int!
 
   lifetimeLiquidity: BigInt! # default: 0
   lifetimePrincipalStableDebt: BigInt! # default: 0
@@ -651,9 +656,12 @@ type UserReserve @entity {
   variableBorrowIndex: BigInt!
 
   # incentives
-  incentivesAccrued: BigInt!
-  incentivesUserIndex: BigInt!
-  incentivesUserIndexLastUpdated: Int!
+  aTokenincentivesUserIndex: BigInt!
+  vTokenincentivesUserIndex: BigInt!
+  sTokenincentivesUserIndex: BigInt!
+  aIncentivesLastUpdateTimestamp: Int!
+  vIncentivesLastUpdateTimestamp: Int!
+  sIncentivesLastUpdateTimestamp: Int!
   """
   Amount in currency units included as fee
   """
