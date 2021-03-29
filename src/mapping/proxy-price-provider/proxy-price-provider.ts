@@ -1,6 +1,10 @@
 import { Bytes, Address, log } from '@graphprotocol/graph-ts';
 
-import { FallbackOracleUpdated, AaveOracle } from '../../../generated/AaveOracle/AaveOracle';
+import {
+  FallbackOracleUpdated,
+  AaveOracle,
+  WethSet,
+} from '../../../generated/AaveOracle/AaveOracle';
 import { GenericOracleI as FallbackPriceOracle } from '../../../generated/AaveOracle/GenericOracleI';
 
 import { FallbackPriceOracle as FallbackPriceOracleContract } from '../../../generated/templates';
@@ -8,6 +12,22 @@ import { getOrInitPriceOracle, getPriceOracleAsset } from '../../helpers/initial
 import { formatUsdEthChainlinkPrice, zeroAddress, zeroBI } from '../../utils/converters';
 import { MOCK_USD_ADDRESS, ZERO_ADDRESS } from '../../utils/constants';
 import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
+import { WETHReserve } from '../../../generated/schema';
+
+export function handleWethSet(event: WethSet): void {
+  let wethAddress = event.params.weth;
+  let weth = WETHReserve.load('weth');
+  if (weth == null) {
+    weth = new WETHReserve('weth');
+  }
+  weth.address = wethAddress;
+  weth.name = 'Wrapped Ethereum';
+  weth.symbol = 'WETH';
+  weth.decimals = 18;
+  weth.updatedTimestamp = event.block.timestamp.toI32();
+  weth.updatedBlockNumber = event.block.number;
+  weth.save();
+}
 
 export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void {
   let priceOracle = getOrInitPriceOracle();

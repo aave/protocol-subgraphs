@@ -19,22 +19,7 @@ import {
 import { MOCK_USD_ADDRESS } from '../../utils/constants';
 import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
 import { AggregatorUpdated } from '../../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
-export { handleFallbackOracleUpdated } from './proxy-price-provider';
-
-export function handleWethSet(event: WethSet): void {
-  let wethAddress = event.params.weth;
-  let weth = WETHReserve.load('weth');
-  if (weth == null) {
-    weth = new WETHReserve('weth');
-  }
-  weth.address = wethAddress;
-  weth.name = 'Wrapped Matic';
-  weth.symbol = 'WMATIC';
-  weth.decimals = 18;
-  weth.updatedTimestamp = event.block.timestamp.toI32();
-  weth.updatedBlockNumber = event.block.number;
-  weth.save();
-}
+export { handleFallbackOracleUpdated, handleWethSet } from './proxy-price-provider';
 
 export function priceFeedUpdated(
   event: ethereum.Event,

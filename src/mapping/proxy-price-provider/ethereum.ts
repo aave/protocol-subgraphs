@@ -1,6 +1,6 @@
 import { Address, log, ethereum } from '@graphprotocol/graph-ts';
 
-import { AssetSourceUpdated, AaveOracle, WethSet } from '../../../generated/AaveOracle/AaveOracle';
+import { AssetSourceUpdated, AaveOracle } from '../../../generated/AaveOracle/AaveOracle';
 import { IExtendedPriceAggregator } from '../../../generated/AaveOracle/IExtendedPriceAggregator';
 import { AggregatorUpdated } from '../../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
 
@@ -28,24 +28,9 @@ import {
 } from '../../utils/converters';
 import { MOCK_USD_ADDRESS } from '../../utils/constants';
 import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
-import { PriceOracle, PriceOracleAsset, WETHReserve } from '../../../generated/schema';
+import { PriceOracle, PriceOracleAsset } from '../../../generated/schema';
 import { EACAggregatorProxy } from '../../../generated/AaveOracle/EACAggregatorProxy';
-export { handleFallbackOracleUpdated } from './proxy-price-provider';
-
-export function handleWethSet(event: WethSet): void {
-  let wethAddress = event.params.weth;
-  let weth = WETHReserve.load('weth');
-  if (weth == null) {
-    weth = new WETHReserve('weth');
-  }
-  weth.address = wethAddress;
-  weth.name = 'Wrapped Ethereum';
-  weth.symbol = 'WETH';
-  weth.decimals = 18;
-  weth.updatedTimestamp = event.block.timestamp.toI32();
-  weth.updatedBlockNumber = event.block.number;
-  weth.save();
-}
+export { handleFallbackOracleUpdated, handleWethSet } from './proxy-price-provider';
 
 export function priceFeedUpdated(
   event: ethereum.Event,
