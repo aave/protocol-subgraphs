@@ -9,7 +9,12 @@ import { GenericOracleI as FallbackPriceOracle } from '../../../generated/AaveOr
 
 import { FallbackPriceOracle as FallbackPriceOracleContract } from '../../../generated/templates';
 import { getOrInitPriceOracle, getPriceOracleAsset } from '../../helpers/initializers';
-import { formatUsdEthChainlinkPrice, zeroAddress, zeroBI } from '../../utils/converters';
+import {
+  exponentToBigInt,
+  formatUsdEthChainlinkPrice,
+  zeroAddress,
+  zeroBI,
+} from '../../utils/converters';
 import { MOCK_USD_ADDRESS, ZERO_ADDRESS } from '../../utils/constants';
 import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
 import { WETHReserve } from '../../../generated/schema';
@@ -21,12 +26,17 @@ export function handleWethSet(event: WethSet): void {
     weth = new WETHReserve('weth');
   }
   weth.address = wethAddress;
-  weth.name = 'Wrapped Ethereum';
+  weth.name = 'Wrapped Ether';
   weth.symbol = 'WETH';
   weth.decimals = 18;
   weth.updatedTimestamp = event.block.timestamp.toI32();
   weth.updatedBlockNumber = event.block.number;
   weth.save();
+
+  let oracleAsset = getPriceOracleAsset(wethAddress.toHexString());
+  oracleAsset.priceInEth = exponentToBigInt(18);
+  oracleAsset.lastUpdateTimestamp = event.block.timestamp.toI32();
+  oracleAsset.save();
 }
 
 export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void {
