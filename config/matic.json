@@ -1,9 +1,9 @@
 {
   "network": "matic",
-  "AaveOracleAddress": "0x21451bD7b528896B4AB2b9764b521D6ed641708d",
-  "AaveOracleStartBlock": 12607301,
-  "LendingPoolAddressesProviderRegistryAddress": "0xeD03247f4858E60ad682B9865d64eCb46322ECfd",
-  "LendingPoolAddressesProviderRegistryStartBlock": 12489190,
-  "ChainlinkSourcesRegistryAddress": "0x6b226932bcE921e1301c7b6033E371a2aFe397Fb",
-  "ChainlinkSourcesRegistryStartBlock": 12490656
+  "AaveOracleAddress": "0x0229F777B0fAb107F9591a41d5F02E4e98dB6f2d",
+  "AaveOracleStartBlock": 12687266,
+  "LendingPoolAddressesProviderRegistryAddress": "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19",
+  "LendingPoolAddressesProviderRegistryStartBlock": 12687211,
+  "ChainlinkSourcesRegistryAddress": "0x0d0515111C8603400543e6342f321093bFABC88D",
+  "ChainlinkSourcesRegistryStartBlock": 12687869
 }
