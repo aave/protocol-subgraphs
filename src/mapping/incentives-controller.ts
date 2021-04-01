@@ -5,7 +5,7 @@ import {
   RewardsAccrued,
   RewardsClaimed,
   UserIndexUpdated,
-} from '../../generated/AaveIncentivesController/AaveIncentivesController';
+} from '../../generated/templates/AaveIncentivesController/AaveIncentivesController';
 import {
   ClaimIncentiveCall,
   IncentivizedAction,

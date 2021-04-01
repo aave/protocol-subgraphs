@@ -112,12 +112,12 @@ templates:
       entities:
         - IncentivesController
       abis:
+        - name: AaveIncentivesController
+          file: ./constant-abis/AaveIncentivesController.json
         - name: IERC20Detailed
           file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
         - name: AToken
           file: ./constant-abis/AToken.json
-        - name: AaveIncentivesController
-          file: ./constant-abis/AaveIncentivesController.json
       eventHandlers:
         - event: AssetConfigUpdated(indexed address,uint256)
           handler: handleAssetConfigUpdated
@@ -416,4 +416,4 @@ templates:
           handler: handleUnpaused
         - event: ReserveDataUpdated(indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleReserveDataUpdated
-      file: src/mapping/lending-pool.ts
+      file: src/mapping/lending-pool/lending-pool.ts

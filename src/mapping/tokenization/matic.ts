@@ -1,9 +1,9 @@
 import { Initialized as ATokenInitialized } from '../../../generated/templates/AToken/AToken';
 import { Initialized as VTokenInitialized } from '../../../generated/templates/VariableDebtToken/VariableDebtToken';
 import { Initialized as STokenInitialized } from '../../../generated/templates/StableDebtToken/StableDebtToken';
-import { AaveIncentivesController } from '../../../generated/templates';
-import { AaveIncentivesController as AaveIncentivesControllerC } from '../../../generated/AaveIncentivesController/AaveIncentivesController';
-import { IncentivesController, MapAssetPool, Pool, Reserve } from '../../../generated/schema';
+import { AaveIncentivesController as AaveIncentivesControllerTemplate } from '../../../generated/templates';
+import { AaveIncentivesController as AaveIncentivesControllerC } from '../../../generated/templates/AaveIncentivesController/AaveIncentivesController';
+import { IncentivesController, MapAssetPool } from '../../../generated/schema';
 import { Address, log } from '@graphprotocol/graph-ts';
 import { IERC20Detailed } from '../../../generated/templates/AToken/IERC20Detailed';
 export {
@@ -44,7 +44,7 @@ function createIncentivesController(
 
     iController.save();
 
-    AaveIncentivesController.create(incentivesController);
+    AaveIncentivesControllerTemplate.create(incentivesController);
   }
 
   // save asset pool mapping

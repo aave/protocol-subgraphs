@@ -171,7 +171,7 @@ dataSources:
       eventHandlers:
         - event: Swapped(address,address,uint256,uint256)
           handler: handleSwappedLiquidity
-      file: src/mapping/lending-pool.ts
+      file: src/mapping/lending-pool/ethereum.ts
   - kind: ethereum/contract
     name: UniswapRepayAdapter
     network: {{network}}
@@ -191,7 +191,7 @@ dataSources:
       eventHandlers:
         - event: Swapped(address,address,uint256,uint256)
           handler: handleSwappedRepay
-      file: src/mapping/lending-pool.ts
+      file: src/mapping/lending-pool/ethereum.ts
   # --------------------------------------
   #
   # --------------------------------------
@@ -460,7 +460,7 @@ templates:
           handler: handleUnpaused
         - event: ReserveDataUpdated(indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleReserveDataUpdated
-      file: src/mapping/lending-pool.ts
+      file: src/mapping/lending-pool/ethereum.ts
 
   # --------------------------------------
   #       CONFIGURATIONS
