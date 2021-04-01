@@ -8,27 +8,18 @@ import {
 } from '../../generated/AaveIncentivesController/AaveIncentivesController';
 import {
   ClaimIncentiveCall,
-  IncentivesController,
   IncentivizedAction,
   MapAssetPool,
   Reserve,
   UserReserve,
 } from '../../generated/schema';
 import { getOrInitUser } from '../helpers/initializers';
+import { getReserveId } from '../utils/id-generation';
 
 export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let emissionsPerSecond = event.params.emission;
   let asset = event.params.asset; // a / v / s token
-  let incentivesController = event.address;
 
-  let iController = IncentivesController.load(incentivesController.toHexString());
-  if (!iController) {
-    log.error(
-      'Incentives Controller not initialized. incentives controller: {} | asset: {} | emission: {}',
-      [incentivesController.toHexString(), asset.toHexString(), emissionsPerSecond.toString()]
-    );
-    return;
-  }
   let mapAssetPool = MapAssetPool.load(asset.toHexString());
   if (!mapAssetPool) {
     log.error('Mapping not initiated for asset: {}', [asset.toHexString()]);
@@ -38,16 +29,8 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let underlyingAsset = mapAssetPool.underlyingAsset;
 
   // get reserve
-  let reserveId = underlyingAsset.toHexString() + pool.toHexString();
+  let reserveId = getReserveId(underlyingAsset, pool.toHexString());
   let reserve = Reserve.load(reserveId);
-
-  if (!reserve) {
-    log.error('Error getting the reserve. pool: {} | underlying: {}', [
-      pool.toHexString(),
-      underlyingAsset.toHexString(),
-    ]);
-    return;
-  }
 
   if (asset.toHexString() == reserve.aToken) {
     reserve.aEmissionPerSecond = emissionsPerSecond;
@@ -108,16 +91,8 @@ export function handleAssetIndexUpdated(event: AssetIndexUpdated): void {
   let pool = mapAssetPool.pool;
   let underlyingAsset = mapAssetPool.underlyingAsset;
   // get reserve
-  let reserveId = underlyingAsset.toHexString() + pool.toHexString();
+  let reserveId = getReserveId(underlyingAsset, pool.toHexString());
   let reserve = Reserve.load(reserveId);
-
-  if (!reserve) {
-    log.error('Error getting the reserve. pool: {} | underlying: {}', [
-      pool.toHexString(),
-      underlyingAsset.toHexString(),
-    ]);
-    return;
-  }
 
   if (asset.toHexString() == reserve.aToken) {
     reserve.aTokenIncentivesIndex = index;
@@ -147,7 +122,7 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
   let pool = mapAssetPool.pool;
   let underlyingAsset = mapAssetPool.underlyingAsset;
 
-  let reserveId = underlyingAsset.toHexString() + pool.toHexString();
+  let reserveId = getReserveId(underlyingAsset, pool.toHexString());
   let userReserveId = user.toHexString() + reserveId;
   let userReserve = UserReserve.load(userReserveId);
 
