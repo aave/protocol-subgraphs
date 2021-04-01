@@ -18,6 +18,7 @@ import { getHistoryEntityId, getReserveId, getUserReserveId } from '../utils/id-
 
 export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let emissionsPerSecond = event.params.emission;
+  let blockTimestamp = event.block.timestamp.toI32();
   let asset = event.params.asset; // a / v / s token
 
   let mapAssetPool = MapAssetPool.load(asset.toHexString());
@@ -34,13 +35,13 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
 
   if (asset.toHexString() == reserve.aToken) {
     reserve.aEmissionPerSecond = emissionsPerSecond;
-    reserve.aIncentivesLastUpdateTimestamp = event.block.timestamp.toI32();
+    reserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
   } else if (asset.toHexString() == reserve.vToken) {
     reserve.vEmissionPerSecond = emissionsPerSecond;
-    reserve.vIncentivesLastUpdateTimestamp = event.block.timestamp.toI32();
+    reserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
   } else if (asset.toHexString() == reserve.sToken) {
     reserve.sEmissionPerSecond = emissionsPerSecond;
-    reserve.sIncentivesLastUpdateTimestamp = event.block.timestamp.toI32();
+    reserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
   }
 
   reserve.save();
@@ -55,6 +56,7 @@ export function handleRewardsAccrued(event: RewardsAccrued): void {
   user.unclaimedRewards = user.unclaimedRewards.plus(amount);
   user.lifetimeRewards = user.lifetimeRewards.plus(amount);
   user.incentivesLastUpdated = event.block.timestamp.toI32();
+  user.save();
 
   let incentivizedAction = new IncentivizedAction(getHistoryEntityId(event));
   incentivizedAction.incentivesController = incentivesController.toHexString();
@@ -71,6 +73,7 @@ export function handleRewardsClaimed(event: RewardsClaimed): void {
   let user = getOrInitUser(userAddress);
   user.unclaimedRewards = user.unclaimedRewards.minus(amount);
   user.incentivesLastUpdated = event.block.timestamp.toI32();
+  user.save();
 
   let claimIncentive = new ClaimIncentiveCall(getHistoryEntityId(event));
   claimIncentive.incentivesController = incentivesController.toHexString();
@@ -82,7 +85,7 @@ export function handleRewardsClaimed(event: RewardsClaimed): void {
 export function handleAssetIndexUpdated(event: AssetIndexUpdated): void {
   let asset = event.params.asset;
   let index = event.params.index;
-  let incentiveAssetIndexLastUpdated = event.block.timestamp.toI32();
+  let blockTimestamp = event.block.timestamp.toI32();
 
   let mapAssetPool = MapAssetPool.load(asset.toHexString());
   if (!mapAssetPool) {
@@ -97,13 +100,13 @@ export function handleAssetIndexUpdated(event: AssetIndexUpdated): void {
 
   if (asset.toHexString() == reserve.aToken) {
     reserve.aTokenIncentivesIndex = index;
-    reserve.aIncentivesLastUpdateTimestamp = incentiveAssetIndexLastUpdated;
+    reserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
   } else if (asset.toHexString() == reserve.vToken) {
     reserve.vTokenIncentivesIndex = index;
-    reserve.vIncentivesLastUpdateTimestamp = incentiveAssetIndexLastUpdated;
+    reserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
   } else if (asset.toHexString() == reserve.sToken) {
     reserve.sTokenIncentivesIndex = index;
-    reserve.sIncentivesLastUpdateTimestamp = incentiveAssetIndexLastUpdated;
+    reserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
   }
 
   reserve.save();
@@ -113,7 +116,7 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
   let user = event.params.user;
   let asset = event.params.asset;
   let index = event.params.index;
-  let incentivesUserIndexLastUpdated = event.block.timestamp.toI32();
+  let blockTimestamp = event.block.timestamp.toI32();
 
   let mapAssetPool = MapAssetPool.load(asset.toHexString());
   if (!mapAssetPool) {
@@ -131,13 +134,13 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
 
   if (asset.toHexString() == reserve.aToken) {
     userReserve.aTokenincentivesUserIndex = index;
-    userReserve.aIncentivesLastUpdateTimestamp = incentivesUserIndexLastUpdated;
+    userReserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
   } else if (asset.toHexString() == reserve.vToken) {
     userReserve.aTokenincentivesUserIndex = index;
-    userReserve.vIncentivesLastUpdateTimestamp = incentivesUserIndexLastUpdated;
+    userReserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
   } else if (asset.toHexString() == reserve.sToken) {
     userReserve.aTokenincentivesUserIndex = index;
-    userReserve.sIncentivesLastUpdateTimestamp = incentivesUserIndexLastUpdated;
+    userReserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
   }
 
   userReserve.save();
