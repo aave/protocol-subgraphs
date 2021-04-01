@@ -695,7 +695,8 @@ type User @entity {
   borrowedReservesCount: Int!
 
   #incentives
-  incentivesRewardsAccrued: BigInt!
+  unclaimedRewards: BigInt!
+  lifetimeRewards: BigInt!
   incentivesLastUpdated: Int!
 
   reserves: [UserReserve!]! @derivedFrom(field: "user")

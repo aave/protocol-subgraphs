@@ -14,7 +14,7 @@ import {
   UserReserve,
 } from '../../generated/schema';
 import { getOrInitUser } from '../helpers/initializers';
-import { getReserveId } from '../utils/id-generation';
+import { getHistoryEntityId, getReserveId, getUserReserveId } from '../utils/id-generation';
 
 export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let emissionsPerSecond = event.params.emission;
@@ -52,10 +52,11 @@ export function handleRewardsAccrued(event: RewardsAccrued): void {
   let incentivesController = event.address;
 
   let user = getOrInitUser(userAddress);
-  user.incentivesRewardsAccrued = user.incentivesRewardsAccrued.plus(amount);
+  user.unclaimedRewards = user.unclaimedRewards.plus(amount);
+  user.lifetimeRewards = user.lifetimeRewards.plus(amount);
   user.incentivesLastUpdated = event.block.timestamp.toI32();
 
-  let incentivizedAction = new IncentivizedAction(event.transaction.hash.toHexString());
+  let incentivizedAction = new IncentivizedAction(getHistoryEntityId(event));
   incentivizedAction.incentivesController = incentivesController.toHexString();
   incentivizedAction.user = userAddress.toHexString();
   incentivizedAction.amount = amount;
@@ -68,10 +69,10 @@ export function handleRewardsClaimed(event: RewardsClaimed): void {
   let incentivesController = event.address;
 
   let user = getOrInitUser(userAddress);
-  user.incentivesRewardsAccrued = user.incentivesRewardsAccrued.minus(amount);
+  user.unclaimedRewards = user.unclaimedRewards.minus(amount);
   user.incentivesLastUpdated = event.block.timestamp.toI32();
 
-  let claimIncentive = new ClaimIncentiveCall(event.transaction.hash.toHexString());
+  let claimIncentive = new ClaimIncentiveCall(getHistoryEntityId(event));
   claimIncentive.incentivesController = incentivesController.toHexString();
   claimIncentive.user = userAddress.toHexString();
   claimIncentive.amount = amount;
@@ -123,7 +124,7 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
   let underlyingAsset = mapAssetPool.underlyingAsset;
 
   let reserveId = getReserveId(underlyingAsset, pool.toHexString());
-  let userReserveId = user.toHexString() + reserveId;
+  let userReserveId = getUserReserveId(user, underlyingAsset, pool.toHexString());
   let userReserve = UserReserve.load(userReserveId);
 
   let reserve = Reserve.load(reserveId);

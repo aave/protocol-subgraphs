@@ -49,8 +49,9 @@ export function getOrInitUser(address: Address): User {
   if (!user) {
     user = new User(address.toHexString());
     user.borrowedReservesCount = 0;
-    user.incentivesRewardsAccrued = zeroBI();
+    user.unclaimedRewards = zeroBI();
     user.incentivesLastUpdated = 0;
+    user.lifetimeRewards = zeroBI();
     user.save();
   }
   return user as User;

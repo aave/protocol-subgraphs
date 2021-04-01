@@ -24,6 +24,10 @@ export function getHistoryId(
   return event.transaction.hash.toHexString() + postfix;
 }
 
+export function getHistoryEntityId(event: ethereum.Event): string {
+  return event.transaction.hash.toHexString() + ':' + event.logIndex.toString();
+}
+
 export function getReserveId(underlyingAsset: Address, poolId: string): string {
   return underlyingAsset.toHexString() + poolId;
 }
