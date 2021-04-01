@@ -1,4 +1,4 @@
-import { log } from '@graphprotocol/graph-ts';
+import { Address, log } from '@graphprotocol/graph-ts';
 import {
   AssetConfigUpdated,
   AssetIndexUpdated,
@@ -30,7 +30,7 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let underlyingAsset = mapAssetPool.underlyingAsset;
 
   // get reserve
-  let reserveId = getReserveId(underlyingAsset, pool.toHexString());
+  let reserveId = getReserveId(underlyingAsset as Address, pool.toHexString());
   let reserve = Reserve.load(reserveId);
 
   if (asset.toHexString() == reserve.aToken) {
@@ -95,7 +95,7 @@ export function handleAssetIndexUpdated(event: AssetIndexUpdated): void {
   let pool = mapAssetPool.pool;
   let underlyingAsset = mapAssetPool.underlyingAsset;
   // get reserve
-  let reserveId = getReserveId(underlyingAsset, pool.toHexString());
+  let reserveId = getReserveId(underlyingAsset as Address, pool.toHexString());
   let reserve = Reserve.load(reserveId);
 
   if (asset.toHexString() == reserve.aToken) {
@@ -126,8 +126,8 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
   let pool = mapAssetPool.pool;
   let underlyingAsset = mapAssetPool.underlyingAsset;
 
-  let reserveId = getReserveId(underlyingAsset, pool.toHexString());
-  let userReserveId = getUserReserveId(user, underlyingAsset, pool.toHexString());
+  let reserveId = getReserveId(underlyingAsset as Address, pool.toHexString());
+  let userReserveId = getUserReserveId(user, underlyingAsset as Address, pool.toHexString());
   let userReserve = UserReserve.load(userReserveId);
 
   let reserve = Reserve.load(reserveId);
