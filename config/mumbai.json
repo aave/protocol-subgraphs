@@ -1,0 +1,9 @@
+{
+  "network": "mumbai",
+  "AaveOracleAddress": "0x4f8B5cA23a2ef9e8887a8f22BF47E50648760931",
+  "AaveOracleStartBlock": 12488200,
+  "LendingPoolAddressesProviderRegistryAddress": "0x2C901a65071c077C78209b06AB2b5D8eC285aB84",
+  "LendingPoolAddressesProviderRegistryStartBlock": 12488140,
+  "ChainlinkSourcesRegistryAddress": "0xf5f49EEDc50cC9D2C9CD4dC3DD2939660f4eb2E4",
+  "ChainlinkSourcesRegistryStartBlock": 12490186
+}
