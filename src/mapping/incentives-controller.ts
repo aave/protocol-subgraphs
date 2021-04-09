@@ -21,30 +21,46 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let blockTimestamp = event.block.timestamp.toI32();
   let asset = event.params.asset; // a / v / s token
 
+  // log.warning('emission:: {} | asset: {}', [emissionsPerSecond.toString(), asset.toHexString()]);
   let mapAssetPool = MapAssetPool.load(asset.toHexString());
+  log.warning('mappAssetPool id :: {}', [mapAssetPool.id]);
   if (!mapAssetPool) {
     log.error('Mapping not initiated for asset: {}', [asset.toHexString()]);
     return;
   }
   let pool = mapAssetPool.pool;
+  log.warning('pool::::: {}', [pool]);
   let underlyingAsset = mapAssetPool.underlyingAsset;
-
+  log.warning('underlying asset:::: {} ', [underlyingAsset.toHexString()]);
   // get reserve
-  let reserveId = getReserveId(underlyingAsset as Address, pool.toHexString());
+  let reserveId = getReserveId(underlyingAsset as Address, pool);
+  log.warning('reserveId:::: {}', [reserveId]);
+
   let reserve = Reserve.load(reserveId);
-
-  if (asset.toHexString() == reserve.aToken) {
-    reserve.aEmissionPerSecond = emissionsPerSecond;
-    reserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
-  } else if (asset.toHexString() == reserve.vToken) {
-    reserve.vEmissionPerSecond = emissionsPerSecond;
-    reserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
-  } else if (asset.toHexString() == reserve.sToken) {
-    reserve.sEmissionPerSecond = emissionsPerSecond;
-    reserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
+  // log.warning('reserve id::: {} | asset: {} | pool: {}', [
+  //   reserve.id,
+  //   underlyingAsset.toHexString(),
+  //   pool.toHexString(),
+  // ]);
+  if (reserve != null) {
+    if (asset.toHexString() == reserve.aToken) {
+      reserve.aEmissionPerSecond = emissionsPerSecond;
+      reserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
+    } else if (asset.toHexString() == reserve.vToken) {
+      reserve.vEmissionPerSecond = emissionsPerSecond;
+      reserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
+    } else if (asset.toHexString() == reserve.sToken) {
+      reserve.sEmissionPerSecond = emissionsPerSecond;
+      reserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
+    }
+    log.warning('Log before reserve:::: {} ', [reserve.id]);
+    reserve.save();
+  } else {
+    log.warning('Handle asset config updated reserve not created. pool: {} | underlying: {}', [
+      pool,
+      underlyingAsset.toHexString(),
+    ]);
   }
-
-  reserve.save();
 }
 
 export function handleRewardsAccrued(event: RewardsAccrued): void {
@@ -95,21 +111,28 @@ export function handleAssetIndexUpdated(event: AssetIndexUpdated): void {
   let pool = mapAssetPool.pool;
   let underlyingAsset = mapAssetPool.underlyingAsset;
   // get reserve
-  let reserveId = getReserveId(underlyingAsset as Address, pool.toHexString());
+  let reserveId = getReserveId(underlyingAsset as Address, pool);
   let reserve = Reserve.load(reserveId);
 
-  if (asset.toHexString() == reserve.aToken) {
-    reserve.aTokenIncentivesIndex = index;
-    reserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
-  } else if (asset.toHexString() == reserve.vToken) {
-    reserve.vTokenIncentivesIndex = index;
-    reserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
-  } else if (asset.toHexString() == reserve.sToken) {
-    reserve.sTokenIncentivesIndex = index;
-    reserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
-  }
+  if (reserve != null) {
+    if (asset.toHexString() == reserve.aToken) {
+      reserve.aTokenIncentivesIndex = index;
+      reserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
+    } else if (asset.toHexString() == reserve.vToken) {
+      reserve.vTokenIncentivesIndex = index;
+      reserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
+    } else if (asset.toHexString() == reserve.sToken) {
+      reserve.sTokenIncentivesIndex = index;
+      reserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
+    }
 
-  reserve.save();
+    reserve.save();
+  } else {
+    log.warning('Handle asset index updated reserve not created. pool: {} | underlying: {}', [
+      pool,
+      underlyingAsset.toHexString(),
+    ]);
+  }
 }
 
 export function handleUserIndexUpdated(event: UserIndexUpdated): void {
@@ -126,22 +149,28 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
   let pool = mapAssetPool.pool;
   let underlyingAsset = mapAssetPool.underlyingAsset;
 
-  let reserveId = getReserveId(underlyingAsset as Address, pool.toHexString());
-  let userReserveId = getUserReserveId(user, underlyingAsset as Address, pool.toHexString());
+  let reserveId = getReserveId(underlyingAsset as Address, pool);
+  let userReserveId = getUserReserveId(user, underlyingAsset as Address, pool);
   let userReserve = UserReserve.load(userReserveId);
 
   let reserve = Reserve.load(reserveId);
+  if (reserve != null) {
+    if (asset.toHexString() == reserve.aToken) {
+      userReserve.aTokenincentivesUserIndex = index;
+      userReserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
+    } else if (asset.toHexString() == reserve.vToken) {
+      userReserve.aTokenincentivesUserIndex = index;
+      userReserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
+    } else if (asset.toHexString() == reserve.sToken) {
+      userReserve.aTokenincentivesUserIndex = index;
+      userReserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
+    }
 
-  if (asset.toHexString() == reserve.aToken) {
-    userReserve.aTokenincentivesUserIndex = index;
-    userReserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
-  } else if (asset.toHexString() == reserve.vToken) {
-    userReserve.aTokenincentivesUserIndex = index;
-    userReserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
-  } else if (asset.toHexString() == reserve.sToken) {
-    userReserve.aTokenincentivesUserIndex = index;
-    userReserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
+    userReserve.save();
+  } else {
+    log.warning('UserIndex updated reserve not created. pool: {} | underlying: {}', [
+      pool,
+      underlyingAsset.toHexString(),
+    ]);
   }
-
-  userReserve.save();
 }

@@ -1,5 +1,5 @@
-import { PriceOracle, PriceOracleAsset, WETHReserve } from '../../../generated/schema';
-import { AaveOracle, AssetSourceUpdated, WethSet } from '../../../generated/AaveOracle/AaveOracle';
+import { PriceOracle, PriceOracleAsset } from '../../../generated/schema';
+import { AaveOracle, AssetSourceUpdated } from '../../../generated/AaveOracle/AaveOracle';
 import { Address, ethereum, log } from '@graphprotocol/graph-ts';
 import {
   formatUsdEthChainlinkPrice,

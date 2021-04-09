@@ -3,8 +3,8 @@ import { Initialized as VTokenInitialized } from '../../../generated/templates/V
 import { Initialized as STokenInitialized } from '../../../generated/templates/StableDebtToken/StableDebtToken';
 import { AaveIncentivesController as AaveIncentivesControllerTemplate } from '../../../generated/templates';
 import { AaveIncentivesController as AaveIncentivesControllerC } from '../../../generated/templates/AaveIncentivesController/AaveIncentivesController';
-import { IncentivesController, MapAssetPool } from '../../../generated/schema';
-import { Address, log } from '@graphprotocol/graph-ts';
+import { IncentivesController, MapAssetPool, Pool } from '../../../generated/schema';
+import { Address, Bytes, log } from '@graphprotocol/graph-ts';
 import { IERC20Detailed } from '../../../generated/templates/AToken/IERC20Detailed';
 export {
   handleATokenBurn,
@@ -47,9 +47,12 @@ function createIncentivesController(
     AaveIncentivesControllerTemplate.create(incentivesController);
   }
 
+  let poolObj = Pool.load(pool.toHexString());
+  let lendingPoolAddress = poolObj.lendingPool;
+
   // save asset pool mapping
   let mapAssetPool = new MapAssetPool(asset.toHexString());
-  mapAssetPool.pool = pool;
+  mapAssetPool.pool = lendingPoolAddress.toHexString();
   mapAssetPool.underlyingAsset = underlyingAsset;
   mapAssetPool.save();
 }
