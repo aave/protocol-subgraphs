@@ -29,7 +29,7 @@
     "deploy:hosted:kovan": "BLOCKCHAIN=ethereum NETWORK=kovan env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2-kovan env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:mainnet": "BLOCKCHAIN=ethereum NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2 env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:matic": "BLOCKCHAIN=matic NETWORK=matic env-cmd npm run prepare:subgraph && SLUG=aave/aave-v2-matic env-cmd npm run subgraph:deploy:hosted",
-    "deploy:hosted:mumbai": "BLOCKCHAIN=matic NETWORK=mumbai env-cmd npm run prepare:subgraph && SLUG=aave/aave-v2-mumbai env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:mumbai": "BLOCKCHAIN=matic NETWORK=mumbai env-cmd npm run prepare:subgraph && SLUG=aave/aave-v2-polygon-mumbai env-cmd npm run subgraph:deploy:hosted",
     "deploy:self-hosted:kovan": "BLOCKCHAIN=ethereum NETWORK=kovan npm run prepare:subgraph && SLUG=aave/protocol-v2-kovan npm run subgraph:deploy:self-hosted",
     "deploy:self-hosted:mainnet": "BLOCKCHAIN=ethereum NETWORK=mainnet npm run prepare:subgraph && SLUG=aave/protocol-v2 npm run subgraph:deploy:self-hosted",
     "deploy:self-hosted:matic": "BLOCKCHAIN=matic NETWORK=matic env-cmd npm run prepare:subgraph && SLUG=aave/aave-v2-matic env-cmd npm run subgraph:deploy:local"

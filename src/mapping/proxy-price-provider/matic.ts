@@ -117,37 +117,43 @@ export function priceFeedUpdated(
         }
       }
     }
-
-    if (sAssetAddress == MOCK_USD_ADDRESS) {
-      priceOracle.usdPriceEthFallbackRequired = priceOracleAsset.isFallbackRequired;
-      priceOracle.usdPriceEthMainSource = priceOracleAsset.priceSource;
-      usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(priceFromOracle), event);
-      // this is so we also save the assetOracle for usd chainlink
-      genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
-    } else {
-      // if chainlink was invalid before and valid now, remove from tokensWithFallback array
-      if (
-        !assetOracleAddress.equals(zeroAddress()) &&
-        priceOracle.tokensWithFallback.includes(sAssetAddress) &&
-        !priceOracleAsset.isFallbackRequired
-      ) {
-        priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-          token => token != assetAddress.toHexString()
-        );
-      }
-
-      if (
-        !priceOracle.tokensWithFallback.includes(sAssetAddress) &&
-        (assetOracleAddress.equals(zeroAddress()) || priceOracleAsset.isFallbackRequired)
-      ) {
-        let updatedTokensWithFallback = priceOracle.tokensWithFallback;
-        updatedTokensWithFallback.push(sAssetAddress);
-        priceOracle.tokensWithFallback = updatedTokensWithFallback;
-      }
-      priceOracle.save();
-
-      genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
+  } else {
+    log.error('registry of asset: {} | oracle: {} | price: {}', [
+      assetAddress.toHexString(),
+      assetOracleAddress.toHexString(),
+      priceFromOracle.toString(),
+    ]);
+  }
+  // if (assetAddress.toHexString != MOCK_USD_ADDRESS)
+  if (sAssetAddress == MOCK_USD_ADDRESS) {
+    priceOracle.usdPriceEthFallbackRequired = priceOracleAsset.isFallbackRequired;
+    priceOracle.usdPriceEthMainSource = priceOracleAsset.priceSource;
+    usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(priceFromOracle), event);
+    // this is so we also save the assetOracle for usd chainlink
+    genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
+  } else {
+    // if chainlink was invalid before and valid now, remove from tokensWithFallback array
+    if (
+      !assetOracleAddress.equals(zeroAddress()) &&
+      priceOracle.tokensWithFallback.includes(sAssetAddress) &&
+      !priceOracleAsset.isFallbackRequired
+    ) {
+      priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
+        token => token != assetAddress.toHexString()
+      );
     }
+
+    if (
+      !priceOracle.tokensWithFallback.includes(sAssetAddress) &&
+      (assetOracleAddress.equals(zeroAddress()) || priceOracleAsset.isFallbackRequired)
+    ) {
+      let updatedTokensWithFallback = priceOracle.tokensWithFallback;
+      updatedTokensWithFallback.push(sAssetAddress);
+      priceOracle.tokensWithFallback = updatedTokensWithFallback;
+    }
+    priceOracle.save();
+
+    genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
   }
 }
 
