@@ -21,27 +21,17 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let blockTimestamp = event.block.timestamp.toI32();
   let asset = event.params.asset; // a / v / s token
 
-  // log.warning('emission:: {} | asset: {}', [emissionsPerSecond.toString(), asset.toHexString()]);
   let mapAssetPool = MapAssetPool.load(asset.toHexString());
-  log.warning('mappAssetPool id :: {}', [mapAssetPool.id]);
   if (!mapAssetPool) {
     log.error('Mapping not initiated for asset: {}', [asset.toHexString()]);
     return;
   }
   let pool = mapAssetPool.pool;
-  log.warning('pool::::: {}', [pool]);
   let underlyingAsset = mapAssetPool.underlyingAsset;
-  log.warning('underlying asset:::: {} ', [underlyingAsset.toHexString()]);
   // get reserve
   let reserveId = getReserveId(underlyingAsset as Address, pool);
-  log.warning('reserveId:::: {}', [reserveId]);
-
   let reserve = Reserve.load(reserveId);
-  // log.warning('reserve id::: {} | asset: {} | pool: {}', [
-  //   reserve.id,
-  //   underlyingAsset.toHexString(),
-  //   pool.toHexString(),
-  // ]);
+
   if (reserve != null) {
     if (asset.toHexString() == reserve.aToken) {
       reserve.aEmissionPerSecond = emissionsPerSecond;
@@ -53,7 +43,6 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
       reserve.sEmissionPerSecond = emissionsPerSecond;
       reserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
     }
-    log.warning('Log before reserve:::: {} ', [reserve.id]);
     reserve.save();
   } else {
     log.warning('Handle asset config updated reserve not created. pool: {} | underlying: {}', [
@@ -154,7 +143,7 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
   let userReserve = UserReserve.load(userReserveId);
 
   let reserve = Reserve.load(reserveId);
-  if (reserve != null) {
+  if (userReserve != null) {
     if (asset.toHexString() == reserve.aToken) {
       userReserve.aTokenincentivesUserIndex = index;
       userReserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
