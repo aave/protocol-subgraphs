@@ -148,10 +148,10 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
       userReserve.aTokenincentivesUserIndex = index;
       userReserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
     } else if (asset.toHexString() == reserve.vToken) {
-      userReserve.aTokenincentivesUserIndex = index;
+      userReserve.vTokenincentivesUserIndex = index;
       userReserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
     } else if (asset.toHexString() == reserve.sToken) {
-      userReserve.aTokenincentivesUserIndex = index;
+      userReserve.sTokenincentivesUserIndex = index;
       userReserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
     }
 
