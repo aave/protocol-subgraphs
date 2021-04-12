@@ -13,7 +13,7 @@ import {
   Reserve,
   UserReserve,
 } from '../../generated/schema';
-import { getOrInitUser } from '../helpers/initializers';
+import { getOrInitUser, getOrInitUserReserveWithIds } from '../helpers/initializers';
 import { getHistoryEntityId, getReserveId, getUserReserveId } from '../utils/id-generation';
 
 export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
@@ -139,8 +139,8 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
   let underlyingAsset = mapAssetPool.underlyingAsset;
 
   let reserveId = getReserveId(underlyingAsset as Address, pool);
-  let userReserveId = getUserReserveId(user, underlyingAsset as Address, pool);
-  let userReserve = UserReserve.load(userReserveId);
+  // let userReserveId = getUserReserveId(user, underlyingAsset as Address, pool);
+  let userReserve = getOrInitUserReserveWithIds(user, underlyingAsset as Address, pool);
 
   let reserve = Reserve.load(reserveId);
   if (userReserve != null) {
@@ -157,9 +157,9 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
 
     userReserve.save();
   } else {
-    log.warning('UserIndex updated reserve not created. pool: {} | underlying: {}', [
-      pool,
-      underlyingAsset.toHexString(),
-    ]);
+    log.warning(
+      'UserIndex updated reserve not created. user: {} | pool: {} | underlying: {} | asset: {} ',
+      [user.toHexString(), pool, underlyingAsset.toHexString(), asset.toHexString()]
+    );
   }
 }

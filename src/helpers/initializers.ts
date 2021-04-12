@@ -69,6 +69,48 @@ export function getOrInitENS(node: string): ChainlinkENS {
   return ens as ChainlinkENS;
 }
 
+export function getOrInitUserReserveWithIds(
+  userAddress: Address,
+  underlyingAssetAddress: Address,
+  pool: string
+): UserReserve {
+  let userReserveId = getUserReserveId(userAddress, underlyingAssetAddress, pool);
+  let userReserve = UserReserve.load(userReserveId);
+  if (userReserve === null) {
+    userReserve = new UserReserve(userReserveId);
+    userReserve.pool = pool;
+    userReserve.usageAsCollateralEnabledOnUser = false; // TODO: reminder that we changed to false. check other places where it may effect
+    userReserve.scaledATokenBalance = zeroBI();
+    userReserve.scaledVariableDebt = zeroBI();
+    userReserve.principalStableDebt = zeroBI();
+    userReserve.currentATokenBalance = zeroBI();
+    userReserve.currentVariableDebt = zeroBI();
+    userReserve.currentStableDebt = zeroBI();
+    userReserve.stableBorrowRate = zeroBI();
+    userReserve.oldStableBorrowRate = zeroBI();
+    userReserve.currentTotalDebt = zeroBI();
+    userReserve.variableBorrowIndex = zeroBI();
+    userReserve.lastUpdateTimestamp = 0;
+    userReserve.liquidityRate = zeroBI();
+    userReserve.stableBorrowLastUpdateTimestamp = 0;
+
+    // incentives
+    userReserve.aTokenincentivesUserIndex = zeroBI();
+    userReserve.vTokenincentivesUserIndex = zeroBI();
+    userReserve.sTokenincentivesUserIndex = zeroBI();
+    userReserve.aIncentivesLastUpdateTimestamp = 0;
+    userReserve.vIncentivesLastUpdateTimestamp = 0;
+    userReserve.sIncentivesLastUpdateTimestamp = 0;
+
+    let user = getOrInitUser(userAddress);
+    userReserve.user = user.id;
+
+    let poolReserve = getReserveId(underlyingAssetAddress, pool);
+    userReserve.reserve = poolReserve;
+  }
+  return userReserve as UserReserve;
+}
+
 export function getOrInitUserReserve(
   _user: Address,
   _underlyingAsset: Address,
