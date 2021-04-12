@@ -1,9 +1,9 @@
 {
   "network": "mumbai",
-  "AaveOracleAddress": "0xE6d947B89c837B761bf3B7D48bB406a7a2EEc3e0",
-  "AaveOracleStartBlock": 12521965,
-  "LendingPoolAddressesProviderRegistryAddress": "0x249534a37C31f64bB4577e783eDed62561029c99",
-  "LendingPoolAddressesProviderRegistryStartBlock": 12521917,
+  "AaveOracleAddress": "0x3cC6db8dBBa233Fe342c2c8379993aCa231674bd",
+  "AaveOracleStartBlock": 12528929,
+  "LendingPoolAddressesProviderRegistryAddress": "0x7116EA5095e3fCfEeA55468C675a0591D3986271",
+  "LendingPoolAddressesProviderRegistryStartBlock": 12528882,
   "ChainlinkSourcesRegistryAddress": "0xf5f49EEDc50cC9D2C9CD4dC3DD2939660f4eb2E4",
   "ChainlinkSourcesRegistryStartBlock": 12490186
 }
