@@ -69,18 +69,18 @@ export function getOrInitENS(node: string): ChainlinkENS {
   return ens as ChainlinkENS;
 }
 
-export function getOrInitUserReserve(
-  _user: Address,
-  _underlyingAsset: Address,
-  event: ethereum.Event
+function initUserReserve(
+  underlyingAssetAddress: Address,
+  userAddress: Address,
+  poolId: string,
+  reserveId: string
 ): UserReserve {
-  let poolId = getPoolByContract(event);
-  let userReserveId = getUserReserveId(_user, _underlyingAsset, poolId);
+  let userReserveId = getUserReserveId(userAddress, underlyingAssetAddress, poolId);
   let userReserve = UserReserve.load(userReserveId);
   if (userReserve === null) {
     userReserve = new UserReserve(userReserveId);
     userReserve.pool = poolId;
-    userReserve.usageAsCollateralEnabledOnUser = false; // TODO: reminder that we changed to false. check other places where it may effect
+    userReserve.usageAsCollateralEnabledOnUser = false;
     userReserve.scaledATokenBalance = zeroBI();
     userReserve.scaledVariableDebt = zeroBI();
     userReserve.principalStableDebt = zeroBI();
@@ -103,13 +103,31 @@ export function getOrInitUserReserve(
     userReserve.vIncentivesLastUpdateTimestamp = 0;
     userReserve.sIncentivesLastUpdateTimestamp = 0;
 
-    let user = getOrInitUser(_user);
+    let user = getOrInitUser(userAddress);
     userReserve.user = user.id;
 
-    let poolReserve = getOrInitReserve(_underlyingAsset, event);
-    userReserve.reserve = poolReserve.id;
+    userReserve.reserve = reserveId;
   }
   return userReserve as UserReserve;
+}
+
+export function getOrInitUserReserveWithIds(
+  userAddress: Address,
+  underlyingAssetAddress: Address,
+  pool: string
+): UserReserve {
+  let reserveId = getReserveId(underlyingAssetAddress, pool);
+  return initUserReserve(underlyingAssetAddress, userAddress, pool, reserveId);
+}
+
+export function getOrInitUserReserve(
+  _user: Address,
+  _underlyingAsset: Address,
+  event: ethereum.Event
+): UserReserve {
+  let poolId = getPoolByContract(event);
+  let reserve = getOrInitReserve(_underlyingAsset, event);
+  return initUserReserve(_underlyingAsset, _user, poolId, reserve.id);
 }
 
 export function getOrInitPriceOracle(): PriceOracle {
