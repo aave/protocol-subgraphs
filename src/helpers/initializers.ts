@@ -70,11 +70,13 @@ export function getOrInitENS(node: string): ChainlinkENS {
 }
 
 function initUserReserve(
-  userReserveId: string,
+  // userReserveId: string,
+  underlyingAssetAddress: Address,
   userAddress: Address,
   poolId: string,
   reserveId: string
 ): UserReserve {
+  let userReserveId = getUserReserveId(userAddress, underlyingAssetAddress, poolId);
   let userReserve = UserReserve.load(userReserveId);
   if (userReserve === null) {
     userReserve = new UserReserve(userReserveId);
@@ -115,9 +117,8 @@ export function getOrInitUserReserveWithIds(
   underlyingAssetAddress: Address,
   pool: string
 ): UserReserve {
-  let userReserveId = getUserReserveId(userAddress, underlyingAssetAddress, pool);
   let reserveId = getReserveId(underlyingAssetAddress, pool);
-  return initUserReserve(userReserveId, userAddress, pool, reserveId);
+  return initUserReserve(underlyingAssetAddress, userAddress, pool, reserveId);
 }
 
 export function getOrInitUserReserve(
@@ -126,9 +127,8 @@ export function getOrInitUserReserve(
   event: ethereum.Event
 ): UserReserve {
   let poolId = getPoolByContract(event);
-  let userReserveId = getUserReserveId(_user, _underlyingAsset, poolId);
   let reserve = getOrInitReserve(_underlyingAsset, event);
-  return initUserReserve(userReserveId, _user, poolId, reserve.id);
+  return initUserReserve(_underlyingAsset, _user, poolId, reserve.id);
 }
 
 export function getOrInitPriceOracle(): PriceOracle {
