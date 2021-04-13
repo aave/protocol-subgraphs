@@ -70,7 +70,6 @@ export function getOrInitENS(node: string): ChainlinkENS {
 }
 
 function initUserReserve(
-  // userReserveId: string,
   underlyingAssetAddress: Address,
   userAddress: Address,
   poolId: string,
@@ -81,7 +80,7 @@ function initUserReserve(
   if (userReserve === null) {
     userReserve = new UserReserve(userReserveId);
     userReserve.pool = poolId;
-    userReserve.usageAsCollateralEnabledOnUser = false; // TODO: reminder that we changed to false. check other places where it may effect
+    userReserve.usageAsCollateralEnabledOnUser = false;
     userReserve.scaledATokenBalance = zeroBI();
     userReserve.scaledVariableDebt = zeroBI();
     userReserve.principalStableDebt = zeroBI();
