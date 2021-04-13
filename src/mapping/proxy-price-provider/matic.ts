@@ -1,5 +1,5 @@
-import { PriceOracle, PriceOracleAsset, WETHReserve } from '../../../generated/schema';
-import { AaveOracle, AssetSourceUpdated, WethSet } from '../../../generated/AaveOracle/AaveOracle';
+import { PriceOracle, PriceOracleAsset } from '../../../generated/schema';
+import { AaveOracle, AssetSourceUpdated } from '../../../generated/AaveOracle/AaveOracle';
 import { Address, ethereum, log } from '@graphprotocol/graph-ts';
 import {
   formatUsdEthChainlinkPrice,
@@ -18,22 +18,8 @@ import {
 } from '../../helpers/initializers';
 import { MOCK_USD_ADDRESS } from '../../utils/constants';
 import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
-export { handleFallbackOracleUpdated } from './proxy-price-provider';
-
-export function handleWethSet(event: WethSet): void {
-  let wethAddress = event.params.weth;
-  let weth = WETHReserve.load('weth');
-  if (weth == null) {
-    weth = new WETHReserve('weth');
-  }
-  weth.address = wethAddress;
-  weth.name = 'Wrapped Matic';
-  weth.symbol = 'WMATIC';
-  weth.decimals = 18;
-  weth.updatedTimestamp = event.block.timestamp.toI32();
-  weth.updatedBlockNumber = event.block.number;
-  weth.save();
-}
+import { AggregatorUpdated } from '../../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
+export { handleFallbackOracleUpdated, handleWethSet } from './proxy-price-provider';
 
 export function priceFeedUpdated(
   event: ethereum.Event,
@@ -131,37 +117,43 @@ export function priceFeedUpdated(
         }
       }
     }
-
-    if (sAssetAddress == MOCK_USD_ADDRESS) {
-      priceOracle.usdPriceEthFallbackRequired = priceOracleAsset.isFallbackRequired;
-      priceOracle.usdPriceEthMainSource = priceOracleAsset.priceSource;
-      usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(priceFromOracle), event);
-      // this is so we also save the assetOracle for usd chainlink
-      genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
-    } else {
-      // if chainlink was invalid before and valid now, remove from tokensWithFallback array
-      if (
-        !assetOracleAddress.equals(zeroAddress()) &&
-        priceOracle.tokensWithFallback.includes(sAssetAddress) &&
-        !priceOracleAsset.isFallbackRequired
-      ) {
-        priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-          token => token != assetAddress.toHexString()
-        );
-      }
-
-      if (
-        !priceOracle.tokensWithFallback.includes(sAssetAddress) &&
-        (assetOracleAddress.equals(zeroAddress()) || priceOracleAsset.isFallbackRequired)
-      ) {
-        let updatedTokensWithFallback = priceOracle.tokensWithFallback;
-        updatedTokensWithFallback.push(sAssetAddress);
-        priceOracle.tokensWithFallback = updatedTokensWithFallback;
-      }
-      priceOracle.save();
-
-      genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
+  } else {
+    log.error('registry of asset: {} | oracle: {} | price: {}', [
+      assetAddress.toHexString(),
+      assetOracleAddress.toHexString(),
+      priceFromOracle.toString(),
+    ]);
+  }
+  // if (assetAddress.toHexString != MOCK_USD_ADDRESS)
+  if (sAssetAddress == MOCK_USD_ADDRESS) {
+    priceOracle.usdPriceEthFallbackRequired = priceOracleAsset.isFallbackRequired;
+    priceOracle.usdPriceEthMainSource = priceOracleAsset.priceSource;
+    usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(priceFromOracle), event);
+    // this is so we also save the assetOracle for usd chainlink
+    genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
+  } else {
+    // if chainlink was invalid before and valid now, remove from tokensWithFallback array
+    if (
+      !assetOracleAddress.equals(zeroAddress()) &&
+      priceOracle.tokensWithFallback.includes(sAssetAddress) &&
+      !priceOracleAsset.isFallbackRequired
+    ) {
+      priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
+        token => token != assetAddress.toHexString()
+      );
     }
+
+    if (
+      !priceOracle.tokensWithFallback.includes(sAssetAddress) &&
+      (assetOracleAddress.equals(zeroAddress()) || priceOracleAsset.isFallbackRequired)
+    ) {
+      let updatedTokensWithFallback = priceOracle.tokensWithFallback;
+      updatedTokensWithFallback.push(sAssetAddress);
+      priceOracle.tokensWithFallback = updatedTokensWithFallback;
+    }
+    priceOracle.save();
+
+    genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
   }
 }
 
@@ -180,6 +172,17 @@ export function handleAssetSourceUpdated(event: AssetSourceUpdated): void {
   }
 
   let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
+  priceOracleAsset.fromChainlinkSourcesRegistry = false;
 
+  priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
+}
+
+export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void {
+  let assetAddress = event.params.token;
+  let assetOracleAddress = event.params.aggregator; // its proxy . Wrong naming
+
+  let priceOracle = getOrInitPriceOracle();
+  let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
+  priceOracleAsset.fromChainlinkSourcesRegistry = true;
   priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
 }

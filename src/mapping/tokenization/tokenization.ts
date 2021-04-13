@@ -2,17 +2,17 @@ import {
   BalanceTransfer as ATokenTransfer,
   Mint as ATokenMint,
   Burn as ATokenBurn,
-} from '../../generated/templates/AToken/AToken';
+} from '../../../generated/templates/AToken/AToken';
 import {
   Mint as VTokenMint,
   Burn as VTokenBurn,
   BorrowAllowanceDelegated as VBorrowAllowanceDelegated,
-} from '../../generated/templates/VariableDebtToken/VariableDebtToken';
+} from '../../../generated/templates/VariableDebtToken/VariableDebtToken';
 import {
   Mint as STokenMint,
   Burn as STokenBurn,
   BorrowAllowanceDelegated as SBorrowAllowanceDelegated,
-} from '../../generated/templates/StableDebtToken/StableDebtToken';
+} from '../../../generated/templates/StableDebtToken/StableDebtToken';
 import {
   ATokenBalanceHistoryItem,
   VTokenBalanceHistoryItem,
@@ -21,7 +21,7 @@ import {
   Reserve,
   StableTokenDelegatedAllowance,
   VariableTokenDelegatedAllowance,
-} from '../../generated/schema';
+} from '../../../generated/schema';
 import {
   getOrInitAToken,
   getOrInitReserve,
@@ -32,11 +32,11 @@ import {
   getPriceOracleAsset,
   getOrInitPriceOracle,
   getOrInitReserveParamsHistoryItem,
-} from '../helpers/initializers';
-import { zeroBI } from '../utils/converters';
-import { calculateUtilizationRate } from '../helpers/reserve-logic';
+} from '../../helpers/initializers';
+import { zeroBI } from '../../utils/converters';
+import { calculateUtilizationRate } from '../../helpers/reserve-logic';
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
-import { rayDiv, rayMul } from '../helpers/math';
+import { rayDiv, rayMul } from '../../helpers/math';
 
 function saveUserReserveAHistory(
   userReserve: UserReserve,
