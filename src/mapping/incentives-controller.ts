@@ -1,9 +1,10 @@
-import { Address, log } from '@graphprotocol/graph-ts';
+import { Address, ethereum, log, BigInt } from '@graphprotocol/graph-ts';
 import {
   AssetConfigUpdated,
   AssetIndexUpdated,
   RewardsAccrued,
   RewardsClaimed,
+  RewardsClaimed1,
   UserIndexUpdated,
 } from '../../generated/templates/AaveIncentivesController/AaveIncentivesController';
 import {
@@ -70,11 +71,12 @@ export function handleRewardsAccrued(event: RewardsAccrued): void {
   incentivizedAction.save();
 }
 
-export function handleRewardsClaimed(event: RewardsClaimed): void {
-  let userAddress = event.params.user;
-  let amount = event.params.amount;
-  let incentivesController = event.address;
-
+function handleRewardsClaimedComon(
+  userAddress: Address,
+  incentivesController: Address,
+  amount: BigInt,
+  event: ethereum.Event
+): void {
   let user = getOrInitUser(userAddress);
   user.unclaimedRewards = user.unclaimedRewards.minus(amount);
   user.incentivesLastUpdated = event.block.timestamp.toI32();
@@ -85,6 +87,14 @@ export function handleRewardsClaimed(event: RewardsClaimed): void {
   claimIncentive.user = userAddress.toHexString();
   claimIncentive.amount = amount;
   claimIncentive.save();
+}
+
+export function handleRewardsClaimed(event: RewardsClaimed): void {
+  handleRewardsClaimedComon(event.params.user, event.address, event.params.amount, event);
+}
+
+export function handleRewardsClaimedClaimer(event: RewardsClaimed1): void {
+  handleRewardsClaimedComon(event.params.user, event.address, event.params.amount, event);
 }
 
 export function handleAssetIndexUpdated(event: AssetIndexUpdated): void {
