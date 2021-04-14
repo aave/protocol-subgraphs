@@ -1,28 +1,21 @@
-import { Bytes, Address, log, ethereum } from '@graphprotocol/graph-ts';
+import { Address, log, ethereum } from '@graphprotocol/graph-ts';
 
-import {
-  AssetSourceUpdated,
-  FallbackOracleUpdated,
-  AaveOracle,
-  WethSet,
-} from '../../generated/AaveOracle/AaveOracle';
-import { IExtendedPriceAggregator } from '../../generated/AaveOracle/IExtendedPriceAggregator';
-import { GenericOracleI as FallbackPriceOracle } from '../../generated/AaveOracle/GenericOracleI';
-import { AggregatorUpdated } from '../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
+import { AssetSourceUpdated, AaveOracle } from '../../../generated/AaveOracle/AaveOracle';
+import { IExtendedPriceAggregator } from '../../../generated/AaveOracle/IExtendedPriceAggregator';
+import { AggregatorUpdated } from '../../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
+
 import {
   BalancerPool,
   ChainlinkAggregator as ChainlinkAggregatorContract,
-  FallbackPriceOracle as FallbackPriceOracleContract,
   UniswapExchange,
-} from '../../generated/templates';
-import { convertToLowerCase, generateSymbol, namehash } from '../utils/converters';
+} from '../../../generated/templates';
+import { generateSymbol, namehash } from '../../utils/converters';
 import {
   getChainlinkAggregator,
   getOrInitPriceOracle,
   getPriceOracleAsset,
   getOrInitENS,
-  getOrInitReserve,
-} from '../helpers/initializers';
+} from '../../helpers/initializers';
 import {
   formatUsdEthChainlinkPrice,
   getPriceOracleAssetPlatform,
@@ -32,84 +25,12 @@ import {
   PRICE_ORACLE_ASSET_TYPE_SIMPLE,
   zeroAddress,
   zeroBI,
-} from '../utils/converters';
-import { MOCK_USD_ADDRESS, ZERO_ADDRESS } from '../utils/constants';
-import { genericPriceUpdate, usdEthPriceUpdate } from '../helpers/price-updates';
-import { PriceOracle, PriceOracleAsset, WETHReserve } from '../../generated/schema';
-import { IERC20Detailed } from '../../generated/templates/LendingPoolConfigurator/IERC20Detailed';
-import { EACAggregatorProxy } from '../../generated/AaveOracle/EACAggregatorProxy';
-
-export function handleWethSet(event: WethSet): void {
-  let wethAddress = event.params.weth;
-  let weth = WETHReserve.load('weth');
-  if (weth == null) {
-    weth = new WETHReserve('weth');
-  }
-  weth.address = wethAddress;
-  weth.name = 'WEthereum';
-  weth.symbol = 'WETH';
-  weth.decimals = 18;
-  weth.updatedTimestamp = event.block.timestamp.toI32();
-  weth.updatedBlockNumber = event.block.number;
-  weth.save();
-}
-
-export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void {
-  let priceOracle = getOrInitPriceOracle();
-
-  priceOracle.fallbackPriceOracle = event.params.fallbackOracle;
-  if (event.params.fallbackOracle.toHexString() != ZERO_ADDRESS) {
-    FallbackPriceOracleContract.create(event.params.fallbackOracle);
-
-    // update prices on assets which use fallback
-
-    priceOracle.tokensWithFallback.forEach(token => {
-      let priceOracleAsset = getPriceOracleAsset(token);
-      if (
-        priceOracleAsset.priceSource.equals(zeroAddress()) ||
-        priceOracleAsset.isFallbackRequired
-      ) {
-        let proxyPriceProvider = AaveOracle.bind(event.address);
-        let price = proxyPriceProvider.try_getAssetPrice(
-          Bytes.fromHexString(priceOracleAsset.id) as Address
-        );
-        if (!price.reverted) {
-          genericPriceUpdate(priceOracleAsset, price.value, event);
-        } else {
-          log.error(
-            'OracleAssetId: {} | ProxyPriceProvider: {} | FallbackOracle: {} | EventAddress: {}',
-            [
-              priceOracleAsset.id,
-              event.address.toHexString(),
-              event.params.fallbackOracle.toHexString(),
-              event.address.toHexString(),
-            ]
-          );
-        }
-      }
-    });
-
-    // update USDETH price
-    let fallbackOracle = FallbackPriceOracle.bind(event.params.fallbackOracle);
-    let ethUsdPrice = zeroBI();
-    // try method for dev networks
-    let ethUsdPriceCall = fallbackOracle.try_getEthUsdPrice();
-    if (ethUsdPriceCall.reverted) {
-      // try method for ropsten and mainnet
-      ethUsdPrice = formatUsdEthChainlinkPrice(
-        fallbackOracle.getAssetPrice(Address.fromString(MOCK_USD_ADDRESS))
-      );
-    } else {
-      ethUsdPrice = ethUsdPriceCall.value;
-    }
-    if (
-      priceOracle.usdPriceEthFallbackRequired ||
-      priceOracle.usdPriceEthMainSource.equals(zeroAddress())
-    ) {
-      usdEthPriceUpdate(priceOracle, ethUsdPrice, event);
-    }
-  }
-}
+} from '../../utils/converters';
+import { MOCK_USD_ADDRESS } from '../../utils/constants';
+import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
+import { PriceOracle, PriceOracleAsset } from '../../../generated/schema';
+import { EACAggregatorProxy } from '../../../generated/AaveOracle/EACAggregatorProxy';
+export { handleFallbackOracleUpdated, handleWethSet } from './proxy-price-provider';
 
 export function priceFeedUpdated(
   event: ethereum.Event,
@@ -254,37 +175,37 @@ export function priceFeedUpdated(
         ]);
       }
     }
+  }
 
-    if (sAssetAddress == MOCK_USD_ADDRESS) {
-      priceOracle.usdPriceEthFallbackRequired = priceOracleAsset.isFallbackRequired;
-      priceOracle.usdPriceEthMainSource = priceOracleAsset.priceSource;
-      usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(priceFromOracle), event);
-      // this is so we also save the assetOracle for usd chainlink
-      genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
-    } else {
-      // if chainlink was invalid before and valid now, remove from tokensWithFallback array
-      if (
-        !assetOracleAddress.equals(zeroAddress()) &&
-        priceOracle.tokensWithFallback.includes(sAssetAddress) &&
-        !priceOracleAsset.isFallbackRequired
-      ) {
-        priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-          token => token != assetAddress.toHexString()
-        );
-      }
-
-      if (
-        !priceOracle.tokensWithFallback.includes(sAssetAddress) &&
-        (assetOracleAddress.equals(zeroAddress()) || priceOracleAsset.isFallbackRequired)
-      ) {
-        let updatedTokensWithFallback = priceOracle.tokensWithFallback;
-        updatedTokensWithFallback.push(sAssetAddress);
-        priceOracle.tokensWithFallback = updatedTokensWithFallback;
-      }
-      priceOracle.save();
-
-      genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
+  if (sAssetAddress == MOCK_USD_ADDRESS) {
+    priceOracle.usdPriceEthFallbackRequired = priceOracleAsset.isFallbackRequired;
+    priceOracle.usdPriceEthMainSource = priceOracleAsset.priceSource;
+    usdEthPriceUpdate(priceOracle, formatUsdEthChainlinkPrice(priceFromOracle), event);
+    // this is so we also save the assetOracle for usd chainlink
+    genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
+  } else {
+    // if chainlink was invalid before and valid now, remove from tokensWithFallback array
+    if (
+      !assetOracleAddress.equals(zeroAddress()) &&
+      priceOracle.tokensWithFallback.includes(sAssetAddress) &&
+      !priceOracleAsset.isFallbackRequired
+    ) {
+      priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
+        token => token != assetAddress.toHexString()
+      );
     }
+
+    if (
+      !priceOracle.tokensWithFallback.includes(sAssetAddress) &&
+      (assetOracleAddress.equals(zeroAddress()) || priceOracleAsset.isFallbackRequired)
+    ) {
+      let updatedTokensWithFallback = priceOracle.tokensWithFallback;
+      updatedTokensWithFallback.push(sAssetAddress);
+      priceOracle.tokensWithFallback = updatedTokensWithFallback;
+    }
+    priceOracle.save();
+
+    genericPriceUpdate(priceOracleAsset, priceFromOracle, event);
   }
 }
 

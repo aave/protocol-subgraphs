@@ -1,5 +1,9 @@
 import { BigInt } from '@graphprotocol/graph-ts';
-import { BORROW_MODE_STABLE, BORROW_MODE_VARIABLE, getBorrowRateMode } from '../utils/converters';
+import {
+  BORROW_MODE_STABLE,
+  BORROW_MODE_VARIABLE,
+  getBorrowRateMode,
+} from '../../utils/converters';
 import {
   Borrow,
   Deposit,
@@ -14,16 +18,14 @@ import {
   ReserveUsedAsCollateralEnabled,
   Swap,
   ReserveDataUpdated,
-} from '../../generated/templates/LendingPool/LendingPool';
-import { Swapped as SwappedRepay } from '../../generated/UniswapRepayAdapter/UniswapRepayAdapter';
-import { Swapped as SwappedLiquidity } from '../../generated/UniswapLiquiditySwapAdapter/UniswapLiquiditySwapAdapter';
+} from '../../../generated/templates/LendingPool/LendingPool';
 import {
   getOrInitReferrer,
   getOrInitReserve,
   getOrInitUser,
   getOrInitUserReserve,
   getPoolByContract,
-} from '../helpers/initializers';
+} from '../../helpers/initializers';
 import {
   Borrow as BorrowAction,
   Deposit as DepositAction,
@@ -34,11 +36,10 @@ import {
   RedeemUnderlying as RedeemUnderlyingAction,
   Repay as RepayAction,
   Swap as SwapAction,
-  SwapHistory,
   UsageAsCollateral as UsageAsCollateralAction,
-} from '../../generated/schema';
-import { EventTypeRef, getHistoryId } from '../utils/id-generation';
-import { calculateGrowth } from '../helpers/math';
+} from '../../../generated/schema';
+import { EventTypeRef, getHistoryId } from '../../utils/id-generation';
+import { calculateGrowth } from '../../helpers/math';
 
 export function handleDeposit(event: Deposit): void {
   let poolReserve = getOrInitReserve(event.params.reserve, event);
@@ -308,28 +309,4 @@ export function handleReserveDataUpdated(event: ReserveDataUpdated): void {
   reserve.lastUpdateTimestamp = event.block.timestamp.toI32();
 
   reserve.save();
-}
-
-export function handleSwappedRepay(event: SwappedRepay): void {
-  let swap = new SwapHistory(getHistoryId(event, EventTypeRef.SwapAdapter));
-
-  swap.fromAsset = event.params.fromAsset.toHexString();
-  swap.toAsset = event.params.toAsset.toHexString();
-  swap.fromAmount = event.params.fromAmount;
-  swap.receivedAmount = event.params.receivedAmount;
-  swap.swapType = 'REPAY';
-
-  swap.save();
-}
-
-export function handleSwappedLiquidity(event: SwappedLiquidity): void {
-  let swap = new SwapHistory(getHistoryId(event, EventTypeRef.SwapAdapter));
-
-  swap.fromAsset = event.params.fromAsset.toHexString();
-  swap.toAsset = event.params.toAsset.toHexString();
-  swap.fromAmount = event.params.fromAmount;
-  swap.receivedAmount = event.params.receivedAmount;
-  swap.swapType = 'LIQUIDITY';
-
-  swap.save();
 }

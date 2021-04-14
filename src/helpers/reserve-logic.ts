@@ -30,9 +30,7 @@ export function getReserveNormalizedVariableDebt(reserve: Reserve, event: ethere
     timestamp,
     event.block.timestamp
   );
-  let result = rayMul(cumulatedInterest, reserve.variableBorrowIndex);
-
-  return result;
+  return rayMul(cumulatedInterest, reserve.variableBorrowIndex);
 }
 
 export function calculateUtilizationRate(reserve: Reserve): BigDecimal {
