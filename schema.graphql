@@ -75,6 +75,17 @@ type UsdEthPriceHistoryItem @entity {
   timestamp: Int!
 }
 
+type ChainlinkENS @entity {
+  "id is the node hash"
+  id: ID!
+  "address of the aggregator"
+  aggregatorAddress: Bytes!
+  "token address represented with this aggregator"
+  underlyingAddress: Bytes!
+  "symbol of the token represented on the aggregator"
+  symbol: String!
+}
+
 type ChainlinkAggregator @entity {
   # aggregator address
   id: ID!
@@ -119,6 +130,7 @@ type PriceOracle @entity {
   usdPriceEthHistory: [UsdEthPriceHistoryItem!]! @derivedFrom(field: "oracle")
   tokensWithFallback: [PriceOracleAsset!]!
   lastUpdateTimestamp: Int!
+  version: Int!
 }
 
 type SToken @entity {
@@ -406,6 +418,49 @@ type ReserveParamsHistoryItem @entity {
   # lifetimeVariableDebtFeeCollected: BigInt!
 }
 
+type IncentivesController @entity {
+  """
+  address of the incentives controller
+  """
+  id: ID!
+  rewardToken: Bytes!
+  rewardTokenDecimals: Int!
+  rewardTokenSymbol: String!
+  precision: Int!
+
+  incentivizedActions: [IncentivizedAction!]! @derivedFrom(field: "incentivesController")
+  claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "incentivesController")
+}
+
+type IncentivizedAction @entity {
+  """
+  txHash
+  """
+  id: ID!
+  incentivesController: IncentivesController!
+  user: User!
+  amount: BigInt!
+}
+
+type ClaimIncentiveCall @entity {
+  """
+  txHash
+  """
+  id: ID!
+  incentivesController: IncentivesController!
+  user: User!
+  amount: BigInt!
+}
+
+type MapAssetPool @entity {
+  """
+  address of a /s /v token
+  """
+  id: ID!
+  pool: String!
+  underlyingAsset: Bytes!
+}
+
 type Reserve @entity {
   """
   Reserve address
@@ -455,6 +510,17 @@ type Reserve @entity {
   reserveFactor: BigInt! #default 0
   lastUpdateTimestamp: Int!
   stableDebtLastUpdateTimestamp: Int!
+
+  # incentives
+  aEmissionPerSecond: BigInt!
+  vEmissionPerSecond: BigInt!
+  sEmissionPerSecond: BigInt!
+  aTokenIncentivesIndex: BigInt!
+  vTokenIncentivesIndex: BigInt!
+  sTokenIncentivesIndex: BigInt!
+  aIncentivesLastUpdateTimestamp: Int!
+  vIncentivesLastUpdateTimestamp: Int!
+  sIncentivesLastUpdateTimestamp: Int!
 
   lifetimeLiquidity: BigInt! # default: 0
   lifetimePrincipalStableDebt: BigInt! # default: 0
@@ -594,6 +660,13 @@ type UserReserve @entity {
   stableBorrowLastUpdateTimestamp: Int!
   variableBorrowIndex: BigInt!
 
+  # incentives
+  aTokenincentivesUserIndex: BigInt!
+  vTokenincentivesUserIndex: BigInt!
+  sTokenincentivesUserIndex: BigInt!
+  aIncentivesLastUpdateTimestamp: Int!
+  vIncentivesLastUpdateTimestamp: Int!
+  sIncentivesLastUpdateTimestamp: Int!
   """
   Amount in currency units included as fee
   """
@@ -625,6 +698,12 @@ type User @entity {
   """
   id: ID!
   borrowedReservesCount: Int!
+
+  #incentives
+  unclaimedRewards: BigInt!
+  lifetimeRewards: BigInt!
+  incentivesLastUpdated: Int!
+
   reserves: [UserReserve!]! @derivedFrom(field: "user")
   depositHistory: [Deposit!]! @derivedFrom(field: "user")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "user")
@@ -635,6 +714,8 @@ type User @entity {
   repayHistory: [Repay!]! @derivedFrom(field: "user")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "user")
   originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "user")
+  incentivizedActions: [IncentivizedAction!]! @derivedFrom(field: "user")
+  claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "user")
 }
 
 type SwapHistory @entity {
