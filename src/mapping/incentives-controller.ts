@@ -71,7 +71,7 @@ export function handleRewardsAccrued(event: RewardsAccrued): void {
   incentivizedAction.save();
 }
 
-function handleRewardsClaimedComon(
+function handleRewardsClaimedCommon(
   userAddress: Address,
   incentivesController: Address,
   amount: BigInt,
@@ -90,11 +90,11 @@ function handleRewardsClaimedComon(
 }
 
 export function handleRewardsClaimed(event: RewardsClaimed): void {
-  handleRewardsClaimedComon(event.params.user, event.address, event.params.amount, event);
+  handleRewardsClaimedCommon(event.params.user, event.address, event.params.amount, event);
 }
 
 export function handleRewardsClaimedClaimer(event: RewardsClaimed1): void {
-  handleRewardsClaimedComon(event.params.user, event.address, event.params.amount, event);
+  handleRewardsClaimedCommon(event.params.user, event.address, event.params.amount, event);
 }
 
 export function handleAssetIndexUpdated(event: AssetIndexUpdated): void {
