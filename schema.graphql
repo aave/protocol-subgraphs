@@ -405,6 +405,11 @@ type ReserveParamsHistoryItem @entity {
   lifetimePrincipalStableDebt: BigInt!
   lifetimeScaledVariableDebt: BigInt!
   lifetimeCurrentVariableDebt: BigInt!
+  lifetimeLiquidity: BigInt! # default: 0
+  lifetimeRepayments: BigInt! # default: 0
+  lifetimeWithdrawals: BigInt! # default: 0
+  lifetimeBorrows: BigInt! # default: 0
+  lifetimeLiquidated: BigInt! # default: 0
   lifetimeFlashLoans: BigInt!
   lifetimeFlashLoanPremium: BigInt!
   lifetimeReserveFactorAccrued: BigInt!

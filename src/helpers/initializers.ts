@@ -331,6 +331,11 @@ export function getOrInitReserveParamsHistoryItem(
     reserveParamsHistoryItem.lifetimePrincipalStableDebt = zeroBI();
     reserveParamsHistoryItem.lifetimeScaledVariableDebt = zeroBI();
     reserveParamsHistoryItem.lifetimeCurrentVariableDebt = zeroBI();
+    reserveParamsHistoryItem.lifetimeLiquidity = zeroBI();
+    reserveParamsHistoryItem.lifetimeBorrows = zeroBI();
+    reserveParamsHistoryItem.lifetimeRepayments = zeroBI();
+    reserveParamsHistoryItem.lifetimeWithdrawals = zeroBI();
+    reserveParamsHistoryItem.lifetimeLiquidated = zeroBI();
     reserveParamsHistoryItem.lifetimeFlashLoans = zeroBI();
     reserveParamsHistoryItem.lifetimeFlashLoanPremium = zeroBI();
     reserveParamsHistoryItem.lifetimeReserveFactorAccrued = zeroBI();
