@@ -178,6 +178,6 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
 export function handleDistributionEndUpdated(event: DistributionEndUpdated): void {
   let iController = IncentivesController.load(event.address.toHexString());
 
-  iController.emissionEndTimestamp = event.params.ditributionEnd;
+  iController.emissionEndTimestamp = event.params.ditributionEnd.toI32();
   iController.save();
 }

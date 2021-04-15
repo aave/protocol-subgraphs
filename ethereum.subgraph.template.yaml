@@ -312,6 +312,8 @@ templates:
           handler: handleATokenTransfer
         - event: Mint(indexed address,uint256,uint256)
           handler: handleATokenMint
+        - event: Initialized(indexed address,indexed address,address,address,uint8,string,string,bytes)
+          handler: handleATokenInitialized
       file: src/mapping/tokenization/initialization.ts
   - kind: ethereum/contract
     name: StableDebtToken
@@ -341,8 +343,6 @@ templates:
           handler: handleStableTokenMint
         - event: BorrowAllowanceDelegated(indexed address,indexed address,address,uint256)
           handler: handleStableTokenBorrowAllowanceDelegated
-        - event: Initialized(indexed address,indexed address,address,address,uint8,string,string,bytes)
-          handler: handleATokenInitialized
         - event: Initialized(indexed address,indexed address,address,uint8,string,string,bytes)
           handler: handleSTokenInitialized
       file: src/mapping/tokenization/initialization.ts
