@@ -4,18 +4,16 @@ import {
   AssetIndexUpdated,
   RewardsAccrued,
   RewardsClaimed,
-  RewardsClaimed1,
   UserIndexUpdated,
-} from '../../generated/templates/AaveIncentivesController/AaveIncentivesController';
+} from '../../../generated/templates/AaveIncentivesController/AaveIncentivesController';
 import {
   ClaimIncentiveCall,
   IncentivizedAction,
   MapAssetPool,
   Reserve,
-  UserReserve,
-} from '../../generated/schema';
-import { getOrInitUser, getOrInitUserReserveWithIds } from '../helpers/initializers';
-import { getHistoryEntityId, getReserveId, getUserReserveId } from '../utils/id-generation';
+} from '../../../generated/schema';
+import { getOrInitUser, getOrInitUserReserveWithIds } from '../../helpers/initializers';
+import { getHistoryEntityId, getReserveId } from '../../utils/id-generation';
 
 export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let emissionsPerSecond = event.params.emission;
@@ -71,7 +69,7 @@ export function handleRewardsAccrued(event: RewardsAccrued): void {
   incentivizedAction.save();
 }
 
-function handleRewardsClaimedCommon(
+export function handleRewardsClaimedCommon(
   userAddress: Address,
   incentivesController: Address,
   amount: BigInt,
@@ -89,11 +87,12 @@ function handleRewardsClaimedCommon(
   claimIncentive.save();
 }
 
+// We can use this event with ethereum template because it will be the only event with that name for ethereum
+// - for ethereum this event has claimer field
+// - for matic this event does not have the claimer field. the event with claimer field is on ./matic
+// if at some point we want to operate with the claimer field, we will need to do it on the ./matic and create a ./ethereum matic
+// to still have the original event without claimer
 export function handleRewardsClaimed(event: RewardsClaimed): void {
-  handleRewardsClaimedCommon(event.params.user, event.address, event.params.amount, event);
-}
-
-export function handleRewardsClaimedClaimer(event: RewardsClaimed1): void {
   handleRewardsClaimedCommon(event.params.user, event.address, event.params.amount, event);
 }
 

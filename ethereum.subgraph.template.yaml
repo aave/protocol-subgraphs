@@ -228,7 +228,7 @@ templates:
           handler: handleAssetIndexUpdated
         - event: UserIndexUpdated(indexed address,indexed address,uint256)
           handler: handleUserIndexUpdated
-      file: src/mapping/incentives-controller.ts
+      file: src/mapping/incentives-controller/incentives-controller.ts
   # --------------------------------------
   #      ORACLES / PRICE PROVIDERS
   # --------------------------------------
@@ -310,7 +310,7 @@ templates:
           handler: handleATokenTransfer
         - event: Mint(indexed address,uint256,uint256)
           handler: handleATokenMint
-      file: src/mapping/tokenization/tokenization.ts
+      file: src/mapping/tokenization/initialization.ts
   - kind: ethereum/contract
     name: StableDebtToken
     network: {{network}}
@@ -343,7 +343,7 @@ templates:
           handler: handleATokenInitialized
         - event: Initialized(indexed address,indexed address,address,uint8,string,string,bytes)
           handler: handleSTokenInitialized
-      file: src/mapping/tokenization/tokenization.ts
+      file: src/mapping/tokenization/initialization.ts
   - kind: ethereum/contract
     name: VariableDebtToken
     network: {{network}}
@@ -374,7 +374,7 @@ templates:
           handler: handleVariableTokenBorrowAllowanceDelegated
         - event: Initialized(indexed address,indexed address,address,uint8,string,string,bytes)
           handler: handleVTokenInitialized
-      file: src/mapping/tokenization/tokenization.ts
+      file: src/mapping/tokenization/initialization.ts
 
   # --------------------------------------
   #       CONFIGURATIONS

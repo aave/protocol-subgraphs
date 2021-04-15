@@ -7,9 +7,8 @@ import {
   ContractToPoolMapping,
   IncentivesController,
   MapAssetPool,
-  Pool,
 } from '../../../generated/schema';
-import { Address, Bytes, log } from '@graphprotocol/graph-ts';
+import { Address } from '@graphprotocol/graph-ts';
 import { IERC20Detailed } from '../../../generated/templates/AToken/IERC20Detailed';
 export {
   handleATokenBurn,
