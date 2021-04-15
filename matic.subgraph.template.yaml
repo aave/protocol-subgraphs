@@ -131,6 +131,8 @@ templates:
           handler: handleAssetIndexUpdated
         - event: UserIndexUpdated(indexed address,indexed address,uint256)
           handler: handleUserIndexUpdated
+        - event: DistributionEndUpdated(uint256)
+          handler: handleDistributionEndUpdated
       file: src/mapping/incentives-controller/matic.ts
   # --------------------------------------
   #      ORACLES / PRICE PROVIDERS

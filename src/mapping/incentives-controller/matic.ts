@@ -6,6 +6,7 @@ export {
   handleAssetIndexUpdated,
   handleUserIndexUpdated,
   handleRewardsClaimed,
+  handleDistributionEndUpdated,
 } from './incentives-controller';
 
 // This event has the claimer field.

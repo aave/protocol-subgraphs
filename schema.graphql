@@ -427,6 +427,7 @@ type IncentivesController @entity {
   rewardTokenDecimals: Int!
   rewardTokenSymbol: String!
   precision: Int!
+  emissionEndTimestamp: Int!
 
   incentivizedActions: [IncentivizedAction!]! @derivedFrom(field: "incentivesController")
   claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "incentivesController")

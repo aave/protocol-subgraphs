@@ -2,12 +2,14 @@ import { Address, ethereum, log, BigInt } from '@graphprotocol/graph-ts';
 import {
   AssetConfigUpdated,
   AssetIndexUpdated,
+  DistributionEndUpdated,
   RewardsAccrued,
   RewardsClaimed,
   UserIndexUpdated,
 } from '../../../generated/templates/AaveIncentivesController/AaveIncentivesController';
 import {
   ClaimIncentiveCall,
+  IncentivesController,
   IncentivizedAction,
   MapAssetPool,
   Reserve,
@@ -171,4 +173,11 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
       [user.toHexString(), pool, underlyingAsset.toHexString(), asset.toHexString()]
     );
   }
+}
+
+export function handleDistributionEndUpdated(event: DistributionEndUpdated): void {
+  let iController = IncentivesController.load(event.address.toHexString());
+
+  iController.emissionEndTimestamp = event.params.ditributionEnd;
+  iController.save();
 }
