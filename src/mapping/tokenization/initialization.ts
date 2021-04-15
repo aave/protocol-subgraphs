@@ -8,8 +8,9 @@ import {
   IncentivesController,
   MapAssetPool,
 } from '../../../generated/schema';
-import { Address } from '@graphprotocol/graph-ts';
+import { Address, log } from '@graphprotocol/graph-ts';
 import { IERC20Detailed } from '../../../generated/templates/AToken/IERC20Detailed';
+import { zeroAddress } from '../../utils/converters';
 export {
   handleATokenBurn,
   handleATokenMint,
@@ -28,6 +29,14 @@ function createIncentivesController(
   underlyingAsset: Address,
   pool: Address
 ): void {
+  if (incentivesController == zeroAddress()) {
+    log.warning('Incentives controller is 0x0 for asset: {} | underlyingasset: {} | pool: {}', [
+      asset.toHexString(),
+      underlyingAsset.toHexString(),
+      pool.toHexString(),
+    ]);
+    return;
+  }
   let iController = IncentivesController.load(incentivesController.toHexString());
   if (!iController) {
     iController = new IncentivesController(incentivesController.toHexString());
