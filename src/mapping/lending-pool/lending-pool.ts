@@ -246,6 +246,7 @@ export function handleFlashLoan(event: FlashLoan): void {
 export function handleReserveUsedAsCollateralEnabled(event: ReserveUsedAsCollateralEnabled): void {
   let poolReserve = getOrInitReserve(event.params.reserve, event);
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
+  let timestamp = event.block.timestamp.toI32();
 
   let usageAsCollateral = new UsageAsCollateralAction(
     getHistoryId(event, EventTypeRef.UsageAsCollateral)
@@ -256,9 +257,10 @@ export function handleReserveUsedAsCollateralEnabled(event: ReserveUsedAsCollate
   usageAsCollateral.user = userReserve.user;
   usageAsCollateral.userReserve = userReserve.id;
   usageAsCollateral.reserve = poolReserve.id;
-  usageAsCollateral.timestamp = event.block.timestamp.toI32();
+  usageAsCollateral.timestamp = timestamp;
   usageAsCollateral.save();
 
+  userReserve.lastUpdateTimestamp = timestamp;
   userReserve.usageAsCollateralEnabledOnUser = true;
   userReserve.save();
 }
@@ -268,6 +270,7 @@ export function handleReserveUsedAsCollateralDisabled(
 ): void {
   let poolReserve = getOrInitReserve(event.params.reserve, event);
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
+  let timestamp = event.block.timestamp.toI32();
 
   let usageAsCollateral = new UsageAsCollateralAction(
     getHistoryId(event, EventTypeRef.UsageAsCollateral)
@@ -278,9 +281,10 @@ export function handleReserveUsedAsCollateralDisabled(
   usageAsCollateral.user = userReserve.user;
   usageAsCollateral.userReserve = userReserve.id;
   usageAsCollateral.reserve = poolReserve.id;
-  usageAsCollateral.timestamp = event.block.timestamp.toI32();
+  usageAsCollateral.timestamp = timestamp;
   usageAsCollateral.save();
 
+  userReserve.lastUpdateTimestamp = timestamp;
   userReserve.usageAsCollateralEnabledOnUser = false;
   userReserve.save();
 }
