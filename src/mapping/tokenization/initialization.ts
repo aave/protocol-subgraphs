@@ -7,10 +7,10 @@ import {
   ContractToPoolMapping,
   IncentivesController,
   MapAssetPool,
-  Pool,
 } from '../../../generated/schema';
-import { Address, Bytes, log } from '@graphprotocol/graph-ts';
+import { Address, log } from '@graphprotocol/graph-ts';
 import { IERC20Detailed } from '../../../generated/templates/AToken/IERC20Detailed';
+import { zeroAddress } from '../../utils/converters';
 export {
   handleATokenBurn,
   handleATokenMint,
@@ -29,6 +29,14 @@ function createIncentivesController(
   underlyingAsset: Address,
   pool: Address
 ): void {
+  if (incentivesController == zeroAddress()) {
+    log.warning('Incentives controller is 0x0 for asset: {} | underlyingasset: {} | pool: {}', [
+      asset.toHexString(),
+      underlyingAsset.toHexString(),
+      pool.toHexString(),
+    ]);
+    return;
+  }
   let iController = IncentivesController.load(incentivesController.toHexString());
   if (!iController) {
     iController = new IncentivesController(incentivesController.toHexString());
@@ -37,6 +45,7 @@ function createIncentivesController(
     let AaveIncentivesControllerContract = AaveIncentivesControllerC.bind(incentivesController);
     let rewardToken = AaveIncentivesControllerContract.REWARD_TOKEN();
     let precision = AaveIncentivesControllerContract.PRECISION();
+    let emissionEndTimestamp = AaveIncentivesControllerContract.DISTRIBUTION_END();
 
     let IERC20DetailedContract = IERC20Detailed.bind(rewardToken);
     let rewardTokenDecimals = IERC20DetailedContract.decimals();
@@ -46,6 +55,7 @@ function createIncentivesController(
     iController.rewardTokenDecimals = rewardTokenDecimals;
     iController.rewardTokenSymbol = rewardTokenSymbol;
     iController.precision = precision;
+    iController.emissionEndTimestamp = emissionEndTimestamp.toI32();
 
     iController.save();
 
