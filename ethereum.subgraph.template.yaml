@@ -328,10 +328,8 @@ templates:
         - StableDebtToken
         - UserReserve
       abis:
-        # - name: StableDebtToken
-        #   file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/StableDebtToken.sol/StableDebtToken.json
         - name: StableDebtToken
-          file: ./constant-abis/StableDebtToken.json
+          file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/StableDebtToken.sol/StableDebtToken.json
         - name: IERC20Detailed
           file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
         - name: AaveIncentivesController
@@ -359,10 +357,8 @@ templates:
         - StableDebtToken
         - UserReserve
       abis:
-        # - name: VariableDebtToken
-        #   file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/VariableDebtToken.sol/VariableDebtToken.json
         - name: VariableDebtToken
-          file: ./constant-abis/VariableDebtToken.json
+          file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/VariableDebtToken.sol/VariableDebtToken.json
         - name: IERC20Detailed
           file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
         - name: AaveIncentivesController
