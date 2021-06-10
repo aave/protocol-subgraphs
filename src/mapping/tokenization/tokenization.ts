@@ -19,8 +19,7 @@ import {
   STokenBalanceHistoryItem,
   UserReserve,
   Reserve,
-  StableTokenDelegatedAllowance,
-  VariableTokenDelegatedAllowance,
+  CreditDelegationAllowance,
 } from '../../../generated/schema';
 import {
   getOrInitAToken,
@@ -470,11 +469,12 @@ export function handleStableTokenBorrowAllowanceDelegated(event: SBorrowAllowanc
 
   let delegatedAllowanceId =
     'stable' + fromUser.toHexString() + toUser.toHexString() + asset.toHexString();
-  let delegatedAllowance = StableTokenDelegatedAllowance.load(delegatedAllowanceId);
+  let delegatedAllowance = CreditDelegationAllowance.load(delegatedAllowanceId);
   if (delegatedAllowance == null) {
-    delegatedAllowance = new StableTokenDelegatedAllowance(delegatedAllowanceId);
+    delegatedAllowance = new CreditDelegationAllowance(delegatedAllowanceId);
     delegatedAllowance.fromUser = fromUser.toHexString();
     delegatedAllowance.toUser = toUser.toHexString();
+    delegatedAllowance.rateMode = 'Stable';
     delegatedAllowance.userReserve = userReserve.id;
   }
   delegatedAllowance.amountAllowed = amount;
@@ -493,11 +493,12 @@ export function handleVariableTokenBorrowAllowanceDelegated(
 
   let delegatedAllowanceId =
     'variable' + fromUser.toHexString() + toUser.toHexString() + asset.toHexString();
-  let delegatedAllowance = VariableTokenDelegatedAllowance.load(delegatedAllowanceId);
+  let delegatedAllowance = CreditDelegationAllowance.load(delegatedAllowanceId);
   if (delegatedAllowance == null) {
-    delegatedAllowance = new VariableTokenDelegatedAllowance(delegatedAllowanceId);
+    delegatedAllowance = new CreditDelegationAllowance(delegatedAllowanceId);
     delegatedAllowance.fromUser = fromUser.toHexString();
     delegatedAllowance.toUser = toUser.toHexString();
+    delegatedAllowance.rateMode = 'Variable';
     delegatedAllowance.userReserve = userReserve.id;
   }
   delegatedAllowance.amountAllowed = amount;

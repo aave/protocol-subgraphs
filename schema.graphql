@@ -617,22 +617,12 @@ type STokenBalanceHistoryItem @entity {
 #  timestamp: Int!
 #}
 
-type StableTokenDelegatedAllowance @entity {
+type CreditDelegationAllowance @entity {
   """
-  stable + fromuser address + touser address+ reserve address
-  """
-  id: ID!
-  fromUser: User!
-  toUser: User!
-  amountAllowed: BigInt!
-  userReserve: UserReserve!
-}
-
-type VariableTokenDelegatedAllowance @entity {
-  """
-  variable + fromuser address + touser address+ reserve address
+  rateMode + fromuser address + touser address+ reserve address
   """
   id: ID!
+  rateMode: String!
   fromUser: User!
   toUser: User!
   amountAllowed: BigInt!
@@ -672,10 +662,7 @@ type UserReserve @entity {
   Amount in currency units included as fee
   """
   lastUpdateTimestamp: Int!
-  stableTokenDelegatedAllowances: [StableTokenDelegatedAllowance!]!
-    @derivedFrom(field: "userReserve")
-  variableTokenDelegatedAllowances: [VariableTokenDelegatedAllowance!]!
-    @derivedFrom(field: "userReserve")
+  creditDelegationAllowances: [CreditDelegationAllowance!]! @derivedFrom(field: "userReserve")
   aTokenBalanceHistory: [ATokenBalanceHistoryItem!]! @derivedFrom(field: "userReserve")
   vTokenBalanceHistory: [VTokenBalanceHistoryItem!]! @derivedFrom(field: "userReserve")
   sTokenBalanceHistory: [STokenBalanceHistoryItem!]! @derivedFrom(field: "userReserve")
