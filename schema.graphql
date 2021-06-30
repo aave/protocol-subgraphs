@@ -616,6 +616,20 @@ type STokenBalanceHistoryItem @entity {
 #  #originationFee: BigInt!
 #  timestamp: Int!
 #}
+type CreditDelegationHistoryItem @entity {
+  """
+  delegationId + txHash
+  """
+  id: ID!
+  rateMode: String!
+  fromUser: User!
+  toUser: User!
+  amountAllowed: BigInt!
+  userReserve: UserReserve!
+  timestamp: Int!
+  txHash: String!
+  allowance: CreditDelegationAllowance!
+}
 
 type CreditDelegationAllowance @entity {
   """
@@ -627,6 +641,9 @@ type CreditDelegationAllowance @entity {
   toUser: User!
   amountAllowed: BigInt!
   userReserve: UserReserve!
+  timestamp: Int!
+  txHash: String!
+  history: [CreditDelegationHistoryItem!]!
 }
 
 type UserReserve @entity {

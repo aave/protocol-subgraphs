@@ -15,6 +15,7 @@ import {
   ContractToPoolMapping,
   Protocol,
   ChainlinkENS,
+  CreditDelegationAllowance,
 } from '../../generated/schema';
 import {
   PRICE_ORACLE_ASSET_PLATFORM_SIMPLE,
@@ -387,4 +388,22 @@ export function createMapContractToPool(_contractAddress: Address, pool: string)
   contractToPoolMapping = new ContractToPoolMapping(contractAddress);
   contractToPoolMapping.pool = pool;
   contractToPoolMapping.save();
+}
+
+export function getOrInitCreditDelegation(
+  delegatedAllowanceId: string,
+  fromUser: User,
+  toUser: User,
+  rateMode: string,
+  userReserve: UserReserve
+): CreditDelegationAllowance {
+  let delegatedAllowance = CreditDelegationAllowance.load(delegatedAllowanceId);
+  if (delegatedAllowance == null) {
+    delegatedAllowance = new CreditDelegationAllowance(delegatedAllowanceId);
+    delegatedAllowance.fromUser = fromUser.id;
+    delegatedAllowance.toUser = toUser.id;
+    delegatedAllowance.rateMode = rateMode;
+    delegatedAllowance.userReserve = userReserve.id;
+  }
+  return delegatedAllowance as CreditDelegationAllowance;
 }
