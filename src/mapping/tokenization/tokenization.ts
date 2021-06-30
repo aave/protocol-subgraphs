@@ -173,8 +173,11 @@ function tokenMint(event: ethereum.Event, from: Address, value: BigInt, index: B
   let aToken = getOrInitAToken(event.address);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress as Address, event);
   poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(value);
-  // Check if we are minting to treasury
-  if (from.toHexString() != '0x464c71f6c2f760dda6093dcb91c24c39e5d6e18c') {
+  // Check if we are minting to treasury for mainnet and polygon
+  if (
+    from.toHexString() != '0x464c71f6c2f760dda6093dcb91c24c39e5d6e18c' &&
+    from.toHexString() != '0x7734280A4337F37Fbf4651073Db7c28C80B339e9'
+  ) {
     let userReserve = getOrInitUserReserve(from, aToken.underlyingAssetAddress as Address, event);
     let calculatedAmount = rayDiv(value, index);
 
