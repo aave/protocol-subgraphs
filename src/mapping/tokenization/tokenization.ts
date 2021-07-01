@@ -471,14 +471,11 @@ function saveCreditDelegationHistory(
   let historyItem = new CreditDelegationHistoryItem(
     delegation.id + event.transaction.hash.toHexString()
   );
-  historyItem.rateMode = delegation.rateMode;
-  historyItem.toUser = delegation.toUser;
-  historyItem.fromUser = delegation.fromUser;
   historyItem.amountAllowed = delegation.amountAllowed;
   historyItem.userReserve = delegation.userReserve;
   historyItem.timestamp = delegation.timestamp;
   historyItem.txHash = event.transaction.hash.toHexString();
-  historyItem.allowance = delegation.id;
+  historyItem.creditDelegationAllowance = delegation.id;
   historyItem.save();
 }
 
@@ -503,11 +500,11 @@ export function handleStableTokenBorrowAllowanceDelegated(event: SBorrowAllowanc
   delegatedAllowance.timestamp = event.block.timestamp.toI32();
   delegatedAllowance.txHash = event.transaction.hash.toHexString();
   delegatedAllowance.amountAllowed = amount;
-  saveCreditDelegationHistory(delegatedAllowance, event);
   userReserve.save();
   fromUser.save();
   toUser.save();
   delegatedAllowance.save();
+  saveCreditDelegationHistory(delegatedAllowance, event);
 }
 
 export function handleVariableTokenBorrowAllowanceDelegated(
@@ -533,9 +530,9 @@ export function handleVariableTokenBorrowAllowanceDelegated(
   delegatedAllowance.timestamp = event.block.timestamp.toI32();
   delegatedAllowance.txHash = event.transaction.hash.toHexString();
   delegatedAllowance.amountAllowed = amount;
-  saveCreditDelegationHistory(delegatedAllowance, event);
   userReserve.save();
   fromUser.save();
   toUser.save();
   delegatedAllowance.save();
+  saveCreditDelegationHistory(delegatedAllowance, event);
 }
