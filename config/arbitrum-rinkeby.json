@@ -1,0 +1,9 @@
+{
+  "network": "arbitrum-rinkeby",
+  "AaveOracleAddress": "0xbdf16840DDA7DadB502D5008943202F747a1136F",
+  "AaveOracleStartBlock": 1008454,
+  "LendingPoolAddressesProviderRegistryAddress": "0x00324F45D5B543A1dEb0f9F8a41809217eCcDFae",
+  "LendingPoolAddressesProviderRegistryStartBlock": 1007911,
+  "ChainlinkSourcesRegistryAddress": "0xFF6Ddc64fcf07675727d4A26EFABC17b015040f0",
+  "ChainlinkSourcesRegistryStartBlock": 1052720
+}
