@@ -1,0 +1,9 @@
+{
+  "network": "avalanche",
+  "AaveOracleAddress": "0xd2FCB92506cE32be6340720c514f82593Ff3471e",
+  "AaveOracleStartBlock": ,
+  "LendingPoolAddressesProviderRegistryAddress": "0x06f311395BA08fFb9e5b31B666F318E417b0FEB0",
+  "LendingPoolAddressesProviderRegistryStartBlock": ,
+  "ChainlinkSourcesRegistryAddress": "",
+  "ChainlinkSourcesRegistryStartBlock": 
+}
