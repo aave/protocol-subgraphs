@@ -7,7 +7,7 @@
     "update-abi-addresses": "npm run update-address && npm run prepare:abi",
     "prepare:all": "npm run prepare:contracts && npm run prepare:subgraph",
     "prepare:contracts": "rm -rf externals && npm run submodule:get && npm run submodule:compile-contracts",
-    "prepare:subgraph": "mustache ./config/${NETWORK:-dev}.json ${BLOCKCHAIN:-ethereum}.subgraph.template.yaml > subgraph.yaml && npm run subgraph:codegen",
+    "prepare:subgraph": "mustache ./config/${NETWORK:-dev}.json ${BLOCKCHAIN:-ethereum}.subgraph.template.yaml > subgraph.yaml && rm -rf generated && npm run subgraph:codegen",
     "prepare:contracts:local": "npm run submodule:get && npm run deploy-contracts && npm run update-address",
     "subgraph:codegen": "graph codegen --output-dir ./generated",
     "subgraph:build": "graph build",

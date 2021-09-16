@@ -34,6 +34,7 @@ export {
   updateInterestRateStrategy,
 } from './lending-pool-configurator';
 import { saveReserve, updateInterestRateStrategy } from './lending-pool-configurator';
+import { Address, log } from '@graphprotocol/graph-ts';
 
 export function handleReserveInitialized(event: ReserveInitialized): void {
   let underlyingAssetAddress = event.params.asset; //_reserve;
@@ -60,7 +61,7 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
 
   updateInterestRateStrategy(reserve, event.params.interestRateStrategyAddress, true);
 
-  ATokenContract.create(event.params.aToken);
+  ATokenContract.create(Address.fromString(event.params.aToken.toHexString()));
   createMapContractToPool(event.params.aToken, reserve.pool);
   let aToken = getOrInitAToken(event.params.aToken);
   aToken.underlyingAssetAddress = reserve.underlyingAsset;

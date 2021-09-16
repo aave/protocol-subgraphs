@@ -180,5 +180,5 @@ export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void
   let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
   priceOracleAsset.fromChainlinkSourcesRegistry = true;
   log.error('2 ------------------------', []);
-  // priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
+  priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
 }

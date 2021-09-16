@@ -203,7 +203,7 @@ templates:
         # - name: AToken
         #   file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/AToken.sol/AToken.json
         - name: AToken
-          file: ./constant-abis/AToken.json
+          file: ./constant-abis/Avalanche_AToken.json
         - name: IERC20Detailed
           file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
         - name: AaveIncentivesController
@@ -217,7 +217,7 @@ templates:
           handler: handleATokenMint
         - event: Initialized(indexed address,indexed address,address,address,uint8,string,string,bytes)
           handler: handleATokenInitialized
-      file: src/mapping/tokenization/initialization.ts
+      file: src/mapping/tokenization/initialization-avalanche.ts
   - kind: ethereum/contract
     name: StableDebtToken
     network: {{network}}
@@ -248,7 +248,7 @@ templates:
           handler: handleStableTokenBorrowAllowanceDelegated
         - event: Initialized(indexed address,indexed address,address,uint8,string,string,bytes)
           handler: handleSTokenInitialized
-      file: src/mapping/tokenization/initialization.ts
+      file: src/mapping/tokenization/initialization-avalanche.ts
   - kind: ethereum/contract
     name: VariableDebtToken
     network: {{network}}
@@ -279,7 +279,8 @@ templates:
           handler: handleVariableTokenBorrowAllowanceDelegated
         - event: Initialized(indexed address,indexed address,address,uint8,string,string,bytes)
           handler: handleVTokenInitialized
-      file: src/mapping/tokenization/initialization.ts
+      file: src/mapping/tokenization/initialization-avalanche.ts
+
 
   # --------------------------------------
   #       CONFIGURATIONS

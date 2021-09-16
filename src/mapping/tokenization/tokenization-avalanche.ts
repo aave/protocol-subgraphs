@@ -30,12 +30,11 @@ import {
   getOrInitVToken,
   getOrInitUser,
   getPriceOracleAsset,
-  getOrInitPriceOracle,
   getOrInitReserveParamsHistoryItem,
 } from '../../helpers/initializers';
 import { zeroBI } from '../../utils/converters';
 import { calculateUtilizationRate } from '../../helpers/reserve-logic';
-import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
+import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
 import { rayDiv, rayMul } from '../../helpers/math';
 
 function saveUserReserveAHistory(
@@ -125,10 +124,7 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   let priceOracleAsset = getPriceOracleAsset(reserve.price);
   reserveParamsHistoryItem.priceInEth = priceOracleAsset.priceInEth;
 
-  let priceOracle = getOrInitPriceOracle();
-  reserveParamsHistoryItem.priceInUsd = reserveParamsHistoryItem.priceInEth
-    .toBigDecimal()
-    .div(priceOracle.usdPriceEth.toBigDecimal());
+  reserveParamsHistoryItem.priceInUsd = reserveParamsHistoryItem.priceInEth.toBigDecimal();
 
   reserveParamsHistoryItem.timestamp = event.block.timestamp.toI32();
   reserveParamsHistoryItem.save();
