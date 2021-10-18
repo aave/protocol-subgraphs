@@ -1,5 +1,10 @@
 # Subgraph for Aave Protocol V2
 
+## Active deployments
+- [mainnet](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2)
+- [polygon](https://thegraph.com/hosted-service/subgraph/aave/aave-v2-matic)
+- [avalanche](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2-avalanche)
+
 ## Development
 
 ```bash
