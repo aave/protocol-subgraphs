@@ -43,7 +43,7 @@ import { calculateGrowth } from '../../helpers/math';
 
 export function handleDeposit(event: Deposit): void {
   let poolReserve = getOrInitReserve(event.params.reserve, event);
-  let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
+  let userReserve = getOrInitUserReserve(event.params.onBehalfOf, event.params.reserve, event);
   let depositedAmount = event.params.amount;
 
   let id = getHistoryId(event, EventTypeRef.Deposit);
@@ -69,7 +69,7 @@ export function handleDeposit(event: Deposit): void {
 export function handleWithdraw(event: Withdraw): void {
   let toUser = getOrInitUser(event.params.to);
   let poolReserve = getOrInitReserve(event.params.reserve, event);
-  let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
+  let userReserve = getOrInitUserReserve(event.params.to, event.params.reserve, event);
   let redeemedAmount = event.params.amount;
 
   let redeemUnderlying = new RedeemUnderlyingAction(getHistoryId(event, EventTypeRef.Redeem));
@@ -84,7 +84,7 @@ export function handleWithdraw(event: Withdraw): void {
 }
 
 export function handleBorrow(event: Borrow): void {
-  let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
+  let userReserve = getOrInitUserReserve(event.params.onBehalfOf, event.params.reserve, event);
   let poolReserve = getOrInitReserve(event.params.reserve, event);
 
   let borrow = new BorrowAction(getHistoryId(event, EventTypeRef.Borrow));
