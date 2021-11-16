@@ -89,6 +89,8 @@ dataSources:
           file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/GenericOracleI.sol/GenericOracleI.json
         - name: IExtendedPriceAggregator
           file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
+        - name: EACAggregatorProxy
+          file: ./constant-abis/EACAggregatorProxy.json
       eventHandlers:
         - event: AggregatorUpdated(address,address)
           handler: handleChainlinkAggregatorUpdated
