@@ -7,7 +7,6 @@ import {
   LendingPoolCollateralManagerUpdated,
   AddressSet,
   LendingRateOracleUpdated,
-  PriceOracleUpdated,
   ProxyCreated,
   EmergencyAdminUpdated,
 } from '../../generated/templates/LendingPoolAddressesProvider/LendingPoolAddressesProvider';
@@ -15,7 +14,7 @@ import {
   LendingPool as LendingPoolContract,
   LendingPoolConfigurator as LendingPoolConfiguratorContract,
 } from '../../generated/templates';
-import { createMapContractToPool, getOrInitPriceOracle } from '../helpers/initializers';
+import { createMapContractToPool } from '../helpers/initializers';
 import { Pool, PoolConfigurationHistoryItem } from '../../generated/schema';
 import { EventTypeRef, getHistoryId } from '../utils/id-generation';
 
@@ -106,8 +105,6 @@ export function handleAddressSet(event: AddressSet): void {
     mappedId = 'emergencyAdmin';
   } else if (event.params.id.toString() == 'COLLATERAL_MANAGER') {
     mappedId = 'lendingPoolCollateralManager';
-  } else if (event.params.id.toString() == 'PRICE_ORACLE') {
-    mappedId = 'proxyPriceProvider';
   } else if (event.params.id.toString() == 'LENDING_RATE_ORACLE') {
     mappedId = 'lendingRateOracle';
   }
@@ -120,17 +117,6 @@ export function handleAddressSet(event: AddressSet): void {
       event.params.id.toString(),
     ]);
   }
-}
-
-export function handlePriceOracleUpdated(event: PriceOracleUpdated): void {
-  genericAddressProviderUpdate('proxyPriceProvider', event.params.newAddress, event, false);
-
-  // TODO: should be more general
-  let priceOracle = getOrInitPriceOracle();
-  //if (priceOracle.proxyPriceProvider.equals(zeroAddress())) {
-  priceOracle.proxyPriceProvider = event.params.newAddress;
-  priceOracle.save();
-  //}
 }
 
 export function handleLendingRateOracleUpdated(event: LendingRateOracleUpdated): void {

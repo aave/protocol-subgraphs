@@ -5,41 +5,6 @@ schema:
   file: ./schema.graphql
 dataSources:
   # --------------------------------------
-  #      ORACLES / PRICE PROVIDERS
-  # --------------------------------------
-  - kind: ethereum/contract
-    name: AaveOracle
-    network: {{network}}
-    source:
-      address: '{{AaveOracleAddress}}'
-      startBlock: {{AaveOracleStartBlock}}
-      abi: AaveOracle
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - ChainlinkAggregator
-        - PriceOracle
-        - PriceOracleAsset
-      abis:
-        - name: AaveOracle
-          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
-        - name: GenericOracleI
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/GenericOracleI.sol/GenericOracleI.json
-        - name: IExtendedPriceAggregator
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
-        - name: EACAggregatorProxy
-          file: ./constant-abis/EACAggregatorProxy.json
-      eventHandlers:
-        - event: AssetSourceUpdated(indexed address,indexed address)
-          handler: handleAssetSourceUpdated
-        - event: FallbackOracleUpdated(indexed address)
-          handler: handleFallbackOracleUpdated
-        - event: WethSet(indexed address)
-          handler: handleWethSet
-      file: src/mapping/proxy-price-provider/matic.ts
-  # --------------------------------------
   #           CONFIGURATIONS
   # --------------------------------------
   - kind: ethereum/contract
@@ -64,37 +29,6 @@ dataSources:
         - event: AddressesProviderUnregistered(indexed address)
           handler: handleAddressesProviderUnregistered
       file: src/mapping/address-provider-registry.ts
-  # --------------------------------------
-  #             CHAINLINK
-  # --------------------------------------
-  - kind: ethereum/contract
-    name: ChainlinkSourcesRegistry
-    network: {{network}}
-    source:
-      address: '{{ChainlinkSourcesRegistryAddress}}'
-      startBlock: {{ChainlinkSourcesRegistryStartBlock}}
-      abi: ChainlinkSourcesRegistry
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - PriceOracle
-      abis:
-        - name: ChainlinkSourcesRegistry
-          file: ./constant-abis/ChainlinkSourcesRegistry.json
-        - name: AaveOracle
-          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
-        - name: GenericOracleI
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/GenericOracleI.sol/GenericOracleI.json
-        - name: IExtendedPriceAggregator
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
-        - name: EACAggregatorProxy
-          file: ./constant-abis/EACAggregatorProxy.json
-      eventHandlers:
-        - event: AggregatorUpdated(address,address)
-          handler: handleChainlinkAggregatorUpdated
-      file: src/mapping/proxy-price-provider/matic.ts
   # --------------------------------------
   #
   # --------------------------------------
@@ -136,54 +70,6 @@ templates:
         - event: DistributionEndUpdated(uint256)
           handler: handleDistributionEndUpdated
       file: src/mapping/incentives-controller/matic.ts
-  # --------------------------------------
-  #      ORACLES / PRICE PROVIDERS
-  # --------------------------------------
-  - kind: ethereum/contract
-    name: FallbackPriceOracle
-    network: {{network}}
-    source:
-      abi: GenericOracleI
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - PriceOracle
-        - PriceOracleReserve
-      abis:
-        - name: GenericOracleI
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/GenericOracleI.sol/GenericOracleI.json
-      eventHandlers:
-        - event: AssetPriceUpdated(address,uint256,uint256)
-          handler: handleAssetPriceUpdated
-        - event: EthPriceUpdated(uint256,uint256)
-          handler: handleEthPriceUpdated
-        - event: ProphecySubmitted(indexed address,indexed address,uint96,uint96)
-          handler: handleProphecySubmitted
-      file: src/mapping/price-oracle.ts
-
-  - kind: ethereum/contract
-    name: ChainlinkAggregator
-    network: {{network}}
-    source:
-      abi: IExtendedPriceAggregator
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - PriceOracleReserve
-      abis:
-        - name: IExtendedPriceAggregator
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
-        - name: AaveOracle
-          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
-      eventHandlers:
-        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
-          handler: handleChainlinkAnswerUpdated
-      file: src/mapping/price-oracle.ts
-
   # --------------------------------------
   #      AToken / Stable / Variable
   # --------------------------------------
@@ -301,8 +187,8 @@ templates:
       eventHandlers:
         - event: ProxyCreated(bytes32,indexed address)
           handler: handleProxyCreated
-        - event: PriceOracleUpdated(indexed address)
-          handler: handlePriceOracleUpdated
+        # - event: PriceOracleUpdated(indexed address)
+        #   handler: handlePriceOracleUpdated
         - event: LendingRateOracleUpdated(indexed address)
           handler: handleLendingRateOracleUpdated
         - event: LendingPoolUpdated(indexed address)
