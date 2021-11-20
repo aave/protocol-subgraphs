@@ -29,7 +29,6 @@ import {
   getOrInitSToken,
   getOrInitVToken,
   getOrInitUser,
-  getOrInitReserveParamsHistoryItem,
 } from '../../helpers/initializers';
 import { zeroBI } from '../../utils/converters';
 import { calculateUtilizationRate } from '../../helpers/reserve-logic';
@@ -89,40 +88,6 @@ function saveUserReserveSHistory(
 function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   reserve.utilizationRate = calculateUtilizationRate(reserve);
   reserve.save();
-
-  let reserveParamsHistoryItem = getOrInitReserveParamsHistoryItem(event.transaction.hash, reserve);
-  reserveParamsHistoryItem.totalScaledVariableDebt = reserve.totalScaledVariableDebt;
-  reserveParamsHistoryItem.totalCurrentVariableDebt = reserve.totalCurrentVariableDebt;
-  reserveParamsHistoryItem.totalPrincipalStableDebt = reserve.totalPrincipalStableDebt;
-  reserveParamsHistoryItem.lifetimePrincipalStableDebt = reserve.lifetimePrincipalStableDebt;
-  reserveParamsHistoryItem.lifetimeScaledVariableDebt = reserve.lifetimeScaledVariableDebt;
-  reserveParamsHistoryItem.lifetimeCurrentVariableDebt = reserve.lifetimeCurrentVariableDebt;
-  reserveParamsHistoryItem.lifetimeLiquidity = reserve.lifetimeLiquidity;
-  reserveParamsHistoryItem.lifetimeBorrows = reserve.lifetimeBorrows;
-  reserveParamsHistoryItem.lifetimeRepayments = reserve.lifetimeRepayments;
-  reserveParamsHistoryItem.lifetimeWithdrawals = reserve.lifetimeWithdrawals;
-  reserveParamsHistoryItem.lifetimeLiquidated = reserve.lifetimeLiquidated;
-  reserveParamsHistoryItem.lifetimeFlashLoanPremium = reserve.lifetimeFlashLoanPremium;
-  reserveParamsHistoryItem.lifetimeFlashLoans = reserve.lifetimeFlashLoans;
-  // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = reserve.lifetimeStableDebFeeCollected;
-  // reserveParamsHistoryItem.lifetimeVariableDebtFeeCollected = reserve.lifetimeVariableDebtFeeCollected;
-  reserveParamsHistoryItem.lifetimeReserveFactorAccrued = reserve.lifetimeReserveFactorAccrued;
-  reserveParamsHistoryItem.lifetimeDepositorsInterestEarned =
-    reserve.lifetimeDepositorsInterestEarned;
-  reserveParamsHistoryItem.availableLiquidity = reserve.availableLiquidity;
-  reserveParamsHistoryItem.totalLiquidity = reserve.totalLiquidity;
-  reserveParamsHistoryItem.totalLiquidityAsCollateral = reserve.totalLiquidityAsCollateral;
-  reserveParamsHistoryItem.utilizationRate = reserve.utilizationRate;
-  reserveParamsHistoryItem.variableBorrowRate = reserve.variableBorrowRate;
-  reserveParamsHistoryItem.variableBorrowIndex = reserve.variableBorrowIndex;
-  reserveParamsHistoryItem.stableBorrowRate = reserve.stableBorrowRate;
-  reserveParamsHistoryItem.liquidityIndex = reserve.liquidityIndex;
-  reserveParamsHistoryItem.liquidityRate = reserve.liquidityRate;
-  reserveParamsHistoryItem.totalATokenSupply = reserve.totalATokenSupply;
-  reserveParamsHistoryItem.averageStableBorrowRate = reserve.averageStableRate;
-
-  reserveParamsHistoryItem.timestamp = event.block.timestamp.toI32();
-  reserveParamsHistoryItem.save();
 }
 
 function tokenBurn(event: ethereum.Event, from: Address, value: BigInt, index: BigInt): void {

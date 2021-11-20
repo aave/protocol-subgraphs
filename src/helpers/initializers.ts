@@ -6,7 +6,6 @@ import {
   Reserve,
   User,
   UserReserve,
-  ReserveParamsHistoryItem,
   ReserveConfigurationHistoryItem,
   Referrer,
   ContractToPoolMapping,
@@ -227,47 +226,6 @@ export function getOrInitAToken(aTokenAddress: Address): AToken {
     aToken.underlyingAssetDecimals = 18;
   }
   return aToken as AToken;
-}
-
-export function getOrInitReserveParamsHistoryItem(
-  id: Bytes,
-  reserve: Reserve
-): ReserveParamsHistoryItem {
-  let itemId = id.toHexString() + reserve.id;
-  let reserveParamsHistoryItem = ReserveParamsHistoryItem.load(itemId);
-  if (!reserveParamsHistoryItem) {
-    reserveParamsHistoryItem = new ReserveParamsHistoryItem(itemId);
-    reserveParamsHistoryItem.variableBorrowRate = zeroBI();
-    reserveParamsHistoryItem.variableBorrowIndex = zeroBI();
-    reserveParamsHistoryItem.utilizationRate = zeroBD();
-    reserveParamsHistoryItem.stableBorrowRate = zeroBI();
-    reserveParamsHistoryItem.averageStableBorrowRate = zeroBI();
-    reserveParamsHistoryItem.liquidityIndex = zeroBI();
-    reserveParamsHistoryItem.liquidityRate = zeroBI();
-    reserveParamsHistoryItem.totalLiquidity = zeroBI();
-    reserveParamsHistoryItem.totalATokenSupply = zeroBI();
-    reserveParamsHistoryItem.availableLiquidity = zeroBI();
-    reserveParamsHistoryItem.totalLiquidityAsCollateral = zeroBI();
-    reserveParamsHistoryItem.reserve = reserve.id;
-    reserveParamsHistoryItem.totalScaledVariableDebt = zeroBI();
-    reserveParamsHistoryItem.totalCurrentVariableDebt = zeroBI();
-    reserveParamsHistoryItem.totalPrincipalStableDebt = zeroBI();
-    reserveParamsHistoryItem.lifetimePrincipalStableDebt = zeroBI();
-    reserveParamsHistoryItem.lifetimeScaledVariableDebt = zeroBI();
-    reserveParamsHistoryItem.lifetimeCurrentVariableDebt = zeroBI();
-    reserveParamsHistoryItem.lifetimeLiquidity = zeroBI();
-    reserveParamsHistoryItem.lifetimeBorrows = zeroBI();
-    reserveParamsHistoryItem.lifetimeRepayments = zeroBI();
-    reserveParamsHistoryItem.lifetimeWithdrawals = zeroBI();
-    reserveParamsHistoryItem.lifetimeLiquidated = zeroBI();
-    reserveParamsHistoryItem.lifetimeFlashLoans = zeroBI();
-    reserveParamsHistoryItem.lifetimeFlashLoanPremium = zeroBI();
-    reserveParamsHistoryItem.lifetimeReserveFactorAccrued = zeroBI();
-    reserveParamsHistoryItem.lifetimeDepositorsInterestEarned = zeroBI();
-    // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = zeroBI();
-    // reserveParamsHistoryItem.lifetimeVariableDebtFeeCollected = zeroBI();
-  }
-  return reserveParamsHistoryItem as ReserveParamsHistoryItem;
 }
 
 export function getOrInitReserveConfigurationHistoryItem(

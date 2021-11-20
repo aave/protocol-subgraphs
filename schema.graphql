@@ -306,43 +306,6 @@ type ReserveConfigurationHistoryItem @entity {
   timestamp: Int!
 }
 
-type ReserveParamsHistoryItem @entity {
-  """
-  tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
-  id: ID!
-  reserve: Reserve!
-  variableBorrowRate: BigInt!
-  variableBorrowIndex: BigInt!
-  utilizationRate: BigDecimal!
-  stableBorrowRate: BigInt!
-  averageStableBorrowRate: BigInt!
-  liquidityIndex: BigInt!
-  liquidityRate: BigInt!
-  totalLiquidity: BigInt!
-  totalATokenSupply: BigInt!
-  totalLiquidityAsCollateral: BigInt!
-  availableLiquidity: BigInt!
-  timestamp: Int!
-  totalScaledVariableDebt: BigInt!
-  totalCurrentVariableDebt: BigInt!
-  totalPrincipalStableDebt: BigInt!
-  lifetimePrincipalStableDebt: BigInt!
-  lifetimeScaledVariableDebt: BigInt!
-  lifetimeCurrentVariableDebt: BigInt!
-  lifetimeLiquidity: BigInt! # default: 0
-  lifetimeRepayments: BigInt! # default: 0
-  lifetimeWithdrawals: BigInt! # default: 0
-  lifetimeBorrows: BigInt! # default: 0
-  lifetimeLiquidated: BigInt! # default: 0
-  lifetimeFlashLoans: BigInt!
-  lifetimeFlashLoanPremium: BigInt!
-  lifetimeReserveFactorAccrued: BigInt!
-  lifetimeDepositorsInterestEarned: BigInt!
-  # lifetimeStableDebFeeCollected: BigInt!
-  # lifetimeVariableDebtFeeCollected: BigInt!
-}
-
 type IncentivesController @entity {
   """
   address of the incentives controller
@@ -473,22 +436,7 @@ type Reserve @entity {
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "collateralReserve")
   originationFeeLiquidationHistory: [OriginationFeeLiquidation!]!
     @derivedFrom(field: "collateralReserve")
-  paramsHistory: [ReserveParamsHistoryItem!]! @derivedFrom(field: "reserve")
   configurationHistory: [ReserveConfigurationHistoryItem!]! @derivedFrom(field: "reserve")
-  deposits: [Deposit!]! @derivedFrom(field: "reserve")
-}
-
-type WETHReserve @entity {
-  """
-  weth address
-  """
-  id: ID!
-  address: Bytes!
-  symbol: String!
-  name: String!
-  decimals: Int!
-  updatedTimestamp: Int!
-  updatedBlockNumber: BigInt!
 }
 
 type ATokenBalanceHistoryItem @entity {
