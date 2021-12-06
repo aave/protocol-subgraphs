@@ -5,3 +5,4 @@ generated
 .idea
 abis
 .env
+schema.graphql
