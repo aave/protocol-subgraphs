@@ -24,13 +24,13 @@ dataSources:
         - PriceOracleAsset
       abis:
         - name: AaveOracle
-          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+          file: ./abis/v2/AaveOracle.json
         - name: GenericOracleI
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/GenericOracleI.sol/GenericOracleI.json
+          file: ./abis/v2/GenericOracleI.json
         - name: IExtendedPriceAggregator
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
+          file: ./abis/helpers/IExtendedPriceAggregator.json
         - name: EACAggregatorProxy
-          file: ./constant-abis/EACAggregatorProxy.json
+          file: ./abis/helpers/EACAggregatorProxy.json
       eventHandlers:
         - event: AssetSourceUpdated(indexed address,indexed address)
           handler: handleAssetSourceUpdated
@@ -57,7 +57,7 @@ dataSources:
         - LendingPoolAddressesProvider
       abis:
         - name: LendingPoolAddressesProviderRegistry
-          file: ./externals/protocol-v2/artifacts/contracts/protocol/configuration/LendingPoolAddressesProviderRegistry.sol/LendingPoolAddressesProviderRegistry.json
+          file: ./abis/v2/LendingPoolAddressesProviderRegistry.json
       eventHandlers:
         - event: AddressesProviderRegistered(indexed address)
           handler: handleAddressesProviderRegistered
@@ -82,13 +82,13 @@ dataSources:
         - PriceOracle
       abis:
         - name: ChainlinkSourcesRegistry
-          file: ./constant-abis/ChainlinkSourcesRegistry.json
+          file: ./abis/helpers/ChainlinkSourcesRegistry.json
         - name: AaveOracle
-          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+          file: ./abis/v2/AaveOracle.json
         - name: GenericOracleI
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/GenericOracleI.sol/GenericOracleI.json
+          file: ./abis/v2/GenericOracleI.json
         - name: IExtendedPriceAggregator
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
+          file: ./abis/helpers/IExtendedPriceAggregator.json
       eventHandlers:
         - event: AggregatorUpdated(address,address)
           handler: handleChainlinkAggregatorUpdated
@@ -113,11 +113,11 @@ templates:
         - IncentivesController
       abis:
         - name: AaveIncentivesController
-          file: ./constant-abis/AaveIncentivesController.json
+          file: ./abis/v2/AaveIncentivesController.json
         - name: IERC20Detailed
-          file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
+          file: ./abis/helpers/IERC20Detailed.json
         - name: AToken
-          file: ./constant-abis/AToken.json
+          file: ./abis/v2/AToken.json
       eventHandlers:
         - event: AssetConfigUpdated(indexed address,uint256)
           handler: handleAssetConfigUpdated
@@ -151,7 +151,7 @@ templates:
         - PriceOracleReserve
       abis:
         - name: GenericOracleI
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/GenericOracleI.sol/GenericOracleI.json
+          file: ./abis/v2/GenericOracleI.json
       eventHandlers:
         - event: AssetPriceUpdated(address,uint256,uint256)
           handler: handleAssetPriceUpdated
@@ -174,9 +174,9 @@ templates:
         - PriceOracleReserve
       abis:
         - name: IExtendedPriceAggregator
-          file: ./externals/protocol-v2/artifacts/contracts/mocks/oracle/IExtendedPriceAggregator.sol/IExtendedPriceAggregator.json
+          file: ./abis/helpers/IExtendedPriceAggregator.json
         - name: AaveOracle
-          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+          file: ./abis/v2/AaveOracle.json
       eventHandlers:
         - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
           handler: handleChainlinkAnswerUpdated
@@ -198,14 +198,12 @@ templates:
         - AToken
         - UserReserve
       abis:
-        # - name: AToken
-        #   file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/AToken.sol/AToken.json
         - name: AToken
-          file: ./constant-abis/AToken.json
+          file: ./abis/v2/AToken.json
         - name: IERC20Detailed
-          file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
+          file: ./abis/helpers/IERC20Detailed.json
         - name: AaveIncentivesController
-          file: ./constant-abis/AaveIncentivesController.json
+          file: ./abis/v2/AaveIncentivesController.json
       eventHandlers:
         - event: Burn(indexed address,indexed address,uint256,uint256)
           handler: handleATokenBurn
@@ -229,14 +227,12 @@ templates:
         - StableDebtToken
         - UserReserve
       abis:
-        # - name: StableDebtToken
-        #   file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/StableDebtToken.sol/StableDebtToken.json
         - name: StableDebtToken
-          file: ./constant-abis/StableDebtToken.json
+          file: ./abis/v2/StableDebtToken.json
         - name: IERC20Detailed
-          file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
+          file: ./abis/helpers/IERC20Detailed.json
         - name: AaveIncentivesController
-          file: ./constant-abis/AaveIncentivesController.json
+          file: ./abis/v2/AaveIncentivesController.json
       eventHandlers:
         - event: Burn(indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleStableTokenBurn
@@ -260,14 +256,12 @@ templates:
         - StableDebtToken
         - UserReserve
       abis:
-        # - name: VariableDebtToken
-        #   file: ./externals/protocol-v2/artifacts/contracts/protocol/tokenization/VariableDebtToken.sol/VariableDebtToken.json
         - name: VariableDebtToken
-          file: ./constant-abis/VariableDebtToken.json
+          file: ./abis/v2/VariableDebtToken.json
         - name: IERC20Detailed
-          file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
+          file: ./abis/helpers/IERC20Detailed.json
         - name: AaveIncentivesController
-          file: ./constant-abis/AaveIncentivesController.json
+          file: ./abis/v2/AaveIncentivesController.json
       eventHandlers:
         - event: Burn(indexed address,uint256,uint256)
           handler: handleVariableTokenBurn
@@ -295,7 +289,7 @@ templates:
         - LendingPoolAddressesProvider
       abis:
         - name: LendingPoolAddressesProvider
-          file: ./externals/protocol-v2/artifacts/contracts/protocol/configuration/LendingPoolAddressesProvider.sol/LendingPoolAddressesProvider.json
+          file: ./abis/v2/LendingPoolAddressesProvider.json
       eventHandlers:
         - event: ProxyCreated(bytes32,indexed address)
           handler: handleProxyCreated
@@ -334,13 +328,13 @@ templates:
         - Reserve
       abis:
         - name: LendingPoolConfigurator
-          file: ./externals/protocol-v2/artifacts/contracts/protocol/lendingpool/LendingPoolConfigurator.sol/LendingPoolConfigurator.json
+          file: ./abis/v2/LendingPoolConfigurator.json
         - name: IERC20Detailed
-          file: ./externals/protocol-v2/artifacts/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol/IERC20Detailed.json
+          file: ./abis/helpers/IERC20Detailed.json
         - name: IERC20DetailedBytes
-          file: ./constant-abis/IERC20DetailedBytes.json
+          file: ./abis/helpers/IERC20DetailedBytes.json
         - name: DefaultReserveInterestRateStrategy
-          file: ./externals/protocol-v2/artifacts/contracts/protocol/lendingpool/DefaultReserveInterestRateStrategy.sol/DefaultReserveInterestRateStrategy.json
+          file: ./abis/v2/DefaultReserveInterestRateStrategy.json
       eventHandlers:
         - event: ReserveInitialized(indexed address,indexed address,address,address,address)
           handler: handleReserveInitialized
@@ -392,7 +386,7 @@ templates:
         - User
       abis:
         - name: LendingPool
-          file: ./externals/protocol-v2/artifacts/contracts/protocol/lendingpool/LendingPool.sol/LendingPool.json
+          file: ./abis/v2/LendingPool.json
       eventHandlers:
         - event: Deposit(indexed address,address,indexed address,uint256,indexed uint16)
           handler: handleDeposit

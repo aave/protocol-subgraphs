@@ -1,6 +1,0 @@
-[submodule "externals/aToken"]
-	path = externals/aToken
-	url = https://github.com/aave/protocol-v2
-[submodule "externals/protocol-v2"]
-	path = externals/protocol-v2
-	url = https://github.com/aave/protocol-v2.git
