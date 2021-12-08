@@ -64,6 +64,8 @@ dataSources:
           file: ./abis/helpers/GenericOracleI.json
         - name: IExtendedPriceAggregator
           file: ./abis/helpers/IExtendedPriceAggregator.json
+        - name: EACAggregatorProxy
+          file: ./abis/helpers/EACAggregatorProxy.json
       eventHandlers:
         - event: AggregatorUpdated(address,address)
           handler: handleChainlinkAggregatorUpdated
