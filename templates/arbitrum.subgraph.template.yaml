@@ -57,7 +57,7 @@ dataSources:
         - PriceOracle
       abis:
         - name: ChainlinkSourcesRegistry
-          file: ./abis/ChainlinkSourcesRegistry.json
+          file: ./abis/helpers/ChainlinkSourcesRegistry.json
         - name: AaveOracle
           file: ./abis/v3/AaveOracle.json
         - name: PriceOracle
@@ -95,7 +95,7 @@ dataSources:
           handler: handleAddressesProviderRegistered
         - event: AddressesProviderUnregistered(indexed address)
           handler: handleAddressesProviderUnregistered
-      file: src/mapping/address-provider-registry/arbitrum.ts
+      file: src/mapping/address-provider-registry.ts
 
   # --------------------------------------
   #
@@ -135,8 +135,6 @@ templates:
           handler: handleUserIndexUpdated
         - event: RewardOracleUpdated(indexed address,indexed address) # TODO: add to logic and schema
           handler: handleRewardOracleUpdated
-        # - event: DistributionEndUpdated(uint256) #TODO: remove logic
-        #   handler: handleDistributionEndUpdated
       file: src/mapping/incentives-controller/arbitrum.ts
   # --------------------------------------
   #      ORACLES / PRICE PROVIDERS
@@ -236,7 +234,7 @@ templates:
         - name: IERC20Detailed
           file: ./abis/helpers/IERC20Detailed.json
         - name: IncentivesController
-          file: ./abis/v3/AaveIncentivesController.json
+          file: ./abis/v3/IncentivesControllerV2.json
       eventHandlers:
         - event: Burn(indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleStableTokenBurn
@@ -267,9 +265,9 @@ templates:
         - name: IncentivesControllerV2
           file: ./abis/v3/IncentivesControllerV2.json
       eventHandlers:
-        - event: Burn(indexed address,uint256,uint256)
+        - event: Burn(indexed address,uint256,uint256,uint256)
           handler: handleVariableTokenBurn
-        - event: Mint(indexed address,indexed address,uint256,uint256)
+        - event: Mint(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleVariableTokenMint
         - event: BorrowAllowanceDelegated(indexed address,indexed address,address,uint256)
           handler: handleVariableTokenBorrowAllowanceDelegated
@@ -312,7 +310,7 @@ templates:
           handler: handleACLAdminUpdated
         - event: PriceOracleSentinelUpdated(indexed address) #new
           handler: handlePriceOracleSentinelUpdated
-        - event: ProxyCreated(indexed address) # new 
+        - event: ProxyCreated(bytes32,indexed address) # new 
           handler: handleProxyCreated
         - event: BridgeAccessControlUpdated(indexed address) # new
           handler: handleBridgeAccessControlUpdated
@@ -447,7 +445,6 @@ templates:
           handler: handleFlashLoan
         - event: LiquidationCall(indexed address,indexed address,indexed address,uint256,uint256,address,bool)
           handler: handleLiquidationCall
-          handler: handleUnpaused
         - event: ReserveDataUpdated(indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleReserveDataUpdated
         - event: MintUnbacked(indexed address,address,indexed address,uint256,indexed uint16) # new TODO: add to schema

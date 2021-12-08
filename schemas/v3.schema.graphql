@@ -118,6 +118,7 @@ type PriceOracleAsset @entity {
   fromChainlinkSourcesRegistry: Boolean!
 }
 
+# TODO: should we change the naming of usdPriceEth to have generic market naming?
 type PriceOracle @entity {
   id: ID!
   proxyPriceProvider: Bytes!
@@ -131,6 +132,8 @@ type PriceOracle @entity {
   tokensWithFallback: [PriceOracleAsset!]!
   lastUpdateTimestamp: Int!
   version: Int!
+  baseCurrency: Bytes! # new for v3
+  baseCurrencyUnit: BigInt! # new for v3
 }
 
 type SToken @entity {

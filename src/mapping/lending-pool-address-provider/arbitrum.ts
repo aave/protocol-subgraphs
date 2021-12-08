@@ -15,9 +15,9 @@ import {
   LendingPool as LendingPoolContract,
   LendingPoolConfigurator as LendingPoolConfiguratorContract,
 } from '../../generated/templates';
-import { createMapContractToPool, getOrInitPriceOracle } from '../helpers/initializers';
+import { createMapContractToPool, getOrInitPriceOracle } from '../../helpers/initializers';
 import { Pool, PoolConfigurationHistoryItem } from '../../generated/schema';
-import { EventTypeRef, getHistoryId } from '../utils/id-generation';
+import { EventTypeRef, getHistoryId } from '../../utils/id-generation';
 
 let POOL_COMPONENTS = [
   'lendingPoolConfigurator',

@@ -1,5 +1,9 @@
 import { PriceOracle, PriceOracleAsset } from '../../../generated/schema';
-import { AaveOracle, AssetSourceUpdated } from '../../../generated/AaveOracle/AaveOracle';
+import {
+  AaveOracle,
+  AssetSourceUpdated,
+  BaseCurrencySet,
+} from '../../../generated/AaveOracle/AaveOracle';
 import { Address, ethereum, log } from '@graphprotocol/graph-ts';
 import {
   formatUsdEthChainlinkPrice,
@@ -179,4 +183,11 @@ export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void
   let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
   priceOracleAsset.fromChainlinkSourcesRegistry = true;
   priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
+}
+
+export function handleBaseCurrencySet(event: BaseCurrencySet): void {
+  let priceOracle = getOrInitPriceOracle();
+
+  priceOracle.baseCurrency = event.params.baseCurrency;
+  priceOracle.baseCurrencyUnit = event.params.baseCurrencyUnit;
 }

@@ -4,18 +4,18 @@ import {
   AssetPriceUpdated,
   EthPriceUpdated,
   ProphecySubmitted,
-} from '../../generated/templates/FallbackPriceOracle/GenericOracleI';
-import { AnswerUpdated } from '../../generated/templates/ChainlinkAggregator/IExtendedPriceAggregator';
-import { formatUsdEthChainlinkPrice, zeroAddress, zeroBI } from '../utils/converters';
+} from '../../../generated/templates/FallbackPriceOracle/GenericOracleI';
+import { AnswerUpdated } from '../../../generated/templates/ChainlinkAggregator/IExtendedPriceAggregator';
+import { formatUsdEthChainlinkPrice, zeroAddress, zeroBI } from '../../utils/converters';
 import {
   getChainlinkAggregator,
   getOrInitPriceOracle,
   getPriceOracleAsset,
-} from '../helpers/initializers';
-import { PriceOracle } from '../../generated/schema';
-import { AaveOracle } from '../../generated/AaveOracle/AaveOracle';
-import { MOCK_USD_ADDRESS } from '../utils/constants';
-import { genericPriceUpdate, usdEthPriceUpdate } from '../helpers/price-updates';
+} from '../../helpers/initializers';
+import { PriceOracle } from '../../../generated/schema';
+import { AaveOracle } from '../../../generated/AaveOracle/AaveOracle';
+import { MOCK_USD_ADDRESS } from '../../utils/constants';
+import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
 
 // GANACHE
 export function handleAssetPriceUpdated(event: AssetPriceUpdated): void {
