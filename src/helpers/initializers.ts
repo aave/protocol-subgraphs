@@ -143,6 +143,8 @@ export function getOrInitPriceOracle(): PriceOracle {
     priceOracle.lastUpdateTimestamp = 0;
     priceOracle.usdDependentAssets = [];
     priceOracle.version = 1;
+    priceOracle.baseCurrency = zeroAddress();
+    priceOracle.baseCurrencyUnit = zeroBI();
     priceOracle.save();
   }
   return priceOracle as PriceOracle;

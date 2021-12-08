@@ -190,4 +190,6 @@ export function handleBaseCurrencySet(event: BaseCurrencySet): void {
 
   priceOracle.baseCurrency = event.params.baseCurrency;
   priceOracle.baseCurrencyUnit = event.params.baseCurrencyUnit;
+
+  priceOracle.save();
 }
