@@ -3,8 +3,9 @@ import {
   AaveOracle,
   AssetSourceUpdated,
   BaseCurrencySet,
+  FallbackOracleUpdated,
 } from '../../../generated/AaveOracle/AaveOracle';
-import { Address, ethereum, log } from '@graphprotocol/graph-ts';
+import { Address, ethereum, log, Bytes } from '@graphprotocol/graph-ts';
 import {
   formatUsdEthChainlinkPrice,
   getPriceOracleAssetType,
@@ -20,10 +21,62 @@ import {
   getOrInitPriceOracle,
   getPriceOracleAsset,
 } from '../../helpers/initializers';
-import { MOCK_USD_ADDRESS } from '../../utils/constants';
 import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
-import { AggregatorUpdated } from '../../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
-export { handleFallbackOracleUpdated, handleWethSet } from './proxy-price-provider';
+
+import { PriceOracle as FallbackPriceOracle } from '../../../generated/AaveOracle/PriceOracle';
+
+import { FallbackPriceOracle as FallbackPriceOracleContract } from '../../../generated/templates';
+import { MOCK_USD_ADDRESS, ZERO_ADDRESS } from '../../utils/constants';
+
+export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void {
+  let priceOracle = getOrInitPriceOracle();
+
+  priceOracle.fallbackPriceOracle = event.params.fallbackOracle;
+  if (event.params.fallbackOracle.toHexString() != ZERO_ADDRESS) {
+    FallbackPriceOracleContract.create(event.params.fallbackOracle);
+
+    // update prices on assets which use fallback
+
+    priceOracle.tokensWithFallback.forEach(token => {
+      let priceOracleAsset = getPriceOracleAsset(token);
+      if (
+        priceOracleAsset.priceSource.equals(zeroAddress()) ||
+        priceOracleAsset.isFallbackRequired
+      ) {
+        let proxyPriceProvider = AaveOracle.bind(event.address);
+        let price = proxyPriceProvider.try_getAssetPrice(
+          Bytes.fromHexString(priceOracleAsset.id) as Address
+        );
+        if (!price.reverted) {
+          genericPriceUpdate(priceOracleAsset, price.value, event);
+        } else {
+          log.error(
+            'OracleAssetId: {} | ProxyPriceProvider: {} | FallbackOracle: {} | EventAddress: {}',
+            [
+              priceOracleAsset.id,
+              event.address.toHexString(),
+              event.params.fallbackOracle.toHexString(),
+              event.address.toHexString(),
+            ]
+          );
+        }
+      }
+    });
+
+    // update USDETH price
+    let fallbackOracle = FallbackPriceOracle.bind(event.params.fallbackOracle);
+    let ethUsdPrice = formatUsdEthChainlinkPrice(
+      fallbackOracle.getAssetPrice(Address.fromString(MOCK_USD_ADDRESS))
+    );
+
+    if (
+      priceOracle.usdPriceEthFallbackRequired ||
+      priceOracle.usdPriceEthMainSource.equals(zeroAddress())
+    ) {
+      usdEthPriceUpdate(priceOracle, ethUsdPrice, event);
+    }
+  }
+}
 
 export function priceFeedUpdated(
   event: ethereum.Event,
@@ -175,15 +228,15 @@ export function handleAssetSourceUpdated(event: AssetSourceUpdated): void {
   priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
 }
 
-export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void {
-  let assetAddress = event.params.token;
-  let assetOracleAddress = event.params.aggregator; // its proxy . Wrong naming
+// export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void {
+//   let assetAddress = event.params.token;
+//   let assetOracleAddress = event.params.aggregator; // its proxy . Wrong naming
 
-  let priceOracle = getOrInitPriceOracle();
-  let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
-  priceOracleAsset.fromChainlinkSourcesRegistry = true;
-  priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
-}
+//   let priceOracle = getOrInitPriceOracle();
+//   let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
+//   priceOracleAsset.fromChainlinkSourcesRegistry = true;
+//   priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
+// }
 
 export function handleBaseCurrencySet(event: BaseCurrencySet): void {
   let priceOracle = getOrInitPriceOracle();

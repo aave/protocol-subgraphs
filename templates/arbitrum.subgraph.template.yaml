@@ -38,38 +38,38 @@ dataSources:
           handler: handleAssetSourceUpdated
         - event: FallbackOracleUpdated(indexed address)
           handler: handleFallbackOracleUpdated
-        - event: BaseCurrencySet(indexed address,uint256) # TODO: add handler logic and schema for this event
+        - event: BaseCurrencySet(indexed address,uint256)
           handler: handleBaseCurrencySet
       file: src/mapping/proxy-price-provider/arbitrum.ts
 
-  - kind: ethereum/contract
-    name: ChainlinkSourcesRegistry
-    network: {{network}}
-    source:
-      address: '{{ChainlinkSourcesRegistryAddress}}'
-      startBlock: {{ChainlinkSourcesRegistryStartBlock}}
-      abi: ChainlinkSourcesRegistry
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - PriceOracle
-      abis:
-        - name: ChainlinkSourcesRegistry
-          file: ./abis/helpers/ChainlinkSourcesRegistry.json
-        - name: AaveOracle
-          file: ./abis/v3/AaveOracle.json
-        - name: PriceOracle
-          file: ./abis/v3/PriceOracle.json
-        - name: IExtendedPriceAggregator
-          file: ./abis/helpers/IExtendedPriceAggregator.json
-        - name: EACAggregatorProxy
-          file: ./abis/helpers/EACAggregatorProxy.json
-      eventHandlers:
-        - event: AggregatorUpdated(address,address)
-          handler: handleChainlinkAggregatorUpdated
-      file: src/mapping/proxy-price-provider/arbitrum.ts
+  # - kind: ethereum/contract
+  #   name: ChainlinkSourcesRegistry
+  #   network: {{network}}
+  #   source:
+  #     address: '{{ChainlinkSourcesRegistryAddress}}'
+  #     startBlock: {{ChainlinkSourcesRegistryStartBlock}}
+  #     abi: ChainlinkSourcesRegistry
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.4
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - PriceOracle
+  #     abis:
+  #       - name: ChainlinkSourcesRegistry
+  #         file: ./abis/helpers/ChainlinkSourcesRegistry.json
+  #       - name: AaveOracle
+  #         file: ./abis/v3/AaveOracle.json
+  #       - name: PriceOracle
+  #         file: ./abis/v3/PriceOracle.json
+  #       - name: IExtendedPriceAggregator
+  #         file: ./abis/helpers/IExtendedPriceAggregator.json
+  #       - name: EACAggregatorProxy
+  #         file: ./abis/helpers/EACAggregatorProxy.json
+  #     eventHandlers:
+  #       - event: AggregatorUpdated(address,address)
+  #         handler: handleChainlinkAggregatorUpdated
+  #     file: src/mapping/proxy-price-provider/arbitrum.ts
 
   # --------------------------------------
   #           CONFIGURATIONS

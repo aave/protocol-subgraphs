@@ -212,15 +212,16 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
     reserve.sToken = zeroAddress().toHexString();
 
     // incentives
-    reserve.aEmissionPerSecond = zeroBI();
-    reserve.vEmissionPerSecond = zeroBI();
-    reserve.sEmissionPerSecond = zeroBI();
-    reserve.aTokenIncentivesIndex = zeroBI();
-    reserve.vTokenIncentivesIndex = zeroBI();
-    reserve.sTokenIncentivesIndex = zeroBI();
-    reserve.aIncentivesLastUpdateTimestamp = 0;
-    reserve.vIncentivesLastUpdateTimestamp = 0;
-    reserve.sIncentivesLastUpdateTimestamp = 0;
+    // TODO: link incentives??
+    // reserve.aEmissionPerSecond = zeroBI();
+    // reserve.vEmissionPerSecond = zeroBI();
+    // reserve.sEmissionPerSecond = zeroBI();
+    // reserve.aTokenIncentivesIndex = zeroBI();
+    // reserve.vTokenIncentivesIndex = zeroBI();
+    // reserve.sTokenIncentivesIndex = zeroBI();
+    // reserve.aIncentivesLastUpdateTimestamp = 0;
+    // reserve.vIncentivesLastUpdateTimestamp = 0;
+    // reserve.sIncentivesLastUpdateTimestamp = 0;
 
     reserve.totalScaledVariableDebt = zeroBI();
     reserve.totalCurrentVariableDebt = zeroBI();

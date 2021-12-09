@@ -1,56 +1,70 @@
-import { Address, ethereum, log, BigInt } from '@graphprotocol/graph-ts';
 import {
   AssetConfigUpdated,
   AssetIndexUpdated,
-  DistributionEndUpdated,
   RewardsAccrued,
   RewardsClaimed,
   UserIndexUpdated,
-} from '../../../generated/templates/AaveIncentivesControllerV2/AaveIncentivesControllerV2';
+  RewardOracleUpdated,
+  IncentivesControllerV2,
+} from '../../../generated/templates/IncentivesControllerV2/IncentivesControllerV2';
 import {
   ClaimIncentiveCall,
-  IncentivesController,
   IncentivizedAction,
-  MapAssetPool,
-  Reserve,
+  RewardFeedOracle,
+  RewardIncentives,
+  UserRewardIncentives,
 } from '../../../generated/schema';
-import { getOrInitUser, getOrInitUserReserveWithIds } from '../../helpers/initializers';
-import { getHistoryEntityId, getReserveId } from '../../utils/id-generation';
+import { getOrInitUser } from '../../helpers/initializers';
+import { getHistoryEntityId } from '../../utils/id-generation';
+import { IERC20Detailed } from '../../../generated/templates/IncentivesControllerV2/IERC20Detailed';
+import { zeroBI } from '../../utils/converters';
 
 export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let emissionsPerSecond = event.params.emission;
   let blockTimestamp = event.block.timestamp.toI32();
   let asset = event.params.asset; // a / v / s token
+  let reward = event.params.reward;
+  let distributionEnd = event.params.distributionEnd;
+  let incentivesController = event.address;
 
-  let mapAssetPool = MapAssetPool.load(asset.toHexString());
-  if (!mapAssetPool) {
-    log.error('Mapping not initiated for asset: {}', [asset.toHexString()]);
-    return;
-  }
-  let pool = mapAssetPool.pool;
-  let underlyingAsset = mapAssetPool.underlyingAsset;
-  // get reserve
-  let reserveId = getReserveId(underlyingAsset as Address, pool);
-  let reserve = Reserve.load(reserveId);
+  //  update rewards configurations
+  let rewardIncentiveId =
+    incentivesController.toHexString() + ':' + asset.toHexString() + ':' + reward.toHexString();
 
-  if (reserve != null) {
-    if (asset.toHexString() == reserve.aToken) {
-      reserve.aEmissionPerSecond = emissionsPerSecond;
-      reserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
-    } else if (asset.toHexString() == reserve.vToken) {
-      reserve.vEmissionPerSecond = emissionsPerSecond;
-      reserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
-    } else if (asset.toHexString() == reserve.sToken) {
-      reserve.sEmissionPerSecond = emissionsPerSecond;
-      reserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
+  let rewardIncentive = RewardIncentives.load(rewardIncentiveId);
+  if (!rewardIncentive) {
+    rewardIncentive = new RewardIncentives(rewardIncentiveId);
+    rewardIncentive.rewardToken = reward;
+    rewardIncentive.index = zeroBI();
+    rewardIncentive.asset = asset.toHexString();
+    rewardIncentive.incentivesController = incentivesController.toHexString();
+
+    let IERC20DetailedContract = IERC20Detailed.bind(reward);
+    rewardIncentive.rewardTokenDecimals = IERC20DetailedContract.decimals();
+    rewardIncentive.rewardTokenSymbol = IERC20DetailedContract.symbol();
+
+    let iController = IncentivesControllerV2.bind(incentivesController);
+    rewardIncentive.precision = iController.PRECISION();
+
+    rewardIncentive.createdAt = blockTimestamp;
+
+    // get oracle
+    let oracle = RewardFeedOracle.load(reward.toHexString());
+    if (!oracle) {
+      let rewardOracle = iController.getRewardOracle(reward);
+      oracle = new RewardFeedOracle(reward.toHexString());
+      oracle.rewardFeedAddress = rewardOracle;
+      oracle.createdAt = blockTimestamp;
+      oracle.updatedAt = blockTimestamp;
     }
-    reserve.save();
-  } else {
-    log.warning('Handle asset config updated reserve not created. pool: {} | underlying: {}', [
-      pool,
-      underlyingAsset.toHexString(),
-    ]);
+
+    rewardIncentive.rewardFeedOracle = oracle.id;
   }
+
+  rewardIncentive.distributionEnd = distributionEnd;
+  rewardIncentive.emissionsPerSecond = emissionsPerSecond;
+  rewardIncentive.updatedAt = blockTimestamp;
+  rewardIncentive.save();
 }
 
 export function handleRewardsAccrued(event: RewardsAccrued): void {
@@ -71,113 +85,75 @@ export function handleRewardsAccrued(event: RewardsAccrued): void {
   incentivizedAction.save();
 }
 
-export function handleRewardsClaimedCommon(
-  userAddress: Address,
-  incentivesController: Address,
-  amount: BigInt,
-  event: ethereum.Event
-): void {
-  let user = getOrInitUser(userAddress);
-  user.unclaimedRewards = user.unclaimedRewards.minus(amount);
+export function handleRewardsClaimed(event: RewardsClaimed): void {
+  let user = getOrInitUser(event.params.user);
+  user.unclaimedRewards = user.unclaimedRewards.minus(event.params.amount);
   user.incentivesLastUpdated = event.block.timestamp.toI32();
   user.save();
 
   let claimIncentive = new ClaimIncentiveCall(getHistoryEntityId(event));
-  claimIncentive.incentivesController = incentivesController.toHexString();
-  claimIncentive.user = userAddress.toHexString();
-  claimIncentive.amount = amount;
+  claimIncentive.incentivesController = event.address.toHexString();
+  claimIncentive.user = event.params.user.toHexString();
+  claimIncentive.amount = event.params.amount;
   claimIncentive.save();
-}
-
-// We can use this event with ethereum template because it will be the only event with that name for ethereum
-// - for ethereum this event has claimer field
-// - for matic this event does not have the claimer field. the event with claimer field is on ./matic
-// if at some point we want to operate with the claimer field, we will need to do it on the ./matic and create a ./ethereum matic
-// to still have the original event without claimer
-export function handleRewardsClaimed(event: RewardsClaimed): void {
-  handleRewardsClaimedCommon(event.params.user, event.address, event.params.amount, event);
 }
 
 export function handleAssetIndexUpdated(event: AssetIndexUpdated): void {
   let asset = event.params.asset;
   let index = event.params.index;
+  let reward = event.params.reward;
   let blockTimestamp = event.block.timestamp.toI32();
+  let incentivesController = event.address;
 
-  let mapAssetPool = MapAssetPool.load(asset.toHexString());
-  if (!mapAssetPool) {
-    log.error('Mapping not initiated for asset: {}', [asset.toHexString()]);
-    return;
-  }
-  let pool = mapAssetPool.pool;
-  let underlyingAsset = mapAssetPool.underlyingAsset;
-  // get reserve
-  let reserveId = getReserveId(underlyingAsset as Address, pool);
-  let reserve = Reserve.load(reserveId);
+  let rewardIncentiveId =
+    incentivesController.toHexString() + ':' + asset.toHexString() + ':' + reward.toHexString();
 
-  if (reserve != null) {
-    if (asset.toHexString() == reserve.aToken) {
-      reserve.aTokenIncentivesIndex = index;
-      reserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
-    } else if (asset.toHexString() == reserve.vToken) {
-      reserve.vTokenIncentivesIndex = index;
-      reserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
-    } else if (asset.toHexString() == reserve.sToken) {
-      reserve.sTokenIncentivesIndex = index;
-      reserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
-    }
+  let rewardIncentive = RewardIncentives.load(rewardIncentiveId);
+  rewardIncentive.index = index;
+  rewardIncentive.updatedAt = blockTimestamp;
 
-    reserve.save();
-  } else {
-    log.warning('Handle asset index updated reserve not created. pool: {} | underlying: {}', [
-      pool,
-      underlyingAsset.toHexString(),
-    ]);
-  }
+  rewardIncentive.save();
 }
 
 export function handleUserIndexUpdated(event: UserIndexUpdated): void {
   let user = event.params.user;
   let asset = event.params.asset;
   let index = event.params.index;
+  let reward = event.params.reward;
   let blockTimestamp = event.block.timestamp.toI32();
+  let incentivesController = event.address;
 
-  let mapAssetPool = MapAssetPool.load(asset.toHexString());
-  if (!mapAssetPool) {
-    log.error('Mapping not initiated for asset: {}', [asset.toHexString()]);
-    return;
+  let rewardId =
+    incentivesController.toHexString() + ':' + asset.toHexString() + ':' + reward.toHexString();
+  let userRewardsId = rewardId + ':' + user.toHexString();
+
+  let userReward = UserRewardIncentives.load(userRewardsId);
+  if (!userReward) {
+    userReward = new UserRewardIncentives(userRewardsId);
+    userReward.reward = rewardId;
+    userReward.createdAt = blockTimestamp;
   }
-  let pool = mapAssetPool.pool;
-  let underlyingAsset = mapAssetPool.underlyingAsset;
 
-  let reserveId = getReserveId(underlyingAsset as Address, pool);
-  // let userReserveId = getUserReserveId(user, underlyingAsset as Address, pool);
-  let userReserve = getOrInitUserReserveWithIds(user, underlyingAsset as Address, pool);
-
-  let reserve = Reserve.load(reserveId);
-  if (userReserve != null) {
-    if (asset.toHexString() == reserve.aToken) {
-      userReserve.aTokenincentivesUserIndex = index;
-      userReserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
-    } else if (asset.toHexString() == reserve.vToken) {
-      userReserve.vTokenincentivesUserIndex = index;
-      userReserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
-    } else if (asset.toHexString() == reserve.sToken) {
-      userReserve.sTokenincentivesUserIndex = index;
-      userReserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
-    }
-
-    userReserve.save();
-  } else {
-    log.warning(
-      'UserIndex updated reserve not created. user: {} | pool: {} | underlying: {} | asset: {} ',
-      [user.toHexString(), pool, underlyingAsset.toHexString(), asset.toHexString()]
-    );
-  }
+  userReward.index = index;
+  userReward.updatedAt = blockTimestamp;
+  userReward.save();
 }
 
-export function handleDistributionEndUpdated(event: DistributionEndUpdated): void {
-  let iController = IncentivesController.load(event.address.toHexString());
+export function handleRewardOracleUpdated(event: RewardOracleUpdated): void {
+  let reward = event.params.reward;
+  let oracle = event.params.rewardOracle;
 
-  iController.emissionEndTimestamp = event.params.ditributionEnd.toI32();
-  iController.save();
+  let blockTimestamp = event.block.timestamp.toI32();
+
+  let rewardOracleId = reward.toHexString();
+
+  let rewardOracle = RewardFeedOracle.load(rewardOracleId);
+  if (!rewardOracle) {
+    rewardOracle = new RewardFeedOracle(rewardOracleId);
+    rewardOracle.createdAt = blockTimestamp;
+  }
+  rewardOracle.rewardFeedAddress = oracle;
+  rewardOracle.updatedAt = blockTimestamp;
+
+  rewardOracle.save();
 }

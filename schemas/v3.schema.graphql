@@ -136,57 +136,16 @@ type PriceOracle @entity {
   baseCurrencyUnit: BigInt! # new for v3
 }
 
-type SToken @entity {
+# Entity representing A/VariableDebt/StableDebt tokens
+type SubToken @entity {
   """
-  SToken address
-  """
-  id: ID!
-  pool: Pool!
-  underlyingAssetAddress: Bytes!
-  underlyingAssetDecimals: Int!
-  tokenContractImpl: Bytes!
-}
-
-type VToken @entity {
-  """
-  VToken address
+  SubToken address
   """
   id: ID!
   pool: Pool!
   underlyingAssetAddress: Bytes!
   underlyingAssetDecimals: Int!
-  tokenContractImpl: Bytes!
-}
-
-type AToken @entity {
-  """
-  AToken address
-  """
-  id: ID!
-  pool: Pool!
-  underlyingAssetAddress: Bytes!
-  underlyingAssetDecimals: Int!
-  tokenContractImpl: Bytes!
-}
-
-type VariableDebtToken @entity {
-  """
-  VariableDebtToken address
-  """
-  id: ID!
-  pool: Pool!
-  underlyingAssetAddress: Bytes!
-  underlyingAssetDecimals: Int!
-}
-
-type StableDebtToken @entity {
-  """
-  StableDebtToken address
-  """
-  id: ID!
-  pool: Pool!
-  underlyingAssetAddress: Bytes!
-  underlyingAssetDecimals: Int!
+  incentives: [RewardIncentives!]! @derivedFrom(field: "asset")
 }
 
 enum BorrowRateMode {
@@ -421,17 +380,53 @@ type ReserveParamsHistoryItem @entity {
   # lifetimeVariableDebtFeeCollected: BigInt!
 }
 
+type RewardFeedOracle @entity {
+  """
+  address of reward
+  """
+  id: ID!
+  rewardFeedAddress: Bytes!
+  createdAt: Int!
+  updatedAt: Int!
+}
+
+type RewardIncentives @entity {
+  """
+  address of ic:asset:reward
+  """
+  id: ID!
+  rewardToken: Bytes!
+  asset: SubToken!
+  rewardTokenDecimals: Bytes!
+  rewardFeedOracle: RewardFeedOracle!
+  rewardTokenSymbol: String!
+  index: BigInt!
+  precision: Int!
+  distributionEnd: Int!
+  emissionsPerSecond: BigInt!
+  incentivesController: IncentivesController!
+  createdAt: Int!
+  updatedAt: Int!
+}
+
+type UserRewardIncentives @entity {
+  """
+  id: ic:asset:reward:user
+  """
+  id: ID!
+  user: User!
+  index: BigInt!
+  reward: RewardIncentives!
+  createdAt: Int!
+  updatedAt: Int!
+}
+
 type IncentivesController @entity {
   """
   address of the incentives controller
   """
   id: ID!
-  rewardToken: Bytes!
-  rewardTokenDecimals: Int!
-  rewardTokenSymbol: String!
-  precision: Int!
-  emissionEndTimestamp: Int!
-
+  incentives: [RewardIncentives!]! @derivedFrom(field: "incentivesController")
   incentivizedActions: [IncentivizedAction!]! @derivedFrom(field: "incentivesController")
   claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "incentivesController")
 }
@@ -454,15 +449,6 @@ type ClaimIncentiveCall @entity {
   incentivesController: IncentivesController!
   user: User!
   amount: BigInt!
-}
-
-type MapAssetPool @entity {
-  """
-  address of a /s /v token
-  """
-  id: ID!
-  pool: String!
-  underlyingAsset: Bytes!
 }
 
 type Reserve @entity {
@@ -508,23 +494,12 @@ type Reserve @entity {
   stableBorrowRate: BigInt!
   liquidityIndex: BigInt!
   variableBorrowIndex: BigInt!
-  aToken: AToken!
-  vToken: VToken!
-  sToken: SToken!
+  aToken: SubToken!
+  vToken: SubToken!
+  sToken: SubToken!
   reserveFactor: BigInt! #default 0
   lastUpdateTimestamp: Int!
   stableDebtLastUpdateTimestamp: Int!
-
-  # incentives
-  aEmissionPerSecond: BigInt!
-  vEmissionPerSecond: BigInt!
-  sEmissionPerSecond: BigInt!
-  aTokenIncentivesIndex: BigInt!
-  vTokenIncentivesIndex: BigInt!
-  sTokenIncentivesIndex: BigInt!
-  aIncentivesLastUpdateTimestamp: Int!
-  vIncentivesLastUpdateTimestamp: Int!
-  sIncentivesLastUpdateTimestamp: Int!
 
   lifetimeLiquidity: BigInt! # default: 0
   lifetimePrincipalStableDebt: BigInt! # default: 0
@@ -555,19 +530,6 @@ type Reserve @entity {
   paramsHistory: [ReserveParamsHistoryItem!]! @derivedFrom(field: "reserve")
   configurationHistory: [ReserveConfigurationHistoryItem!]! @derivedFrom(field: "reserve")
   deposits: [Deposit!]! @derivedFrom(field: "reserve")
-}
-
-type WETHReserve @entity {
-  """
-  weth address
-  """
-  id: ID!
-  address: Bytes!
-  symbol: String!
-  name: String!
-  decimals: Int!
-  updatedTimestamp: Int!
-  updatedBlockNumber: BigInt!
 }
 
 type ATokenBalanceHistoryItem @entity {
@@ -663,14 +625,6 @@ type UserReserve @entity {
   liquidityRate: BigInt!
   stableBorrowLastUpdateTimestamp: Int!
   variableBorrowIndex: BigInt!
-
-  # incentives
-  aTokenincentivesUserIndex: BigInt!
-  vTokenincentivesUserIndex: BigInt!
-  sTokenincentivesUserIndex: BigInt!
-  aIncentivesLastUpdateTimestamp: Int!
-  vIncentivesLastUpdateTimestamp: Int!
-  sIncentivesLastUpdateTimestamp: Int!
   """
   Amount in currency units included as fee
   """
@@ -707,6 +661,7 @@ type User @entity {
   unclaimedRewards: BigInt!
   lifetimeRewards: BigInt!
   incentivesLastUpdated: Int!
+  incentives: [UserRewardIncentives!]! @derivedFrom(field: "user")
 
   reserves: [UserReserve!]! @derivedFrom(field: "user")
   depositHistory: [Deposit!]! @derivedFrom(field: "user")
