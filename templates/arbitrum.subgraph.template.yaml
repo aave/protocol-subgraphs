@@ -298,25 +298,13 @@ templates:
           handler: handleProxyCreated
         - event: PriceOracleUpdated(indexed address)
           handler: handlePriceOracleUpdated
-        - event: PriceOracleUpdated(indexed address) # TODO update naming from LendingRateOracleUpdated
-          handler: handlePriceOracleUpdated
-        - event: PoolUpdated(indexed address) # TODO: update naming from LendingPoolUpdated
+        - event: PoolUpdated(indexed address)
           handler: handlePoolUpdated
-        - event: PoolConfiguratorUpdated(indexed address) # TODO: update naming: LendingPoolConfiguratorUpdated
+        - event: PoolConfiguratorUpdated(indexed address)
           handler: handlePoolConfiguratorUpdated
-        - event: ACLManagerUpdated(indexed address) # TODO: update naming from LendingPoolCollateralManagerUpdated
-          handler: handleACLManagerUpdated
-        - event: ACLAdminUpdated(indexed address) # TODO: update from ConfigurationAdminUpdated
-          handler: handleACLAdminUpdated
-        - event: PriceOracleSentinelUpdated(indexed address) #new
-          handler: handlePriceOracleSentinelUpdated
-        - event: ProxyCreated(bytes32,indexed address) # new 
-          handler: handleProxyCreated
-        - event: BridgeAccessControlUpdated(indexed address) # new
-          handler: handleBridgeAccessControlUpdated
-        - event: PoolDataProviderUpdated(indexed address) # new
+        - event: PoolDataProviderUpdated(indexed address)
           handler: handlePoolDataProviderUpdated
-        - event: AddressSet(bytes32,indexed address,bool) #new
+        - event: AddressSet(bytes32,indexed address,bool)
           handler: handleAddressSet
       file: src/mapping/lending-pool-address-provider/arbitrum.ts
 
@@ -361,11 +349,11 @@ templates:
           handler: handleReserveFreezed
         - event: ReserveUnfrozen(indexed address)
           handler: handleReserveUnfreezed
-        - event: ReservePaused(indexed address) # new TODO: add to schema
+        - event: ReservePaused(indexed address)
           handler: handleReservePaused
-        - event: ReserveUnpaused(indexed address) # new TODO: add to schema
+        - event: ReserveUnpaused(indexed address) 
           handler: handleReserveUnpaused
-        - event: ReserveDropped(indexed address)  # new TODO: add to schema
+        - event: ReserveDropped(indexed address) 
           handler: handleReserveDropped
         - event: ReserveFactorChanged(indexed address,uint256)
           handler: handleReserveFactorChanged
@@ -379,31 +367,27 @@ templates:
           handler: handleStableDebtTokenUpgraded
         - event: VariableDebtTokenUpgraded(indexed address,indexed address,indexed address)
           handler: handleVariableDebtTokenUpgraded
-        - event: BorrowCapChanged(indexed address,uint256) # new TODO: add to schema
+        - event: BorrowCapChanged(indexed address,uint256) 
           handler: handleBorrowCapChanged
-        - event: SupplyCapChanged(indexed address,uint256) # new TODO: add to schema
+        - event: SupplyCapChanged(indexed address,uint256) 
           handler: handleSupplyCapChanged
-        - event: LiquidationProtocolFeeChanged(indexed address,uint256) # new TODO: add to schema
+        - event: LiquidationProtocolFeeChanged(indexed address,uint256) 
           handler: handleLiquidationProtocolFeeChanged
-        - event: UnbackedMintCapChanged(indexed address,uint256) # new TODO: add to schema
+        - event: UnbackedMintCapChanged(indexed address,uint256) 
           handler: handleUnbackedMintCapChanged
-        - event: EModeAssetCategoryChanged(indexed address,uint8) # new TODO: add to schema
+        - event: EModeAssetCategoryChanged(indexed address,uint8) 
           handler: handleEModeAssetCategoryChanged
-        - event: EModeCategoryAdded(indexed uint8,uint256,uint256,uint256,address,string) # new TODO: add to schema
+        - event: EModeCategoryAdded(indexed uint8,uint256,uint256,uint256,address,string) 
           handler: handleEModeCategoryAdded
-        - event: DebtCeilingChanged(indexed address,uint256) # new TODO: add to schema
+        - event: DebtCeilingChanged(indexed address,uint256)
           handler: handleDebtCeilingChanged
-        - event: RiskAdminRegistered(indexed address) # new TODO: add to schema
-          handler: handleRiskAdminRegistered
-        - event: RiskAdminUnregistered(indexed address) # new TODO: add to schema
-          handler: handleRiskAdminUnregistered
-        - event: BridgeProtocolFeeUpdated(uint256) # new TODO: add to schema
+        - event: BridgeProtocolFeeUpdated(uint256) 
           handler: handleBridgeProtocolFeeUpdated
-        - event: FlashloanPremiumTotalUpdated(uint256)  # new TODO: add to schema
+        - event: FlashloanPremiumTotalUpdated(uint256)  
           handler: handleFlashloanPremiumTotalUpdated
-        - event: FlashloanPremiumToProtocolUpdated(uint256)  # new TODO: add to schema
+        - event: FlashloanPremiumToProtocolUpdated(uint256)  
           handler: handleFlashloanPremiumToProtocolUpdated
-        - event: BorrowableInIsolationChanged(address,bool)  # new TODO: add to schema
+        - event: BorrowableInIsolationChanged(address,bool) 
           handler: handleBorrowableInIsolationChanged
       file: src/mapping/lending-pool-configurator/arbitrum.ts
   - kind: ethereum/contract

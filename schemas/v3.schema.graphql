@@ -2,6 +2,9 @@ type Protocol @entity {
   # just 1 for now
   id: ID!
   pools: [Pool!]! @derivedFrom(field: "protocol")
+  bridgeProtocolFee: BigInt
+  flashloanPremiumTotal: BigInt
+  flashloanPremiumToProtocol: BigInt
 }
 
 # service entity, when we receiving an event we should wknow which pool is it
@@ -11,38 +14,15 @@ type ContractToPoolMapping @entity {
   pool: Pool!
 }
 
-type PoolConfigurationHistoryItem @entity {
-  """
-  tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
-  id: ID!
-  active: Boolean
-  pool: Pool!
-  lendingPool: Bytes
-  lendingPoolCollateralManager: Bytes
-  lendingPoolConfiguratorImpl: Bytes
-  lendingPoolImpl: Bytes
-  lendingPoolConfigurator: Bytes
-  proxyPriceProvider: Bytes
-  lendingRateOracle: Bytes
-  configurationAdmin: Bytes
-  timestamp: Int!
-}
-
 type Pool @entity {
   id: ID!
   protocol: Protocol!
-  lendingPool: Bytes
-  lendingPoolCollateralManager: Bytes
-  lendingPoolConfiguratorImpl: Bytes
-  lendingPoolImpl: Bytes
-  lendingPoolConfigurator: Bytes
+  pool: Bytes
+  poolCollateralManager: Bytes
+  poolConfiguratorImpl: Bytes
+  poolImpl: Bytes
+  poolConfigurator: Bytes
   proxyPriceProvider: Bytes
-  lendingRateOracle: Bytes
-  configurationAdmin: Bytes
-  ethereumAddress: Bytes
-  emergencyAdmin: Bytes
-  history: [PoolConfigurationHistoryItem!]! @derivedFrom(field: "pool")
   lastUpdateTimestamp: Int!
 
   reserves: [Reserve!]! @derivedFrom(field: "pool")
@@ -73,17 +53,6 @@ type UsdEthPriceHistoryItem @entity {
   oracle: PriceOracle!
   price: BigInt!
   timestamp: Int!
-}
-
-type ChainlinkENS @entity {
-  "id is the node hash"
-  id: ID!
-  "address of the aggregator"
-  aggregatorAddress: Bytes!
-  "token address represented with this aggregator"
-  underlyingAddress: Bytes!
-  "symbol of the token represented on the aggregator"
-  symbol: String!
 }
 
 type ChainlinkAggregator @entity {
@@ -143,6 +112,7 @@ type SubToken @entity {
   """
   id: ID!
   pool: Pool!
+  tokenContractImpl: Bytes
   underlyingAssetAddress: Bytes!
   underlyingAssetDecimals: Int!
   incentives: [RewardIncentives!]! @derivedFrom(field: "asset")
@@ -489,6 +459,18 @@ type ClaimIncentiveCall @entity {
   amount: BigInt!
 }
 
+type EModeCategory @entity {
+  """
+  id: categoryId
+  """
+  id: ID!
+  ltv: BigInt!
+  liquidationThreshold: BigInt!
+  liquidationBonus: BigInt!
+  oracle: Bytes!
+  label: String!
+}
+
 type Reserve @entity {
   """
   Reserve address
@@ -538,6 +520,23 @@ type Reserve @entity {
   reserveFactor: BigInt! #default 0
   lastUpdateTimestamp: Int!
   stableDebtLastUpdateTimestamp: Int!
+
+  # v3
+  isPaused: Boolean!
+  isDropped: Boolean!
+
+  # TODO: how to get this on creation?
+  borrowCap: BigInt
+  supplyCap: BigInt
+  debtCeiling: BigInt
+  unbackedMintCap: BigInt
+
+  liquidationProtocolFee: BigInt
+
+  borrowableInIsolation: Boolean
+
+  # eMode
+  eMode: EModeCategory
 
   lifetimeLiquidity: BigInt! # default: 0
   lifetimePrincipalStableDebt: BigInt! # default: 0

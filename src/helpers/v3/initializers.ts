@@ -245,7 +245,7 @@ export function getChainlinkAggregator(id: string): ChainlinkAggregator {
   return chainlinkAggregator as ChainlinkAggregator;
 }
 
-export function getOrInitSToken(subTokenAddress: Address): SubToken {
+export function getOrInitSubToken(subTokenAddress: Address): SubToken {
   let sTokenId = subTokenAddress.toHexString();
   let sToken = SubToken.load(sTokenId);
   if (!sToken) {
