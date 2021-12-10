@@ -123,17 +123,17 @@ templates:
         - name: AToken
           file: ./abis/v3/AToken.json
       eventHandlers:
-        - event: AssetConfigUpdated(indexed address,indexed address,uint256,uint256) #TODO: update logic
+        - event: AssetConfigUpdated(indexed address,indexed address,uint256,uint256)
           handler: handleAssetConfigUpdated
-        - event: RewardsAccrued(indexed address,indexed address,uint256) #TODO: update logic
+        - event: RewardsAccrued(indexed address,indexed address,uint256) 
           handler: handleRewardsAccrued
-        - event: RewardsClaimed(indexed address,indexed address,indexed address,address,uint256) #TODO: update logic
+        - event: RewardsClaimed(indexed address,indexed address,indexed address,address,uint256) 
           handler: handleRewardsClaimedClaimer
-        - event: AssetIndexUpdated(indexed address,indexed address,uint256) #TODO: update logic
+        - event: AssetIndexUpdated(indexed address,indexed address,uint256) 
           handler: handleAssetIndexUpdated
-        - event: UserIndexUpdated(indexed address,indexed address,indexed address,uint256) #TODO: update logic
+        - event: UserIndexUpdated(indexed address,indexed address,indexed address,uint256) 
           handler: handleUserIndexUpdated
-        - event: RewardOracleUpdated(indexed address,indexed address) # TODO: add to logic and schema
+        - event: RewardOracleUpdated(indexed address,indexed address)
           handler: handleRewardOracleUpdated
       file: src/mapping/incentives-controller/arbitrum.ts
   # --------------------------------------
@@ -425,13 +425,13 @@ templates:
         - name: Pool
           file: ./abis/v3/Pool.json
       eventHandlers:
-        - event: Supply(indexed address,address,indexed address,uint256,indexed uint16) # TODO: changed from Deposit
-          handler: handleDeposit
+        - event: Supply(indexed address,address,indexed address,uint256,indexed uint16)
+          handler: handleSupply
         - event: Withdraw(indexed address,indexed address,indexed address,uint256)
           handler: handleWithdraw
         - event: Borrow(indexed address,address,indexed address,uint256,uint256,uint256,indexed uint16)
           handler: handleBorrow
-        - event: Repay(indexed address,indexed address,indexed address,uint256,bool) # TODO: update schema and logic
+        - event: Repay(indexed address,indexed address,indexed address,uint256,bool)
           handler: handleRepay
         - event: Swap(indexed address,indexed address,uint256)
           handler: handleSwap
@@ -447,12 +447,14 @@ templates:
           handler: handleLiquidationCall
         - event: ReserveDataUpdated(indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleReserveDataUpdated
-        - event: MintUnbacked(indexed address,address,indexed address,uint256,indexed uint16) # new TODO: add to schema
+        - event: MintUnbacked(indexed address,address,indexed address,uint256,indexed uint16)
           handler: handleMintUnbacked
-        - event: BackUnbacked(indexed address,indexed address,uint256,uint256) # new TODO: add to schema
+        - event: BackUnbacked(indexed address,indexed address,uint256,uint256)
           handler: handleBackUnbacked
-        - event: MintedToTreasury(indexed address,uint256) # new TODO: add to schema
+        - event: MintedToTreasury(indexed address,uint256)
           handler: handleMintedToTreasury
+        - event: UserEModeSet(indexed address,uint8)
+          handler: handleUserEModeSet
       file: src/mapping/lending-pool/arbitrum.ts
 
 

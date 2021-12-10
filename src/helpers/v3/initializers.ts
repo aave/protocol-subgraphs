@@ -1,8 +1,6 @@
 import { Address, Bytes, ethereum, log } from '@graphprotocol/graph-ts';
 import {
-  AToken,
-  SToken,
-  VToken,
+  SubToken,
   PriceOracle,
   PriceOracleAsset,
   Reserve,
@@ -15,15 +13,15 @@ import {
   ContractToPoolMapping,
   Protocol,
   ChainlinkENS,
-} from '../../generated/schema';
+} from '../../../generated/schema';
 import {
   PRICE_ORACLE_ASSET_PLATFORM_SIMPLE,
   PRICE_ORACLE_ASSET_TYPE_SIMPLE,
   zeroAddress,
   zeroBD,
   zeroBI,
-} from '../utils/converters';
-import { getAtokenId, getReserveId, getUserReserveId } from '../utils/id-generation';
+} from '../../utils/converters';
+import { getAtokenId, getReserveId, getUserReserveId } from '../../utils/id-generation';
 
 export function getProtocol(): Protocol {
   let protocolId = '1';
@@ -95,14 +93,6 @@ function initUserReserve(
     userReserve.liquidityRate = zeroBI();
     userReserve.stableBorrowLastUpdateTimestamp = 0;
 
-    // incentives
-    userReserve.aTokenincentivesUserIndex = zeroBI();
-    userReserve.vTokenincentivesUserIndex = zeroBI();
-    userReserve.sTokenincentivesUserIndex = zeroBI();
-    userReserve.aIncentivesLastUpdateTimestamp = 0;
-    userReserve.vIncentivesLastUpdateTimestamp = 0;
-    userReserve.sIncentivesLastUpdateTimestamp = 0;
-
     let user = getOrInitUser(userAddress);
     userReserve.user = user.id;
 
@@ -118,16 +108,6 @@ export function getOrInitUserReserveWithIds(
 ): UserReserve {
   let reserveId = getReserveId(underlyingAssetAddress, pool);
   return initUserReserve(underlyingAssetAddress, userAddress, pool, reserveId);
-}
-
-export function getOrInitUserReserve(
-  _user: Address,
-  _underlyingAsset: Address,
-  event: ethereum.Event
-): UserReserve {
-  let poolId = getPoolByContract(event);
-  let reserve = getOrInitReserve(_underlyingAsset, event);
-  return initUserReserve(_underlyingAsset, _user, poolId, reserve.id);
 }
 
 export function getOrInitPriceOracle(): PriceOracle {
@@ -211,21 +191,10 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
     reserve.vToken = zeroAddress().toHexString();
     reserve.sToken = zeroAddress().toHexString();
 
-    // incentives
-    reserve.aEmissionPerSecond = zeroBI();
-    reserve.vEmissionPerSecond = zeroBI();
-    reserve.sEmissionPerSecond = zeroBI();
-    reserve.aTokenIncentivesIndex = zeroBI();
-    reserve.vTokenIncentivesIndex = zeroBI();
-    reserve.sTokenIncentivesIndex = zeroBI();
-    reserve.aIncentivesLastUpdateTimestamp = 0;
-    reserve.vIncentivesLastUpdateTimestamp = 0;
-    reserve.sIncentivesLastUpdateTimestamp = 0;
-
     reserve.totalScaledVariableDebt = zeroBI();
     reserve.totalCurrentVariableDebt = zeroBI();
     reserve.totalPrincipalStableDebt = zeroBI();
-    reserve.totalDeposits = zeroBI();
+    reserve.totalSupplies = zeroBI();
 
     reserve.lifetimePrincipalStableDebt = zeroBI();
     reserve.lifetimeScaledVariableDebt = zeroBI();
@@ -243,7 +212,7 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
     reserve.lastUpdateTimestamp = 0;
 
     reserve.lifetimeReserveFactorAccrued = zeroBI();
-    reserve.lifetimeDepositorsInterestEarned = zeroBI();
+    reserve.lifetimeSuppliersInterestEarned = zeroBI();
     // reserve.lifetimeStableDebFeeCollected = zeroBI();
     // reserve.lifetimeVariableDebtFeeCollected = zeroBI();
 
@@ -257,6 +226,16 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
   return reserve as Reserve;
 }
 
+export function getOrInitUserReserve(
+  _user: Address,
+  _underlyingAsset: Address,
+  event: ethereum.Event
+): UserReserve {
+  let poolId = getPoolByContract(event);
+  let reserve = getOrInitReserve(_underlyingAsset, event);
+  return initUserReserve(_underlyingAsset, _user, poolId, reserve.id);
+}
+
 export function getChainlinkAggregator(id: string): ChainlinkAggregator {
   let chainlinkAggregator = ChainlinkAggregator.load(id);
   if (!chainlinkAggregator) {
@@ -266,43 +245,16 @@ export function getChainlinkAggregator(id: string): ChainlinkAggregator {
   return chainlinkAggregator as ChainlinkAggregator;
 }
 
-export function getOrInitSToken(sTokenAddress: Address): SToken {
-  let sTokenId = getAtokenId(sTokenAddress);
-  let sToken = SToken.load(sTokenId);
+export function getOrInitSToken(subTokenAddress: Address): SubToken {
+  let sTokenId = subTokenAddress.toHexString();
+  let sToken = SubToken.load(sTokenId);
   if (!sToken) {
-    sToken = new SToken(sTokenId);
+    sToken = new SubToken(sTokenId);
     sToken.underlyingAssetAddress = new Bytes(1);
-    sToken.tokenContractImpl = zeroAddress();
     sToken.pool = '';
     sToken.underlyingAssetDecimals = 18;
   }
-  return sToken as SToken;
-}
-
-export function getOrInitVToken(vTokenAddress: Address): VToken {
-  let vTokenId = getAtokenId(vTokenAddress);
-  let vToken = VToken.load(vTokenId);
-  if (!vToken) {
-    vToken = new VToken(vTokenId);
-    vToken.underlyingAssetAddress = new Bytes(1);
-    vToken.tokenContractImpl = zeroAddress();
-    vToken.pool = '';
-    vToken.underlyingAssetDecimals = 18;
-  }
-  return vToken as VToken;
-}
-
-export function getOrInitAToken(aTokenAddress: Address): AToken {
-  let aTokenId = getAtokenId(aTokenAddress);
-  let aToken = AToken.load(aTokenId);
-  if (!aToken) {
-    aToken = new AToken(aTokenId);
-    aToken.underlyingAssetAddress = new Bytes(1);
-    aToken.tokenContractImpl = zeroAddress();
-    aToken.pool = '';
-    aToken.underlyingAssetDecimals = 18;
-  }
-  return aToken as AToken;
+  return sToken as SubToken;
 }
 
 export function getOrInitReserveParamsHistoryItem(
@@ -341,7 +293,7 @@ export function getOrInitReserveParamsHistoryItem(
     reserveParamsHistoryItem.lifetimeFlashLoans = zeroBI();
     reserveParamsHistoryItem.lifetimeFlashLoanPremium = zeroBI();
     reserveParamsHistoryItem.lifetimeReserveFactorAccrued = zeroBI();
-    reserveParamsHistoryItem.lifetimeDepositorsInterestEarned = zeroBI();
+    reserveParamsHistoryItem.lifetimeSuppliersInterestEarned = zeroBI();
     // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = zeroBI();
     // reserveParamsHistoryItem.lifetimeVariableDebtFeeCollected = zeroBI();
   }

@@ -46,7 +46,7 @@ type Pool @entity {
   lastUpdateTimestamp: Int!
 
   reserves: [Reserve!]! @derivedFrom(field: "pool")
-  depositHistory: [Deposit!]! @derivedFrom(field: "pool")
+  supplyHistory: [Supply!]! @derivedFrom(field: "pool")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "pool")
   borrowHistory: [Borrow!]! @derivedFrom(field: "pool")
   swapHistory: [Swap!]! @derivedFrom(field: "pool")
@@ -156,7 +156,7 @@ enum BorrowRateMode {
 
 type Referrer @entity {
   id: ID!
-  deposits: [Deposit!]! @derivedFrom(field: "referrer")
+  supplies: [Supply!]! @derivedFrom(field: "referrer")
   borrows: [Borrow!]! @derivedFrom(field: "referrer")
 }
 
@@ -167,7 +167,7 @@ interface UserTransaction {
   timestamp: Int!
 }
 
-type Deposit implements UserTransaction @entity {
+type Supply @entity {
   """
   tx hash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
@@ -176,9 +176,10 @@ type Deposit implements UserTransaction @entity {
   user: User!
   onBehalfOf: User!
   reserve: Reserve!
+  referrer: Referrer
   userReserve: UserReserve!
   amount: BigInt!
-  referrer: Referrer
+  referralCode: Int!
   timestamp: Int!
 }
 
@@ -273,6 +274,7 @@ type Repay implements UserTransaction @entity {
   userReserve: UserReserve!
   amount: BigInt!
   timestamp: Int!
+  useATokens: Boolean!
 }
 
 type FlashLoan @entity {
@@ -321,6 +323,42 @@ type OriginationFeeLiquidation implements UserTransaction @entity {
   feeLiquidated: BigInt!
   liquidatedCollateralForFee: BigInt!
   timestamp: Int!
+}
+
+type MintUnbacked @entity {
+  id: ID!
+  pool: Pool!
+  user: User!
+  onBehalfOf: User!
+  reserve: Reserve!
+  amount: BigInt!
+  referral: Int!
+  timestamp: Int!
+}
+
+type BackUnbacked @entity {
+  id: ID!
+  pool: Pool!
+  reserve: Reserve!
+  backer: User!
+  amount: BigInt!
+  fee: BigInt!
+  timestamp: Int!
+}
+
+type MintedToTreasury @entity {
+  id: ID!
+  pool: Pool!
+  reserve: Reserve!
+  amount: BigInt!
+  timestamp: Int!
+}
+
+type UserEModeSet @entity {
+  id: ID!
+  user: User!
+  timestamp: Int!
+  categoryId: Int!
 }
 
 type ReserveConfigurationHistoryItem @entity {
@@ -375,7 +413,7 @@ type ReserveParamsHistoryItem @entity {
   lifetimeFlashLoans: BigInt!
   lifetimeFlashLoanPremium: BigInt!
   lifetimeReserveFactorAccrued: BigInt!
-  lifetimeDepositorsInterestEarned: BigInt!
+  lifetimeSuppliersInterestEarned: BigInt!
   # lifetimeStableDebFeeCollected: BigInt!
   # lifetimeVariableDebtFeeCollected: BigInt!
 }
@@ -487,8 +525,8 @@ type Reserve @entity {
   totalPrincipalStableDebt: BigInt! # default: 0
   totalScaledVariableDebt: BigInt! # default: 0
   totalCurrentVariableDebt: BigInt! # default: 0
-  totalDeposits: BigInt! # default: 0
-  liquidityRate: BigInt! # depositors interest
+  totalSupplies: BigInt! # default: 0
+  liquidityRate: BigInt! # suppliers interest
   averageStableRate: BigInt!
   variableBorrowRate: BigInt!
   stableBorrowRate: BigInt!
@@ -511,12 +549,12 @@ type Reserve @entity {
   lifetimeLiquidated: BigInt! # default: 0
   lifetimeFlashLoans: BigInt! # default: 0
   lifetimeFlashLoanPremium: BigInt! # default: 0
-  lifetimeDepositorsInterestEarned: BigInt!
+  lifetimeSuppliersInterestEarned: BigInt!
   lifetimeReserveFactorAccrued: BigInt!
   # lifetimeStableDebFeeCollected: BigInt!
   # lifetimeVariableDebtFeeCollected: BigInt!
   userReserves: [UserReserve!]! @derivedFrom(field: "reserve")
-  depositHistory: [Deposit!]! @derivedFrom(field: "reserve")
+  supplyHistory: [Supply!]! @derivedFrom(field: "reserve")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "reserve")
   borrowHistory: [Borrow!]! @derivedFrom(field: "reserve")
   usageAsCollateralHistory: [UsageAsCollateral!]! @derivedFrom(field: "reserve")
@@ -529,7 +567,7 @@ type Reserve @entity {
     @derivedFrom(field: "collateralReserve")
   paramsHistory: [ReserveParamsHistoryItem!]! @derivedFrom(field: "reserve")
   configurationHistory: [ReserveConfigurationHistoryItem!]! @derivedFrom(field: "reserve")
-  deposits: [Deposit!]! @derivedFrom(field: "reserve")
+  supplies: [Supply!]! @derivedFrom(field: "reserve")
 }
 
 type ATokenBalanceHistoryItem @entity {
@@ -639,7 +677,7 @@ type UserReserve @entity {
   #borrowStateHistory: [UserBorrowHistoryItem!]! @derivedFrom(field: "userReserve")
 
   usageAsCollateralHistory: [UsageAsCollateral!]! @derivedFrom(field: "userReserve")
-  depositHistory: [Deposit!]! @derivedFrom(field: "userReserve")
+  supplyHistory: [Supply!]! @derivedFrom(field: "userReserve")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "userReserve")
   borrowHistory: [Borrow!]! @derivedFrom(field: "userReserve")
   swapHistory: [Swap!]! @derivedFrom(field: "userReserve")
@@ -663,8 +701,11 @@ type User @entity {
   incentivesLastUpdated: Int!
   incentives: [UserRewardIncentives!]! @derivedFrom(field: "user")
 
+  #emode
+  eModeCategoryId: Int
+
   reserves: [UserReserve!]! @derivedFrom(field: "user")
-  depositHistory: [Deposit!]! @derivedFrom(field: "user")
+  supplyHistory: [Supply!]! @derivedFrom(field: "user")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "user")
   usageAsCollateralHistory: [UsageAsCollateral!]! @derivedFrom(field: "user")
   borrowHistory: [Borrow!]! @derivedFrom(field: "user")

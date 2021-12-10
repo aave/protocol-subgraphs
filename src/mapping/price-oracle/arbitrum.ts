@@ -3,10 +3,9 @@ import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts';
 import {
   AssetPriceUpdated,
   EthPriceUpdated,
-  ProphecySubmitted,
-} from '../../../generated/templates/FallbackPriceOracle/GenericOracleI';
+} from '../../../generated/templates/FallbackPriceOracle/PriceOracle';
 import { AnswerUpdated } from '../../../generated/templates/ChainlinkAggregator/IExtendedPriceAggregator';
-import { formatUsdEthChainlinkPrice, zeroAddress, zeroBI } from '../../utils/converters';
+import { formatUsdEthChainlinkPrice, zeroBI } from '../../utils/converters';
 import {
   getChainlinkAggregator,
   getOrInitPriceOracle,
@@ -26,29 +25,6 @@ export function handleAssetPriceUpdated(event: AssetPriceUpdated): void {
 export function handleEthPriceUpdated(event: EthPriceUpdated): void {
   let priceOracle = getOrInitPriceOracle();
   usdEthPriceUpdate(priceOracle, event.params._price, event);
-}
-
-// KOVAN
-export function handleProphecySubmitted(event: ProphecySubmitted): void {
-  let priceOracle = getOrInitPriceOracle();
-
-  if (priceOracle.fallbackPriceOracle.equals(event.address)) {
-    // if usd mock address
-    if (event.params._asset.toHexString() == MOCK_USD_ADDRESS) {
-      if (priceOracle.usdPriceEthMainSource.equals(zeroAddress())) {
-        usdEthPriceUpdate(
-          priceOracle,
-          formatUsdEthChainlinkPrice(event.params._oracleProphecy),
-          event
-        );
-      }
-    } else {
-      let oracleAsset = getPriceOracleAsset(event.params._asset.toHexString());
-      if (oracleAsset.priceSource.equals(zeroAddress()) || oracleAsset.isFallbackRequired) {
-        genericPriceUpdate(oracleAsset, event.params._oracleProphecy, event);
-      }
-    }
-  }
 }
 
 function genericHandleChainlinkUSDETHPrice(
