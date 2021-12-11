@@ -524,48 +524,48 @@ templates:
   # --------------------------------------
   #       CONFIGURATIONS
   # --------------------------------------
-  - kind: ethereum/contract
-    name: UniswapExchange
-    network: {{network}}
-    source:
-      abi: IUniswapExchange
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - PriceOracleAsset
-        - PriceOracle
-      abis:
-        - name: IUniswapExchange
-          file: ./constant-abis/IUniswapExchange.json
-        - name: AaveOracle
-          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
-      eventHandlers:
-        - event: Sync(uint112,uint112)
-          handler: updateAssetPriceFromAaveOracle
-      file: ./src/helpers/price-updates.ts
+  # - kind: ethereum/contract
+  #   name: UniswapExchange
+  #   network: {{network}}
+  #   source:
+  #     abi: IUniswapExchange
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.4
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - PriceOracleAsset
+  #       - PriceOracle
+  #     abis:
+  #       - name: IUniswapExchange
+  #         file: ./constant-abis/IUniswapExchange.json
+  #       - name: AaveOracle
+  #         file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+  #     eventHandlers:
+  #       - event: Sync(uint112,uint112)
+  #         handler: updateAssetPriceFromAaveOracle
+  #     file: ./src/helpers/price-updates.ts
 
-  - kind: ethereum/contract
-    name: BalancerPool
-    network: {{network}}
-    source:
-      abi: IBalancerPool
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - PriceOracleAsset
-        - PriceOracle
-      abis:
-        - name: IBalancerPool
-          file: ./constant-abis/IBalancerPool.json
-        - name: AaveOracle
-          file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
-      eventHandlers:
-        - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256)
-          handler: updateAssetPriceFromAaveOracle
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: updateAssetPriceFromAaveOracle
-      file: ./src/helpers/price-updates.ts
+  # - kind: ethereum/contract
+  #   name: BalancerPool
+  #   network: {{network}}
+  #   source:
+  #     abi: IBalancerPool
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.4
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - PriceOracleAsset
+  #       - PriceOracle
+  #     abis:
+  #       - name: IBalancerPool
+  #         file: ./constant-abis/IBalancerPool.json
+  #       - name: AaveOracle
+  #         file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
+  #     eventHandlers:
+  #       - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256)
+  #         handler: updateAssetPriceFromAaveOracle
+  #       - event: Transfer(indexed address,indexed address,uint256)
+  #         handler: updateAssetPriceFromAaveOracle
+  #     file: ./src/helpers/price-updates.ts

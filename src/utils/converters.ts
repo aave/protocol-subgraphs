@@ -96,6 +96,7 @@ export function getPriceOracleAssetType(_type: BigInt): string {
 export const PRICE_ORACLE_ASSET_PLATFORM_SIMPLE = 'Simple';
 export const PRICE_ORACLE_ASSET_PLATFORM_UNISWAP = 'Uniswap';
 export const PRICE_ORACLE_ASSET_PLATFORM_BALANCER = 'Balancer';
+export const PRICE_ORACLE_ASSET_PLATFORM_GELATO = 'Gelato';
 
 export function getPriceOracleAssetPlatform(_type: BigInt): string {
   let type = _type.toI32();
@@ -106,8 +107,13 @@ export function getPriceOracleAssetPlatform(_type: BigInt): string {
     return PRICE_ORACLE_ASSET_PLATFORM_UNISWAP;
   } else if (type == 3) {
     return PRICE_ORACLE_ASSET_PLATFORM_BALANCER;
+  } else if (type == 4) {
+    return PRICE_ORACLE_ASSET_PLATFORM_GELATO;
+  } else {
+    // other untraked types:
+    log.error('This type is not tracked:: {}', [type.toString()]);
   }
-  throw new Error('invalid price oracle asset platform');
+  // throw new Error('invalid price oracle asset platform');
 }
 
 export function byteArrayFromHex(s: string): ByteArray {
