@@ -1,5 +1,5 @@
 {
-  "network": "arbitrum",
+  "network": "arbitrum-one",
   "AaveOracleAddress": "0x0000000000000000000000000000000000000000",
   "AaveOracleStartBlock": 0,
   "ChainlinkSourcesRegistryAddress": "0x0000000000000000000000000000000000000000",

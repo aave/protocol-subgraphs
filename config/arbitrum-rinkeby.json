@@ -1,9 +1,7 @@
 {
   "network": "arbitrum-rinkeby",
-  "AaveOracleAddress": "0x0000000000000000000000000000000000000000",
-  "AaveOracleStartBlock": 0,
-  "ChainlinkSourcesRegistryAddress": "0x0000000000000000000000000000000000000000",
-  "ChainlinkSourcesRegistryStartBlock": 0,
-  "PoolAddressesProviderRegistryAddress": "0x0000000000000000000000000000000000000000",
-  "PoolAddressesProviderRegistryStartBlock": 0
+  "AaveOracleAddress": "0xCccb61dEf2B8997396C038414a2CD89890025a0A",
+  "AaveOracleStartBlock": 7499380,
+  "PoolAddressesProviderRegistryAddress": "0x3782e8706d700772Bcaf58Ee37F948F2eB3BcbFb",
+  "PoolAddressesProviderRegistryStartBlock": 7499100
 }
