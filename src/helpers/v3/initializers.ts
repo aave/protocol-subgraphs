@@ -12,7 +12,6 @@ import {
   ChainlinkAggregator,
   ContractToPoolMapping,
   Protocol,
-  ChainlinkENS,
 } from '../../../generated/schema';
 import {
   PRICE_ORACLE_ASSET_PLATFORM_SIMPLE,
@@ -21,7 +20,7 @@ import {
   zeroBD,
   zeroBI,
 } from '../../utils/converters';
-import { getAtokenId, getReserveId, getUserReserveId } from '../../utils/id-generation';
+import { getReserveId, getUserReserveId } from '../../utils/id-generation';
 
 export function getProtocol(): Protocol {
   let protocolId = '1';
@@ -53,18 +52,6 @@ export function getOrInitUser(address: Address): User {
     user.save();
   }
   return user as User;
-}
-
-export function getOrInitENS(node: string): ChainlinkENS {
-  let ens = ChainlinkENS.load(node);
-  if (!ens) {
-    ens = new ChainlinkENS(node);
-    ens.aggregatorAddress = zeroAddress();
-    ens.underlyingAddress = zeroAddress();
-    ens.symbol = '';
-    ens.save();
-  }
-  return ens as ChainlinkENS;
 }
 
 function initUserReserve(
