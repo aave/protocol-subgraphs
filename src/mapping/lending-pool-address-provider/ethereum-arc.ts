@@ -15,7 +15,11 @@ import {
   LendingPool as LendingPoolContract,
   LendingPoolConfigurator as LendingPoolConfiguratorContract,
 } from '../../../generated/templates';
-import { createMapContractToPool, getOrInitPriceOracle } from '../../helpers/initializers';
+import {
+  createMapContractToPool,
+  getOrInitPriceOracle,
+  getProtocol,
+} from '../../helpers/initializers';
 import { Pool, PoolConfigurationHistoryItem } from '../../../generated/schema';
 import { EventTypeRef, getHistoryId } from '../../utils/id-generation';
 
@@ -33,9 +37,6 @@ let POOL_COMPONENTS = [
 ] as string[];
 
 function saveAddressProvider(lendingPool: Pool, timestamp: BigInt, event: ethereum.Event): void {
-  lendingPool.lastUpdateTimestamp = timestamp.toI32();
-  lendingPool.save();
-
   let configurationHistoryItem = new PoolConfigurationHistoryItem(
     getHistoryId(event, EventTypeRef.NoType)
   );
@@ -63,9 +64,16 @@ function genericAddressProviderUpdate(
   }
   let poolAddress = event.address.toHexString();
   let lendingPool = Pool.load(poolAddress);
-  if (lendingPool == null) {
-    log.error('pool {} is not registered!', [poolAddress]);
-    throw new Error('pool' + poolAddress + 'is not registered!');
+  if (!lendingPool) {
+    lendingPool = new Pool(poolAddress);
+    let protocol = getProtocol();
+    lendingPool.protocol = protocol.id;
+    lendingPool.active = true;
+    lendingPool.paused = false;
+    lendingPool.lastUpdateTimestamp = event.block.timestamp.toI32();
+    lendingPool.save();
+    // log.error('pool {} is not registered!', [poolAddress]);
+    // throw new Error('pool' + poolAddress + 'is not registered!');
   }
 
   lendingPool.set(component, Value.fromAddress(newAddress));
