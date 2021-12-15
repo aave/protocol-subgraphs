@@ -63,7 +63,7 @@ dataSources:
           handler: handleAddressesProviderRegistered
         - event: AddressesProviderUnregistered(indexed address)
           handler: handleAddressesProviderUnregistered
-      file: src/mapping/address-provider-registry.ts
+      file: src/mapping/address-provider-registry/address-provider-registry.ts
   # --------------------------------------
   #             CHAINLINK
   # --------------------------------------
@@ -159,7 +159,7 @@ templates:
           handler: handleEthPriceUpdated
         - event: ProphecySubmitted(indexed address,indexed address,uint96,uint96)
           handler: handleProphecySubmitted
-      file: src/mapping/price-oracle.ts
+      file: src/mapping/price-oracle/price-oracle.ts
 
   - kind: ethereum/contract
     name: ChainlinkAggregator
@@ -180,7 +180,7 @@ templates:
       eventHandlers:
         - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
           handler: handleChainlinkAnswerUpdated
-      file: src/mapping/price-oracle.ts
+      file: src/mapping/price-oracle/price-oracle.ts
 
   # --------------------------------------
   #      AToken / Stable / Variable
@@ -313,7 +313,7 @@ templates:
         #   handler: handleOwnershipTransferred
         - event: AddressSet(bytes32,indexed address,bool) #new
           handler: handleAddressSet
-      file: src/mapping/lending-pool-address-provider.ts
+      file: src/mapping/lending-pool-address-provider/lending-pool-address-provider.ts
 
   - kind: ethereum/contract
     name: LendingPoolConfigurator
