@@ -23,15 +23,13 @@ import {
   VariableTokenDelegatedAllowance,
 } from '../../../generated/schema';
 import {
-  getOrInitAToken,
   getOrInitReserve,
   getOrInitUserReserve,
-  getOrInitSToken,
-  getOrInitVToken,
+  getOrInitSubToken,
   getOrInitUser,
   getPriceOracleAsset,
   getOrInitReserveParamsHistoryItem,
-} from '../../helpers/initializers';
+} from '../../helpers/v3/initializers';
 import { zeroBI } from '../../utils/converters';
 import { calculateUtilizationRate } from '../../helpers/reserve-logic';
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
@@ -109,8 +107,8 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = reserve.lifetimeStableDebFeeCollected;
   // reserveParamsHistoryItem.lifetimeVariableDebtFeeCollected = reserve.lifetimeVariableDebtFeeCollected;
   reserveParamsHistoryItem.lifetimeReserveFactorAccrued = reserve.lifetimeReserveFactorAccrued;
-  reserveParamsHistoryItem.lifetimeDepositorsInterestEarned =
-    reserve.lifetimeDepositorsInterestEarned;
+  reserveParamsHistoryItem.lifetimeSuppliersInterestEarned =
+    reserve.lifetimeSuppliersInterestEarned;
   reserveParamsHistoryItem.availableLiquidity = reserve.availableLiquidity;
   reserveParamsHistoryItem.totalLiquidity = reserve.totalLiquidity;
   reserveParamsHistoryItem.totalLiquidityAsCollateral = reserve.totalLiquidityAsCollateral;
@@ -132,7 +130,7 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
 }
 
 function tokenBurn(event: ethereum.Event, from: Address, value: BigInt, index: BigInt): void {
-  let aToken = getOrInitAToken(event.address);
+  let aToken = getOrInitSubToken(event.address);
   let userReserve = getOrInitUserReserve(from, aToken.underlyingAssetAddress as Address, event);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress as Address, event);
 
@@ -144,7 +142,7 @@ function tokenBurn(event: ethereum.Event, from: Address, value: BigInt, index: B
   userReserve.liquidityRate = poolReserve.liquidityRate;
 
   // TODO: review liquidity?
-  poolReserve.totalDeposits = poolReserve.totalDeposits.minus(value);
+  poolReserve.totalSupplies = poolReserve.totalSupplies.minus(value);
   // poolReserve.availableLiquidity = poolReserve.totalDeposits
   //   .minus(poolReserve.totalPrincipalStableDebt)
   //   .minus(poolReserve.totalScaledVariableDebt);
@@ -166,7 +164,7 @@ function tokenBurn(event: ethereum.Event, from: Address, value: BigInt, index: B
 }
 
 function tokenMint(event: ethereum.Event, from: Address, value: BigInt, index: BigInt): void {
-  let aToken = getOrInitAToken(event.address);
+  let aToken = getOrInitSubToken(event.address);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress as Address, event);
   poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(value);
   // Check if we are minting to treasury for mainnet and polygon
@@ -184,7 +182,7 @@ function tokenMint(event: ethereum.Event, from: Address, value: BigInt, index: B
     userReserve.save();
 
     // TODO: review
-    poolReserve.totalDeposits = poolReserve.totalDeposits.plus(value);
+    poolReserve.totalSupplies = poolReserve.totalSupplies.plus(value);
     // poolReserve.availableLiquidity = poolReserve.totalDeposits
     //   .minus(poolReserve.totalPrincipalStableDebt)
     //   .minus(poolReserve.totalScaledVariableDebt);
@@ -218,7 +216,7 @@ export function handleATokenTransfer(event: ATokenTransfer): void {
   tokenMint(event, event.params.to, event.params.value, event.params.index);
 
   // TODO: is this really necessary(from v1)? if we transfer aToken we are not moving the collateral (underlying token)
-  let aToken = getOrInitAToken(event.address);
+  let aToken = getOrInitSubToken(event.address);
   let userFromReserve = getOrInitUserReserve(
     event.params.from,
     aToken.underlyingAssetAddress as Address,
@@ -251,7 +249,7 @@ export function handleATokenTransfer(event: ATokenTransfer): void {
 }
 
 export function handleVariableTokenBurn(event: VTokenBurn): void {
-  let vToken = getOrInitVToken(event.address);
+  let vToken = getOrInitSubToken(event.address);
   let from = event.params.user;
   let value = event.params.amount;
   let index = event.params.index;
@@ -294,7 +292,7 @@ export function handleVariableTokenBurn(event: VTokenBurn): void {
 }
 
 export function handleVariableTokenMint(event: VTokenMint): void {
-  let vToken = getOrInitVToken(event.address);
+  let vToken = getOrInitSubToken(event.address);
   let poolReserve = getOrInitReserve(vToken.underlyingAssetAddress as Address, event);
 
   let from = event.params.from;
@@ -347,7 +345,7 @@ export function handleVariableTokenMint(event: VTokenMint): void {
 
 export function handleStableTokenMint(event: STokenMint): void {
   let borrowedAmount = event.params.amount;
-  let sToken = getOrInitSToken(event.address);
+  let sToken = getOrInitSubToken(event.address);
   let from = event.params.user;
   if (from.toHexString() != event.params.onBehalfOf.toHexString()) {
     from = event.params.onBehalfOf;
@@ -401,7 +399,7 @@ export function handleStableTokenMint(event: STokenMint): void {
 
 export function handleStableTokenBurn(event: STokenBurn): void {
   let sTokenAddress = event.address;
-  let sToken = getOrInitSToken(sTokenAddress);
+  let sToken = getOrInitSubToken(sTokenAddress);
   let userReserve = getOrInitUserReserve(
     event.params.user,
     sToken.underlyingAssetAddress as Address,

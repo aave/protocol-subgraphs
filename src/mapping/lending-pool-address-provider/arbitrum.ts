@@ -13,8 +13,7 @@ import {
   PoolConfigurator as PoolConfiguratorContract,
 } from '../../../generated/templates';
 import { createMapContractToPool, getOrInitPriceOracle } from '../../helpers/v3/initializers';
-import { Pool, PoolConfigurationHistoryItem } from '../../../generated/schema';
-import { EventTypeRef, getHistoryId } from '../../utils/id-generation';
+import { Pool } from '../../../generated/schema';
 
 let POOL_COMPONENTS = [
   'poolDataProvider',
@@ -25,26 +24,6 @@ let POOL_COMPONENTS = [
   'poolImpl',
   'proxyPriceProvider',
 ] as string[];
-
-function saveAddressProvider(lendingPool: Pool, timestamp: BigInt, event: ethereum.Event): void {
-  lendingPool.lastUpdateTimestamp = timestamp.toI32();
-  lendingPool.save();
-
-  let configurationHistoryItem = new PoolConfigurationHistoryItem(
-    getHistoryId(event, EventTypeRef.NoType)
-  );
-  for (let i = 0; i < POOL_COMPONENTS.length; i++) {
-    let param = POOL_COMPONENTS[i];
-    let value = lendingPool.get(param);
-    if (!value) {
-      return;
-    }
-    configurationHistoryItem.set(param, value as Value);
-  }
-  configurationHistoryItem.timestamp = timestamp.toI32();
-  configurationHistoryItem.pool = lendingPool.id;
-  configurationHistoryItem.save();
-}
 
 function genericAddressProviderUpdate(
   component: string,
@@ -66,7 +45,8 @@ function genericAddressProviderUpdate(
   if (createMapContract) {
     createMapContractToPool(newAddress, pool.id);
   }
-  saveAddressProvider(pool as Pool, event.block.timestamp, event);
+  pool.lastUpdateTimestamp = event.block.timestamp.toI32();
+  pool.save();
 }
 
 export function handleProxyCreated(event: ProxyCreated): void {

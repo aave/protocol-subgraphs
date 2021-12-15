@@ -405,7 +405,7 @@ type RewardIncentives @entity {
   id: ID!
   rewardToken: Bytes!
   asset: SubToken!
-  rewardTokenDecimals: Bytes!
+  rewardTokenDecimals: Int!
   rewardFeedOracle: RewardFeedOracle!
   rewardTokenSymbol: String!
   index: BigInt!
@@ -701,7 +701,7 @@ type User @entity {
   incentives: [UserRewardIncentives!]! @derivedFrom(field: "user")
 
   #emode
-  eModeCategoryId: Int
+  eModeCategoryId: EModeCategory
 
   reserves: [UserReserve!]! @derivedFrom(field: "user")
   supplyHistory: [Supply!]! @derivedFrom(field: "user")

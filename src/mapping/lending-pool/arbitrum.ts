@@ -26,7 +26,7 @@ import {
   getOrInitReserve,
   getOrInitUser,
   getOrInitUserReserve,
-} from '../../helpers/initializers';
+} from '../../helpers/v3/initializers';
 import {
   Borrow as BorrowAction,
   Supply as SupplyAction,
@@ -350,7 +350,7 @@ export function handleUserEModeSet(event: UserEModeSet): void {
     id = id + '0';
   }
 
-  user.eModeCategoryId = event.params.categoryId;
+  user.eModeCategoryId = BigInt.fromI32(event.params.categoryId).toString();
   user.save();
 
   let userEModeSet = new UserEModeSetAction(id);

@@ -13,7 +13,7 @@ import {
   getOrInitReserveConfigurationHistoryItem,
   getProtocol,
 } from '../../helpers/v3/initializers';
-import { Bytes, Address, ethereum, log } from '@graphprotocol/graph-ts';
+import { Bytes, Address, ethereum, log, BigInt } from '@graphprotocol/graph-ts';
 import {
   BorrowingDisabledOnReserve,
   BorrowingEnabledOnReserve,
@@ -39,8 +39,6 @@ import {
   EModeAssetCategoryChanged,
   EModeCategoryAdded,
   DebtCeilingChanged,
-  RiskAdminRegistered,
-  RiskAdminUnregistered,
   BridgeProtocolFeeUpdated,
   FlashloanPremiumTotalUpdated,
   FlashloanPremiumToProtocolUpdated,
@@ -232,12 +230,12 @@ export function handleUnbackedMintCapChanged(event: UnbackedMintCapChanged): voi
 
 export function handleEModeAssetCategoryChanged(event: EModeAssetCategoryChanged): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.eMode = event.params.categoryId.toString();
+  reserve.eMode = BigInt.fromI32(event.params.categoryId).toString();
   reserve.save();
 }
 
 export function handleEModeCategoryAdded(event: EModeCategoryAdded): void {
-  let id = event.params.categoryId.toString();
+  let id = BigInt.fromI32(event.params.categoryId).toString();
   let eModeCategory = EModeCategory.load(id);
   if (!eModeCategory) {
     eModeCategory = new EModeCategory(id);

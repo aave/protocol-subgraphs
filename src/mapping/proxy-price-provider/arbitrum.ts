@@ -20,8 +20,8 @@ import {
   getChainlinkAggregator,
   getOrInitPriceOracle,
   getPriceOracleAsset,
-} from '../../helpers/initializers';
-import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
+} from '../../helpers/v3/initializers';
+import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/v3/price-updates';
 
 import { PriceOracle as FallbackPriceOracle } from '../../../generated/AaveOracle/PriceOracle';
 

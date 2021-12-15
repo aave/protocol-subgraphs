@@ -1,11 +1,11 @@
 import { Address } from '@graphprotocol/graph-ts';
-import { Pool } from '../../generated/schema';
-import { LendingPoolAddressesProvider } from '../../generated/templates';
+import { Pool } from '../../../generated/schema';
+import { PoolAddressesProvider } from '../../../generated/templates';
 import {
   AddressesProviderRegistered,
   AddressesProviderUnregistered,
-} from '../../generated/LendingPoolAddressesProviderRegistry/LendingPoolAddressesProviderRegistry';
-import { getProtocol } from '../helpers/initializers';
+} from '../../../generated/PoolAddressesProviderRegistry/PoolAddressesProviderRegistry';
+import { getProtocol } from '../../helpers/v3/initializers';
 
 export function handleAddressesProviderRegistered(event: AddressesProviderRegistered): void {
   let protocol = getProtocol();
@@ -18,7 +18,7 @@ export function handleAddressesProviderRegistered(event: AddressesProviderRegist
     pool.lastUpdateTimestamp = event.block.timestamp.toI32();
     pool.save();
 
-    LendingPoolAddressesProvider.create(Address.fromString(address));
+    PoolAddressesProvider.create(Address.fromString(address));
   }
 }
 

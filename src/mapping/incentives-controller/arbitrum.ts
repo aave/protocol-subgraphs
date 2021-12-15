@@ -14,7 +14,7 @@ import {
   RewardIncentives,
   UserRewardIncentives,
 } from '../../../generated/schema';
-import { getOrInitUser } from '../../helpers/initializers';
+import { getOrInitUser } from '../../helpers/v3/initializers';
 import { getHistoryEntityId } from '../../utils/id-generation';
 import { IERC20Detailed } from '../../../generated/templates/IncentivesControllerV2/IERC20Detailed';
 import { zeroBI } from '../../utils/converters';
@@ -61,7 +61,7 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
     rewardIncentive.rewardFeedOracle = oracle.id;
   }
 
-  rewardIncentive.distributionEnd = distributionEnd;
+  rewardIncentive.distributionEnd = distributionEnd.toI32();
   rewardIncentive.emissionsPerSecond = emissionsPerSecond;
   rewardIncentive.updatedAt = blockTimestamp;
   rewardIncentive.save();
