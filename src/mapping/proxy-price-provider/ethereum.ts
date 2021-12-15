@@ -5,11 +5,15 @@ import { IExtendedPriceAggregator } from '../../../generated/AaveOracle/IExtende
 import { AggregatorUpdated } from '../../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
 
 import {
-  BalancerPool,
+  // BalancerPool,
   ChainlinkAggregator as ChainlinkAggregatorContract,
-  UniswapExchange,
+  // UniswapExchange,
 } from '../../../generated/templates';
-import { generateSymbol, namehash } from '../../utils/converters';
+import {
+  generateSymbol,
+  namehash,
+  PRICE_ORACLE_ASSET_PLATFORM_GELATO,
+} from '../../utils/converters';
 import {
   getChainlinkAggregator,
   getOrInitPriceOracle,
@@ -162,9 +166,11 @@ export function priceFeedUpdated(
       if (!platformIdCall.reverted) {
         let platformId = getPriceOracleAssetPlatform(platformIdCall.value);
         if (platformId == PRICE_ORACLE_ASSET_PLATFORM_UNISWAP) {
-          UniswapExchange.create(assetAddress);
+          // UniswapExchange.create(assetAddress);
         } else if (platformId == PRICE_ORACLE_ASSET_PLATFORM_BALANCER) {
-          BalancerPool.create(assetAddress);
+          // BalancerPool.create(assetAddress);
+        } else if (platformId == PRICE_ORACLE_ASSET_PLATFORM_GELATO) {
+          // GelatoPool.create(assetAddress)
         } else {
           log.error('Platform not supported: {}', [platformIdCall.value.toString()]);
         }
@@ -336,9 +342,11 @@ function chainLinkAggregatorUpdated(
       if (!platformIdCall.reverted) {
         let platformId = getPriceOracleAssetPlatform(platformIdCall.value);
         if (platformId == PRICE_ORACLE_ASSET_PLATFORM_UNISWAP) {
-          UniswapExchange.create(assetAddress);
+          // UniswapExchange.create(assetAddress);
         } else if (platformId == PRICE_ORACLE_ASSET_PLATFORM_BALANCER) {
-          BalancerPool.create(assetAddress);
+          // BalancerPool.create(assetAddress);
+        } else if (platformId == PRICE_ORACLE_ASSET_PLATFORM_GELATO) {
+          // GelatoPool.create(assetAddress)
         } else {
           log.error('Platform not supported: {}', [platformIdCall.value.toString()]);
         }
