@@ -149,7 +149,6 @@ type Supply @entity {
   referrer: Referrer
   userReserve: UserReserve!
   amount: BigInt!
-  referralCode: Int!
   timestamp: Int!
 }
 

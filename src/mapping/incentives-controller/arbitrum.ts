@@ -132,6 +132,7 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
     userReward = new UserRewardIncentives(userRewardsId);
     userReward.reward = rewardId;
     userReward.createdAt = blockTimestamp;
+    userReward.user = user.toHexString();
   }
 
   userReward.index = index;

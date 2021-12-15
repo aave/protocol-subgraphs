@@ -183,6 +183,9 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
     reserve.totalPrincipalStableDebt = zeroBI();
     reserve.totalSupplies = zeroBI();
 
+    reserve.isPaused = false;
+    reserve.isDropped = false;
+
     reserve.lifetimePrincipalStableDebt = zeroBI();
     reserve.lifetimeScaledVariableDebt = zeroBI();
     reserve.lifetimeCurrentVariableDebt = zeroBI();
