@@ -470,6 +470,15 @@ type EModeCategory @entity {
   label: String!
 }
 
+type MapAssetPool @entity {
+  """
+  address of a /s /v token
+  """
+  id: ID!
+  pool: String!
+  underlyingAsset: Bytes!
+}
+
 type Reserve @entity {
   """
   Reserve address

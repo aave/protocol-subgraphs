@@ -32,7 +32,7 @@ import {
 } from '../../helpers/v3/initializers';
 import { zeroBI } from '../../utils/converters';
 import { calculateUtilizationRate } from '../../helpers/reserve-logic';
-import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
+import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
 import { rayDiv, rayMul } from '../../helpers/math';
 
 // TODO: check if we need to add stuff to history
@@ -164,6 +164,7 @@ function tokenBurn(event: ethereum.Event, from: Address, value: BigInt, index: B
 }
 
 function tokenMint(event: ethereum.Event, from: Address, value: BigInt, index: BigInt): void {
+  log.error('---------------------------------------------------', []);
   let aToken = getOrInitSubToken(event.address);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress as Address, event);
   poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(value);
@@ -204,14 +205,17 @@ function tokenMint(event: ethereum.Event, from: Address, value: BigInt, index: B
 }
 
 export function handleATokenBurn(event: ATokenBurn): void {
+  log.error('Burn ---------------------------------', []);
   tokenBurn(event, event.params.from, event.params.value, event.params.index);
 }
 
 export function handleATokenMint(event: ATokenMint): void {
+  log.error('Mint ---------------------------------', []);
   tokenMint(event, event.params.from, event.params.value, event.params.index);
 }
 
 export function handleATokenTransfer(event: ATokenTransfer): void {
+  log.error('Transfer ---------------------------------', []);
   tokenBurn(event, event.params.from, event.params.value, event.params.index);
   tokenMint(event, event.params.to, event.params.value, event.params.index);
 

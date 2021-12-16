@@ -128,7 +128,7 @@ templates:
         - event: RewardsAccrued(indexed address,indexed address,uint256) 
           handler: handleRewardsAccrued
         - event: RewardsClaimed(indexed address,indexed address,indexed address,address,uint256) 
-          handler: handleRewardsClaimedClaimer
+          handler: handleRewardsClaimed
         - event: AssetIndexUpdated(indexed address,indexed address,uint256) 
           handler: handleAssetIndexUpdated
         - event: UserIndexUpdated(indexed address,indexed address,indexed address,uint256) 

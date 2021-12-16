@@ -9,15 +9,19 @@ import {
 } from '../../../generated/templates/IncentivesControllerV2/IncentivesControllerV2';
 import {
   ClaimIncentiveCall,
+  IncentivesController,
   IncentivizedAction,
+  MapAssetPool,
+  Reserve,
   RewardFeedOracle,
   RewardIncentives,
   UserRewardIncentives,
 } from '../../../generated/schema';
 import { getOrInitUser } from '../../helpers/v3/initializers';
-import { getHistoryEntityId } from '../../utils/id-generation';
+import { getHistoryEntityId, getReserveId } from '../../utils/id-generation';
 import { IERC20Detailed } from '../../../generated/templates/IncentivesControllerV2/IERC20Detailed';
 import { zeroBI } from '../../utils/converters';
+import { Address, log } from '@graphprotocol/graph-ts';
 
 export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let emissionsPerSecond = event.params.emission;

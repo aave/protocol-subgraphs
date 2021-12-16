@@ -1,21 +1,30 @@
-import { Initialized as ATokenInitialized } from '../../../generated/templates/AToken/AToken';
+import {
+  Burn,
+  Initialized as ATokenInitialized,
+  Mint,
+} from '../../../generated/templates/AToken/AToken';
 import { Initialized as VTokenInitialized } from '../../../generated/templates/VariableDebtToken/VariableDebtToken';
 import { Initialized as STokenInitialized } from '../../../generated/templates/StableDebtToken/StableDebtToken';
 import { IncentivesControllerV2 } from '../../../generated/templates';
 
 import { Address, log } from '@graphprotocol/graph-ts';
 import { zeroAddress } from '../../utils/converters';
-export {
-  handleATokenBurn,
-  handleATokenMint,
-  handleATokenTransfer,
-  handleVariableTokenBurn,
-  handleVariableTokenMint,
-  handleStableTokenMint,
-  handleStableTokenBurn,
-  handleStableTokenBorrowAllowanceDelegated,
-  handleVariableTokenBorrowAllowanceDelegated,
-} from './tokenization-arbitrum';
+import {
+  ContractToPoolMapping,
+  IncentivesController,
+  MapAssetPool,
+} from '../../../generated/schema';
+// export {
+//   // handleATokenBurn,
+//   // handleATokenMint,
+//   handleATokenTransfer,
+//   handleVariableTokenBurn,
+//   handleVariableTokenMint,
+//   handleStableTokenMint,
+//   handleStableTokenBurn,
+//   handleStableTokenBorrowAllowanceDelegated,
+//   handleVariableTokenBorrowAllowanceDelegated,
+// } from './tokenization-arbitrum';
 
 function createIncentivesController(
   asset: Address,
@@ -32,11 +41,33 @@ function createIncentivesController(
     return;
   }
 
-  IncentivesControllerV2.create(incentivesController);
+  let iController = IncentivesController.load(incentivesController.toHexString());
+  if (!iController) {
+    iController = new IncentivesController(incentivesController.toHexString());
+    iController.save();
+    IncentivesControllerV2.create(incentivesController);
+  }
+
+  let poolAddressProvider = ContractToPoolMapping.load(pool.toHexString());
+  // save asset pool mapping
+  let mapAssetPool = new MapAssetPool(asset.toHexString());
+  mapAssetPool.pool = poolAddressProvider.pool;
+  mapAssetPool.underlyingAsset = underlyingAsset;
+  mapAssetPool.save();
+}
+
+export function handleATokenBurn(event: Burn): void {
+  log.error('Burn ---------------------------------', []);
+  // tokenBurn(event, event.params.from, event.params.value, event.params.index);
+}
+
+export function handleATokenMint(event: Mint): void {
+  log.error('Mint ---------------------------------', []);
+  // tokenMint(event, event.params.from, event.params.value, event.params.index);
 }
 
 export function handleATokenInitialized(event: ATokenInitialized): void {
-  // log.warning('Incentives controller is 0x0 for asset: {} | underlyingasset: {} | pool: {}', []);
+  log.error('asset: {}', [event.address.toHexString()]);
   createIncentivesController(
     event.address,
     event.params.incentivesController,
