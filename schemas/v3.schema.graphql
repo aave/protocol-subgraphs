@@ -137,7 +137,7 @@ interface UserTransaction {
   timestamp: Int!
 }
 
-type Supply @entity {
+type Supply implements UserTransaction @entity {
   """
   tx hash
   """ # TODO: replace with blockNumber/timestamp + blockPosition

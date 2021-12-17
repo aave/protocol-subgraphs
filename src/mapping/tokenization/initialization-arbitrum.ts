@@ -14,17 +14,17 @@ import {
   IncentivesController,
   MapAssetPool,
 } from '../../../generated/schema';
-// export {
-//   // handleATokenBurn,
-//   // handleATokenMint,
-//   handleATokenTransfer,
-//   handleVariableTokenBurn,
-//   handleVariableTokenMint,
-//   handleStableTokenMint,
-//   handleStableTokenBurn,
-//   handleStableTokenBorrowAllowanceDelegated,
-//   handleVariableTokenBorrowAllowanceDelegated,
-// } from './tokenization-arbitrum';
+export {
+  handleATokenBurn,
+  handleATokenMint,
+  handleATokenTransfer,
+  handleVariableTokenBurn,
+  handleVariableTokenMint,
+  handleStableTokenMint,
+  handleStableTokenBurn,
+  handleStableTokenBorrowAllowanceDelegated,
+  handleVariableTokenBorrowAllowanceDelegated,
+} from './tokenization-arbitrum';
 
 function createIncentivesController(
   asset: Address,
@@ -56,15 +56,15 @@ function createIncentivesController(
   mapAssetPool.save();
 }
 
-export function handleATokenBurn(event: Burn): void {
-  log.error('Burn ---------------------------------', []);
-  // tokenBurn(event, event.params.from, event.params.value, event.params.index);
-}
+// export function handleATokenBurn(event: Burn): void {
+//   log.error('Burn ---------------------------------', []);
+//   // tokenBurn(event, event.params.from, event.params.value, event.params.index);
+// }
 
-export function handleATokenMint(event: Mint): void {
-  log.error('Mint ---------------------------------', []);
-  // tokenMint(event, event.params.from, event.params.value, event.params.index);
-}
+// export function handleATokenMint(event: Mint): void {
+//   log.error('Mint ---------------------------------', []);
+//   // tokenMint(event, event.params.from, event.params.value, event.params.index);
+// }
 
 export function handleATokenInitialized(event: ATokenInitialized): void {
   log.error('asset: {}', [event.address.toHexString()]);
