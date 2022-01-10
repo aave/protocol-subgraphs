@@ -1,4 +1,4 @@
-import { Address, log, ethereum, Bytes } from '@graphprotocol/graph-ts';
+import { Address, log, ethereum, Bytes, BigInt } from '@graphprotocol/graph-ts';
 
 import {
   AssetSourceUpdated,
@@ -81,9 +81,15 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
     let ethUsdPriceCall = fallbackOracle.try_getEthUsdPrice();
     if (ethUsdPriceCall.reverted) {
       // try method for ropsten and mainnet
-      ethUsdPrice = formatUsdEthChainlinkPrice(
-        fallbackOracle.getAssetPrice(Address.fromString(MOCK_USD_ADDRESS))
+      let fallbackEthUsdPrice = fallbackOracle.try_getAssetPrice(
+        Address.fromString(MOCK_USD_ADDRESS)
       );
+      if (!fallbackEthUsdPrice.reverted) {
+        ethUsdPrice = formatUsdEthChainlinkPrice(fallbackEthUsdPrice.value);
+      } else {
+        ethUsdPrice = BigInt.fromI32(100000000);
+        log.error('Usd price not set for fallback {}', [event.params.fallbackOracle.toHexString()]);
+      }
     } else {
       ethUsdPrice = ethUsdPriceCall.value;
     }
