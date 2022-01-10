@@ -47,9 +47,9 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
     FallbackPriceOracleContract.create(event.params.fallbackOracle);
 
     // update prices on assets which use fallback
-
-    priceOracle.tokensWithFallback.forEach(token => {
-      let priceOracleAsset = getPriceOracleAsset(token);
+    for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
+      // priceOracle.tokensWithFallback.forEach(token => {
+      let priceOracleAsset = getPriceOracleAsset(priceOracle.tokensWithFallback[i]);
       if (
         priceOracleAsset.priceSource.equals(zeroAddress()) ||
         priceOracleAsset.isFallbackRequired
@@ -72,7 +72,7 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
           );
         }
       }
-    });
+    }
 
     // update USDETH price
     let fallbackOracle = FallbackPriceOracle.bind(event.params.fallbackOracle);
@@ -262,9 +262,17 @@ export function priceFeedUpdated(
       priceOracle.tokensWithFallback.includes(sAssetAddress) &&
       !priceOracleAsset.isFallbackRequired
     ) {
-      priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-        token => token != assetAddress.toHexString()
-      );
+      // priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
+      //   token => token != assetAddress.toHexString()
+      // );
+
+      let tokensWithFallback: string[] = [];
+      for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
+        if (priceOracle.tokensWithFallback[i] != sAssetAddress) {
+          tokensWithFallback.push(priceOracle.tokensWithFallback[i]);
+        }
+      }
+      priceOracle.tokensWithFallback = tokensWithFallback;
     }
 
     if (
@@ -390,9 +398,17 @@ function chainLinkAggregatorUpdated(
       priceOracle.tokensWithFallback.includes(sAssetAddress) &&
       !priceOracleAsset.isFallbackRequired
     ) {
-      priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-        token => token != assetAddress.toHexString()
-      );
+      // priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
+      //   token => token != sAssetAddress
+      // );
+
+      let tokensWithFallback: string[] = [];
+      for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
+        if (priceOracle.tokensWithFallback[i] != sAssetAddress) {
+          tokensWithFallback.push(priceOracle.tokensWithFallback[i]);
+        }
+      }
+      priceOracle.tokensWithFallback = tokensWithFallback;
     }
 
     if (

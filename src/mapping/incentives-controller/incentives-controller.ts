@@ -154,7 +154,7 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
   let userReserve = getOrInitUserReserveWithIds(user, underlyingAsset as Address, pool);
 
   let reserve = Reserve.load(reserveId);
-  if (userReserve != null) {
+  if (userReserve != null && reserve != null) {
     if (asset.toHexString() == reserve.aToken) {
       userReserve.aTokenincentivesUserIndex = index;
       userReserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
@@ -177,7 +177,8 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
 
 export function handleDistributionEndUpdated(event: DistributionEndUpdated): void {
   let iController = IncentivesController.load(event.address.toHexString());
-
-  iController.emissionEndTimestamp = event.params.ditributionEnd.toI32();
-  iController.save();
+  if (iController != null) {
+    iController.emissionEndTimestamp = event.params.ditributionEnd.toI32();
+    iController.save();
+  }
 }
