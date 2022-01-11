@@ -1,5 +1,4 @@
-import { ethereum } from '@graphprotocol/graph-ts';
-import { Address } from '@graphprotocol/graph-ts/index';
+import { Bytes, ethereum } from '@graphprotocol/graph-ts';
 
 export enum EventTypeRef {
   NoType,
@@ -33,18 +32,18 @@ export function getHistoryEntityId(event: ethereum.Event): string {
   return event.transaction.hash.toHexString() + ':' + event.logIndex.toString();
 }
 
-export function getReserveId(underlyingAsset: Address, poolId: string): string {
+export function getReserveId(underlyingAsset: Bytes, poolId: string): string {
   return underlyingAsset.toHexString() + poolId;
 }
 
 export function getUserReserveId(
-  userAddress: Address,
-  underlyingAssetAddress: Address,
+  userAddress: Bytes,
+  underlyingAssetAddress: Bytes,
   poolId: string
 ): string {
   return userAddress.toHexString() + underlyingAssetAddress.toHexString() + poolId;
 }
 
-export function getAtokenId(aTokenAddress: Address): string {
+export function getAtokenId(aTokenAddress: Bytes): string {
   return aTokenAddress.toHexString();
 }

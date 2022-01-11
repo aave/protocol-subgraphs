@@ -1,4 +1,4 @@
-import { Address, log, ethereum, Bytes } from '@graphprotocol/graph-ts';
+import { Address, log, ethereum, Bytes, BigInt } from '@graphprotocol/graph-ts';
 
 import {
   AssetSourceUpdated,
@@ -47,17 +47,15 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
     FallbackPriceOracleContract.create(event.params.fallbackOracle);
 
     // update prices on assets which use fallback
-
-    priceOracle.tokensWithFallback.forEach(token => {
-      let priceOracleAsset = getPriceOracleAsset(token);
+    for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
+      // priceOracle.tokensWithFallback.forEach(token => {
+      let priceOracleAsset = getPriceOracleAsset(priceOracle.tokensWithFallback[i]);
       if (
         priceOracleAsset.priceSource.equals(zeroAddress()) ||
         priceOracleAsset.isFallbackRequired
       ) {
         let proxyPriceProvider = AaveOracle.bind(event.address);
-        let price = proxyPriceProvider.try_getAssetPrice(
-          Bytes.fromHexString(priceOracleAsset.id) as Address
-        );
+        let price = proxyPriceProvider.try_getAssetPrice(Address.fromString(priceOracleAsset.id));
         if (!price.reverted) {
           genericPriceUpdate(priceOracleAsset, price.value, event);
         } else {
@@ -72,7 +70,7 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
           );
         }
       }
-    });
+    }
 
     // update USDETH price
     let fallbackOracle = FallbackPriceOracle.bind(event.params.fallbackOracle);
@@ -81,9 +79,15 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
     let ethUsdPriceCall = fallbackOracle.try_getEthUsdPrice();
     if (ethUsdPriceCall.reverted) {
       // try method for ropsten and mainnet
-      ethUsdPrice = formatUsdEthChainlinkPrice(
-        fallbackOracle.getAssetPrice(Address.fromString(MOCK_USD_ADDRESS))
+      let fallbackEthUsdPrice = fallbackOracle.try_getAssetPrice(
+        Address.fromString(MOCK_USD_ADDRESS)
       );
+      if (!fallbackEthUsdPrice.reverted) {
+        ethUsdPrice = formatUsdEthChainlinkPrice(fallbackEthUsdPrice.value);
+      } else {
+        ethUsdPrice = BigInt.fromI32(100000000);
+        log.error('Usd price not set for fallback {}', [event.params.fallbackOracle.toHexString()]);
+      }
     } else {
       ethUsdPrice = ethUsdPriceCall.value;
     }
@@ -256,9 +260,17 @@ export function priceFeedUpdated(
       priceOracle.tokensWithFallback.includes(sAssetAddress) &&
       !priceOracleAsset.isFallbackRequired
     ) {
-      priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-        token => token != assetAddress.toHexString()
-      );
+      // priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
+      //   token => token != assetAddress.toHexString()
+      // );
+
+      let tokensWithFallback: string[] = [];
+      for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
+        if (priceOracle.tokensWithFallback[i] != sAssetAddress) {
+          tokensWithFallback.push(priceOracle.tokensWithFallback[i]);
+        }
+      }
+      priceOracle.tokensWithFallback = tokensWithFallback;
     }
 
     if (
@@ -384,9 +396,17 @@ function chainLinkAggregatorUpdated(
       priceOracle.tokensWithFallback.includes(sAssetAddress) &&
       !priceOracleAsset.isFallbackRequired
     ) {
-      priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-        token => token != assetAddress.toHexString()
-      );
+      // priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
+      //   token => token != sAssetAddress
+      // );
+
+      let tokensWithFallback: string[] = [];
+      for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
+        if (priceOracle.tokensWithFallback[i] != sAssetAddress) {
+          tokensWithFallback.push(priceOracle.tokensWithFallback[i]);
+        }
+      }
+      priceOracle.tokensWithFallback = tokensWithFallback;
     }
 
     if (

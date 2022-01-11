@@ -30,7 +30,7 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let pool = mapAssetPool.pool;
   let underlyingAsset = mapAssetPool.underlyingAsset;
   // get reserve
-  let reserveId = getReserveId(underlyingAsset as Address, pool);
+  let reserveId = getReserveId(underlyingAsset, pool);
   let reserve = Reserve.load(reserveId);
 
   if (reserve != null) {
@@ -111,7 +111,7 @@ export function handleAssetIndexUpdated(event: AssetIndexUpdated): void {
   let pool = mapAssetPool.pool;
   let underlyingAsset = mapAssetPool.underlyingAsset;
   // get reserve
-  let reserveId = getReserveId(underlyingAsset as Address, pool);
+  let reserveId = getReserveId(underlyingAsset, pool);
   let reserve = Reserve.load(reserveId);
 
   if (reserve != null) {
@@ -149,12 +149,11 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
   let pool = mapAssetPool.pool;
   let underlyingAsset = mapAssetPool.underlyingAsset;
 
-  let reserveId = getReserveId(underlyingAsset as Address, pool);
-  // let userReserveId = getUserReserveId(user, underlyingAsset as Address, pool);
-  let userReserve = getOrInitUserReserveWithIds(user, underlyingAsset as Address, pool);
+  let reserveId = getReserveId(underlyingAsset, pool);
+  let userReserve = getOrInitUserReserveWithIds(user, underlyingAsset, pool);
 
   let reserve = Reserve.load(reserveId);
-  if (userReserve != null) {
+  if (userReserve != null && reserve != null) {
     if (asset.toHexString() == reserve.aToken) {
       userReserve.aTokenincentivesUserIndex = index;
       userReserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
@@ -177,7 +176,8 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
 
 export function handleDistributionEndUpdated(event: DistributionEndUpdated): void {
   let iController = IncentivesController.load(event.address.toHexString());
-
-  iController.emissionEndTimestamp = event.params.ditributionEnd.toI32();
-  iController.save();
+  if (iController != null) {
+    iController.emissionEndTimestamp = event.params.ditributionEnd.toI32();
+    iController.save();
+  }
 }
