@@ -41,7 +41,7 @@ function genericHandleChainlinkUSDETHPrice(
     usdEthPriceUpdate(
       priceOracle,
       formatUsdEthChainlinkPrice(
-        proxyPriceProvider.getAssetPrice(Bytes.fromHexString(MOCK_USD_ADDRESS) as Address)
+        proxyPriceProvider.getAssetPrice(Address.fromString(MOCK_USD_ADDRESS))
       ),
       event
     );
@@ -54,7 +54,9 @@ export function handleChainlinkAnswerUpdated(event: AnswerUpdated): void {
   let chainlinkAggregator = getChainlinkAggregator(event.address.toHexString());
 
   if (priceOracle.usdPriceEthMainSource.equals(event.address)) {
-    let proxyPriceProvider = AaveOracle.bind(priceOracle.proxyPriceProvider as Address);
+    let proxyPriceProvider = AaveOracle.bind(
+      Address.fromString(priceOracle.proxyPriceProvider.toHexString())
+    );
     genericHandleChainlinkUSDETHPrice(event.params.current, event, priceOracle, proxyPriceProvider);
   } else {
     let oracleAsset = getPriceOracleAsset(chainlinkAggregator.oracleAsset);
@@ -79,10 +81,10 @@ export function handleChainlinkAnswerUpdated(event: AnswerUpdated): void {
       } else {
         // oracle answer invalid, start using fallback oracle
         oracleAsset.isFallbackRequired = true;
-        let proxyPriceProvider = AaveOracle.bind(priceOracle.proxyPriceProvider as Address);
-        let assetPrice = proxyPriceProvider.try_getAssetPrice(
-          Bytes.fromHexString(oracleAsset.id) as Address
+        let proxyPriceProvider = AaveOracle.bind(
+          Address.fromString(priceOracle.proxyPriceProvider.toHexString())
         );
+        let assetPrice = proxyPriceProvider.try_getAssetPrice(Address.fromString(oracleAsset.id));
         if (!assetPrice.reverted) {
           genericPriceUpdate(oracleAsset, assetPrice.value, event);
         } else {

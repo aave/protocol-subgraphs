@@ -23,7 +23,9 @@ export function updateAssetPriceFromAaveOracle(event: ethereum.Event): void {
   let assetAddress = event.address;
   let priceOracle = getOrInitPriceOracle();
   let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
-  let proxyPriceProvider = AaveOracle.bind(priceOracle.proxyPriceProvider as Address);
+  let proxyPriceProvider = AaveOracle.bind(
+    Address.fromString(priceOracle.proxyPriceProvider.toHexString())
+  );
 
   let assetPriceCall = proxyPriceProvider.try_getAssetPrice(assetAddress);
   if (!assetPriceCall.reverted) {
@@ -41,7 +43,9 @@ export function updateAssetPriceFromAaveOracle(event: ethereum.Event): void {
 
 export function updateDependentAssets(dependentAssets: string[], event: ethereum.Event): void {
   let proxyPriceProviderAddress = getOrInitPriceOracle().proxyPriceProvider;
-  let proxyPriceProvider = AaveOracle.bind(proxyPriceProviderAddress as Address);
+  let proxyPriceProvider = AaveOracle.bind(
+    Address.fromString(proxyPriceProviderAddress.toHexString())
+  );
 
   // update dependent assets price
   for (let i = 0; i < dependentAssets.length; i += 1) {

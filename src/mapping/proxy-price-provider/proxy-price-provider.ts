@@ -55,9 +55,7 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
         priceOracleAsset.isFallbackRequired
       ) {
         let proxyPriceProvider = AaveOracle.bind(event.address);
-        let price = proxyPriceProvider.try_getAssetPrice(
-          Bytes.fromHexString(priceOracleAsset.id) as Address
-        );
+        let price = proxyPriceProvider.try_getAssetPrice(Address.fromString(priceOracleAsset.id));
         if (!price.reverted) {
           genericPriceUpdate(priceOracleAsset, price.value, event);
         } else {

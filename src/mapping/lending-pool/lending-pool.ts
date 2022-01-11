@@ -109,17 +109,20 @@ export function handleBorrow(event: Borrow): void {
 export function handlePaused(event: Paused): void {
   let poolId = getPoolByContract(event);
   let lendingPool = Pool.load(poolId);
-
-  lendingPool.paused = true;
-  lendingPool.save();
+  if (lendingPool) {
+    lendingPool.paused = true;
+    lendingPool.save();
+  }
 }
 
 export function handleUnpaused(event: Unpaused): void {
   let poolId = getPoolByContract(event);
   let lendingPool = Pool.load(poolId);
 
-  lendingPool.paused = false;
-  lendingPool.save();
+  if (lendingPool) {
+    lendingPool.paused = false;
+    lendingPool.save();
+  }
 }
 
 export function handleSwap(event: Swap): void {

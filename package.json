@@ -16,7 +16,9 @@
     "deploy:hosted:fuji": "VERSION=v2 BLOCKCHAIN=avalanche NETWORK=fuji env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2-fuji env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:avalanche": "VERSION=v2 BLOCKCHAIN=avalanche NETWORK=avalanche env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2-avalanche env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:arbitrum-rinkeby": "VERSION=v3 BLOCKCHAIN=arbitrum NETWORK=arbitrum-rinkeby env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-arbitrum-rinkeby env-cmd npm run subgraph:deploy:hosted",
-    "deploy:hosted:arbitrum": "VERSION=v3 BLOCKCHAIN=arbitrum NETWORK=arbitrum env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-arbitrum env-cmd npm run subgraph:deploy:hosted"
+    "deploy:hosted:arbitrum": "VERSION=v3 BLOCKCHAIN=arbitrum NETWORK=arbitrum env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-arbitrum env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:mainnet-arc": "VERSION=v2-arc BLOCKCHAIN=ethereum-arc NETWORK=mainnet-arc env-cmd npm run prepare:subgraph && SLUG=aave/aave-arc env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:mainnet-centrifuge": "VERSION=v2-arc BLOCKCHAIN=ethereum-arc NETWORK=mainnet-centrifuge env-cmd npm run prepare:subgraph && SLUG=aave/aave-centrifuge env-cmd npm run subgraph:deploy:hosted"
   },
   "repository": {
     "type": "git",
@@ -39,8 +41,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@graphprotocol/graph-cli": "^0.18.0",
-    "@graphprotocol/graph-ts": "^0.18.1",
+    "@graphprotocol/graph-cli": "0.25.1",
+    "@graphprotocol/graph-ts": "0.24.1",
     "env-cmd": "^10.1.0",
     "mustache": "^3.1.0",
     "typescript": "3.5.3",
