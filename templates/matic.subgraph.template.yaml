@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 description: Protocol v2 subgraph
 repository: https://github.com/aave/protocol-v2-subgraph
 schema:
@@ -16,7 +16,7 @@ dataSources:
       abi: AaveOracle
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - ChainlinkAggregator
@@ -51,7 +51,7 @@ dataSources:
       startBlock: {{LendingPoolAddressesProviderRegistryStartBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - LendingPoolAddressesProvider
@@ -76,7 +76,7 @@ dataSources:
       abi: ChainlinkSourcesRegistry
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - PriceOracle
@@ -107,7 +107,7 @@ templates:
       abi: AaveIncentivesController
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - IncentivesController
@@ -144,7 +144,7 @@ templates:
       abi: GenericOracleI
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - PriceOracle
@@ -168,7 +168,7 @@ templates:
       abi: IExtendedPriceAggregator
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - PriceOracleReserve
@@ -192,7 +192,7 @@ templates:
       abi: AToken
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - AToken
@@ -221,7 +221,7 @@ templates:
       abi: StableDebtToken
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - StableDebtToken
@@ -250,7 +250,7 @@ templates:
       abi: VariableDebtToken
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - StableDebtToken
@@ -283,7 +283,7 @@ templates:
       abi: LendingPoolAddressesProvider
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - LendingPoolAddressesProvider
@@ -322,7 +322,7 @@ templates:
       abi: LendingPoolConfigurator
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - Reserve
@@ -376,7 +376,7 @@ templates:
       abi: LendingPool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - ReserveOperation
