@@ -1,0 +1,7 @@
+{
+  "network": "fantom",
+  "AaveOracleAddress": "0x0000000000000000000000000000000000000000",
+  "AaveOracleStartBlock": 0,
+  "PoolAddressesProviderRegistryAddress": "0x0000000000000000000000000000000000000000",
+  "PoolAddressesProviderRegistryStartBlock": 0
+}
