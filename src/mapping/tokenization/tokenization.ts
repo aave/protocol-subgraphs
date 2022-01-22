@@ -19,8 +19,8 @@ import {
   STokenBalanceHistoryItem,
   UserReserve,
   Reserve,
-  StableTokenDelegatedAllowance,
-  VariableTokenDelegatedAllowance,
+  CreditDelegationAllowance,
+  CreditDelegationHistoryItem,
 } from '../../../generated/schema';
 import {
   getOrInitAToken,
@@ -32,6 +32,7 @@ import {
   getPriceOracleAsset,
   getOrInitPriceOracle,
   getOrInitReserveParamsHistoryItem,
+  getOrInitCreditDelegation,
 } from '../../helpers/initializers';
 import { zeroBI } from '../../utils/converters';
 import { calculateUtilizationRate } from '../../helpers/reserve-logic';
@@ -463,46 +464,75 @@ export function handleStableTokenBurn(event: STokenBurn): void {
   saveUserReserveSHistory(userReserve, event, event.params.avgStableRate);
 }
 
+function saveCreditDelegationHistory(
+  delegation: CreditDelegationAllowance,
+  event: ethereum.Event
+): void {
+  let historyItem = new CreditDelegationHistoryItem(
+    delegation.id + event.transaction.hash.toHexString()
+  );
+  historyItem.amountAllowed = delegation.amountAllowed;
+  historyItem.userReserve = delegation.userReserve;
+  historyItem.timestamp = delegation.timestamp;
+  historyItem.txHash = event.transaction.hash.toHexString();
+  historyItem.creditDelegationAllowance = delegation.id;
+  historyItem.save();
+}
+
 export function handleStableTokenBorrowAllowanceDelegated(event: SBorrowAllowanceDelegated): void {
-  let fromUser = event.params.fromUser;
-  let toUser = event.params.toUser;
+  let fromUser = getOrInitUser(event.params.fromUser);
+  let toUser = getOrInitUser(event.params.toUser);
   let asset = event.params.asset;
   let amount = event.params.amount;
-
-  let userReserve = getOrInitUserReserve(fromUser, asset, event);
-
+  let userReserve = getOrInitUserReserve(event.params.fromUser, asset, event);
   let delegatedAllowanceId =
-    'stable' + fromUser.toHexString() + toUser.toHexString() + asset.toHexString();
-  let delegatedAllowance = StableTokenDelegatedAllowance.load(delegatedAllowanceId);
-  if (delegatedAllowance == null) {
-    delegatedAllowance = new StableTokenDelegatedAllowance(delegatedAllowanceId);
-    delegatedAllowance.fromUser = fromUser.toHexString();
-    delegatedAllowance.toUser = toUser.toHexString();
-    delegatedAllowance.userReserve = userReserve.id;
-  }
+    'stable' +
+    event.params.fromUser.toHexString() +
+    event.params.toUser.toHexString() +
+    asset.toHexString();
+  let delegatedAllowance = getOrInitCreditDelegation(
+    delegatedAllowanceId,
+    fromUser,
+    toUser,
+    'Stable',
+    userReserve
+  );
+  delegatedAllowance.timestamp = event.block.timestamp.toI32();
+  delegatedAllowance.txHash = event.transaction.hash.toHexString();
   delegatedAllowance.amountAllowed = amount;
+  userReserve.save();
+  fromUser.save();
+  toUser.save();
   delegatedAllowance.save();
+  saveCreditDelegationHistory(delegatedAllowance, event);
 }
 
 export function handleVariableTokenBorrowAllowanceDelegated(
   event: VBorrowAllowanceDelegated
 ): void {
-  let fromUser = event.params.fromUser;
-  let toUser = event.params.toUser;
+  let fromUser = getOrInitUser(event.params.fromUser);
+  let toUser = getOrInitUser(event.params.toUser);
   let asset = event.params.asset;
   let amount = event.params.amount;
-
-  let userReserve = getOrInitUserReserve(fromUser, asset, event);
-
+  let userReserve = getOrInitUserReserve(event.params.fromUser, asset, event);
   let delegatedAllowanceId =
-    'variable' + fromUser.toHexString() + toUser.toHexString() + asset.toHexString();
-  let delegatedAllowance = VariableTokenDelegatedAllowance.load(delegatedAllowanceId);
-  if (delegatedAllowance == null) {
-    delegatedAllowance = new VariableTokenDelegatedAllowance(delegatedAllowanceId);
-    delegatedAllowance.fromUser = fromUser.toHexString();
-    delegatedAllowance.toUser = toUser.toHexString();
-    delegatedAllowance.userReserve = userReserve.id;
-  }
+    'variable' +
+    event.params.fromUser.toHexString() +
+    event.params.toUser.toHexString() +
+    asset.toHexString();
+  let delegatedAllowance = getOrInitCreditDelegation(
+    delegatedAllowanceId,
+    fromUser,
+    toUser,
+    'Variable',
+    userReserve
+  );
+  delegatedAllowance.timestamp = event.block.timestamp.toI32();
+  delegatedAllowance.txHash = event.transaction.hash.toHexString();
   delegatedAllowance.amountAllowed = amount;
+  userReserve.save();
+  fromUser.save();
+  toUser.save();
   delegatedAllowance.save();
+  saveCreditDelegationHistory(delegatedAllowance, event);
 }
