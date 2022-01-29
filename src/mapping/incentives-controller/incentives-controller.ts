@@ -155,17 +155,18 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
 
   let reserve = Reserve.load(reserveId);
   if (userReserve != null) {
-    if (asset.toHexString() == reserve.aToken) {
-      userReserve.aTokenincentivesUserIndex = index;
-      userReserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
-    } else if (asset.toHexString() == reserve.vToken) {
-      userReserve.vTokenincentivesUserIndex = index;
-      userReserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
-    } else if (asset.toHexString() == reserve.sToken) {
-      userReserve.sTokenincentivesUserIndex = index;
-      userReserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
+    if(reserve){
+      if (asset.toHexString() == reserve.aToken) {
+        userReserve.aTokenincentivesUserIndex = index;
+        userReserve.aIncentivesLastUpdateTimestamp = blockTimestamp;
+      } else if (asset.toHexString() == reserve.vToken) {
+        userReserve.vTokenincentivesUserIndex = index;
+        userReserve.vIncentivesLastUpdateTimestamp = blockTimestamp;
+      } else if (asset.toHexString() == reserve.sToken) {
+        userReserve.sTokenincentivesUserIndex = index;
+        userReserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
+      }
     }
-
     userReserve.save();
   } else {
     log.warning(
@@ -177,7 +178,8 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
 
 export function handleDistributionEndUpdated(event: DistributionEndUpdated): void {
   let iController = IncentivesController.load(event.address.toHexString());
-
-  iController.emissionEndTimestamp = event.params.ditributionEnd.toI32();
-  iController.save();
+  if(iController){
+    iController.emissionEndTimestamp = event.params.ditributionEnd.toI32();
+    iController.save();
+  }
 }
