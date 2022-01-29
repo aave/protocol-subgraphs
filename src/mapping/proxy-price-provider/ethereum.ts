@@ -196,9 +196,19 @@ export function priceFeedUpdated(
       priceOracle.tokensWithFallback.includes(sAssetAddress) &&
       !priceOracleAsset.isFallbackRequired
     ) {
-      priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-        token => token != assetAddress.toHexString()
-      );
+      // priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
+      //   token => token != assetAddress.toHexString()
+      // );
+
+      let tokensWithFallback = new Array<string>();
+        
+      for(let i = 0; i < priceOracle.tokensWithFallback.length; i++){
+        if(priceOracle.tokensWithFallback[i] != assetAddress.toHexString()){
+          tokensWithFallback.push(priceOracle.tokensWithFallback[i])
+        }
+      }
+
+      priceOracle.tokensWithFallback = tokensWithFallback
     }
 
     if (
@@ -378,9 +388,19 @@ function chainLinkAggregatorUpdated(
       priceOracle.tokensWithFallback.includes(sAssetAddress) &&
       !priceOracleAsset.isFallbackRequired
     ) {
-      priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-        token => token != assetAddress.toHexString()
-      );
+      // priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
+      //   token => token != assetAddress.toHexString()
+      // );
+
+      let tokensWithFallback = new Array<string>();
+        
+        for(let i = 0; i < priceOracle.tokensWithFallback.length; i++){
+          if(priceOracle.tokensWithFallback[i] != assetAddress.toHexString()){
+            tokensWithFallback.push(priceOracle.tokensWithFallback[i])
+          }
+        }
+
+        priceOracle.tokensWithFallback = tokensWithFallback
     }
 
     if (

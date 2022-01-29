@@ -57,8 +57,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@graphprotocol/graph-cli": "^0.18.0",
-    "@graphprotocol/graph-ts": "^0.18.1",
+    "@graphprotocol/graph-cli": "^0.23.1",
+    "@graphprotocol/graph-ts": "^0.23.1",
     "env-cmd": "^10.1.0",
     "mustache": "^3.1.0",
     "typescript": "3.5.3",
