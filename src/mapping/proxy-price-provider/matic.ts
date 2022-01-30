@@ -19,7 +19,7 @@ import {
 import { MOCK_USD_ADDRESS } from '../../utils/constants';
 import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
 import { AggregatorUpdated } from '../../../generated/ChainlinkSourcesRegistry/ChainlinkSourcesRegistry';
-export { handleFallbackOracleUpdated, handleWethSet } from './proxy-price-provider';
+export { handleFallbackOracleUpdated } from './proxy-price-provider';
 
 export function priceFeedUpdated(
   event: ethereum.Event,

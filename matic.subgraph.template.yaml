@@ -36,8 +36,6 @@ dataSources:
           handler: handleAssetSourceUpdated
         - event: FallbackOracleUpdated(indexed address)
           handler: handleFallbackOracleUpdated
-        - event: WethSet(indexed address)
-          handler: handleWethSet
       file: src/mapping/proxy-price-provider/matic.ts
   # --------------------------------------
   #           CONFIGURATIONS
