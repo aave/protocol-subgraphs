@@ -1,0 +1,7 @@
+{
+  "network": "arbitrum-rinkeby",
+  "AaveOracleAddress": "0x2560A04c24E8870bB12eE7A9E2DcC4186362F3A1",
+  "AaveOracleStartBlock": 10289640,
+  "PoolAddressesProviderRegistryAddress": "0x4D60d51eD920d37D70Df45375A1b856CbeCda8ec",
+  "PoolAddressesProviderRegistryStartBlock": 10289480
+}

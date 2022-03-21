@@ -1,7 +1,0 @@
-{
-  "network": "optimism-kovan",
-  "AaveOracleAddress": "0x23850f709adE267405B443867f21561516723CA1",
-  "AaveOracleStartBlock": 7607340,
-  "PoolAddressesProviderRegistryAddress": "0x2b2722233Ea238af4c1Bf4B510b7fC5370F2e1BB",
-  "PoolAddressesProviderRegistryStartBlock": 7607150
-}
