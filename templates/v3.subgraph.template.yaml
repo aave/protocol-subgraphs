@@ -1,5 +1,5 @@
 specVersion: 0.0.4
-description: Protocol v2 subgraph
+description: Protocol v3 subgraph
 repository: https://github.com/aave/protocol-v2-subgraph
 schema:
   file: ./schema.graphql
@@ -40,7 +40,7 @@ dataSources:
           handler: handleFallbackOracleUpdated
         - event: BaseCurrencySet(indexed address,uint256)
           handler: handleBaseCurrencySet
-      file: src/mapping/proxy-price-provider/arbitrum.ts
+      file: src/mapping/proxy-price-provider/v3.ts
 
   # - kind: ethereum/contract
   #   name: ChainlinkSourcesRegistry
@@ -69,7 +69,7 @@ dataSources:
   #     eventHandlers:
   #       - event: AggregatorUpdated(address,address)
   #         handler: handleChainlinkAggregatorUpdated
-  #     file: src/mapping/proxy-price-provider/arbitrum.ts
+  #     file: src/mapping/proxy-price-provider/v3.ts
 
   # --------------------------------------
   #           CONFIGURATIONS
@@ -95,7 +95,7 @@ dataSources:
           handler: handleAddressesProviderRegistered
         - event: AddressesProviderUnregistered(indexed address)
           handler: handleAddressesProviderUnregistered
-      file: src/mapping/address-provider-registry/arbitrum.ts
+      file: src/mapping/address-provider-registry/v3.ts
 
   # --------------------------------------
   #
@@ -125,17 +125,17 @@ templates:
       eventHandlers:
         - event: AssetConfigUpdated(indexed address,indexed address,uint256,uint256)
           handler: handleAssetConfigUpdated
-        - event: RewardsAccrued(indexed address,indexed address,uint256) 
+        - event: RewardsAccrued(indexed address,indexed address,uint256)
           handler: handleRewardsAccrued
-        - event: RewardsClaimed(indexed address,indexed address,indexed address,address,uint256) 
+        - event: RewardsClaimed(indexed address,indexed address,indexed address,address,uint256)
           handler: handleRewardsClaimed
-        - event: AssetIndexUpdated(indexed address,indexed address,uint256) 
+        - event: AssetIndexUpdated(indexed address,indexed address,uint256)
           handler: handleAssetIndexUpdated
-        - event: UserIndexUpdated(indexed address,indexed address,indexed address,uint256) 
+        - event: UserIndexUpdated(indexed address,indexed address,indexed address,uint256)
           handler: handleUserIndexUpdated
         - event: RewardOracleUpdated(indexed address,indexed address)
           handler: handleRewardOracleUpdated
-      file: src/mapping/incentives-controller/arbitrum.ts
+      file: src/mapping/incentives-controller/v3.ts
   # --------------------------------------
   #      ORACLES / PRICE PROVIDERS
   # --------------------------------------
@@ -161,7 +161,7 @@ templates:
           handler: handleAssetPriceUpdated
         - event: EthPriceUpdated(uint256,uint256)
           handler: handleEthPriceUpdated
-      file: src/mapping/price-oracle/arbitrum.ts
+      file: src/mapping/price-oracle/v3.ts
 
   - kind: ethereum/contract
     name: ChainlinkAggregator
@@ -182,7 +182,7 @@ templates:
       eventHandlers:
         - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
           handler: handleChainlinkAnswerUpdated
-      file: src/mapping/price-oracle/arbitrum.ts
+      file: src/mapping/price-oracle/v3.ts
 
   # --------------------------------------
   #      AToken / Stable / Variable
@@ -215,7 +215,7 @@ templates:
           handler: handleATokenMint
         - event: Initialized(indexed address,indexed address,address,address,uint8,string,string,bytes)
           handler: handleATokenInitialized
-      file: src/mapping/tokenization/initialization-arbitrum.ts
+      file: src/mapping/tokenization/initialization-v3.ts
   - kind: ethereum/contract
     name: StableDebtToken
     network: {{network}}
@@ -244,7 +244,7 @@ templates:
           handler: handleStableTokenBorrowAllowanceDelegated
         - event: Initialized(indexed address,indexed address,address,uint8,string,string,bytes)
           handler: handleSTokenInitialized
-      file: src/mapping/tokenization/initialization-arbitrum.ts
+      file: src/mapping/tokenization/initialization-v3.ts
   - kind: ethereum/contract
     name: VariableDebtToken
     network: {{network}}
@@ -273,8 +273,7 @@ templates:
           handler: handleVariableTokenBorrowAllowanceDelegated
         - event: Initialized(indexed address,indexed address,address,uint8,string,string,bytes)
           handler: handleVTokenInitialized
-      file: src/mapping/tokenization/initialization-arbitrum.ts
-
+      file: src/mapping/tokenization/initialization-v3.ts
 
   # --------------------------------------
   #       CONFIGURATIONS
@@ -306,7 +305,7 @@ templates:
           handler: handlePoolDataProviderUpdated
         - event: AddressSet(bytes32,indexed address,bool)
           handler: handleAddressSet
-      file: src/mapping/lending-pool-address-provider/arbitrum.ts
+      file: src/mapping/lending-pool-address-provider/v3.ts
 
   - kind: ethereum/contract
     name: PoolConfigurator
@@ -351,9 +350,9 @@ templates:
           handler: handleReserveUnfreezed
         - event: ReservePaused(indexed address)
           handler: handleReservePaused
-        - event: ReserveUnpaused(indexed address) 
+        - event: ReserveUnpaused(indexed address)
           handler: handleReserveUnpaused
-        - event: ReserveDropped(indexed address) 
+        - event: ReserveDropped(indexed address)
           handler: handleReserveDropped
         - event: ReserveFactorChanged(indexed address,uint256)
           handler: handleReserveFactorChanged
@@ -367,29 +366,29 @@ templates:
           handler: handleStableDebtTokenUpgraded
         - event: VariableDebtTokenUpgraded(indexed address,indexed address,indexed address)
           handler: handleVariableDebtTokenUpgraded
-        - event: BorrowCapChanged(indexed address,uint256) 
+        - event: BorrowCapChanged(indexed address,uint256)
           handler: handleBorrowCapChanged
-        - event: SupplyCapChanged(indexed address,uint256) 
+        - event: SupplyCapChanged(indexed address,uint256)
           handler: handleSupplyCapChanged
-        - event: LiquidationProtocolFeeChanged(indexed address,uint256) 
+        - event: LiquidationProtocolFeeChanged(indexed address,uint256)
           handler: handleLiquidationProtocolFeeChanged
-        - event: UnbackedMintCapChanged(indexed address,uint256) 
+        - event: UnbackedMintCapChanged(indexed address,uint256)
           handler: handleUnbackedMintCapChanged
-        - event: EModeAssetCategoryChanged(indexed address,uint8) 
+        - event: EModeAssetCategoryChanged(indexed address,uint8)
           handler: handleEModeAssetCategoryChanged
-        - event: EModeCategoryAdded(indexed uint8,uint256,uint256,uint256,address,string) 
+        - event: EModeCategoryAdded(indexed uint8,uint256,uint256,uint256,address,string)
           handler: handleEModeCategoryAdded
         - event: DebtCeilingChanged(indexed address,uint256)
           handler: handleDebtCeilingChanged
-        - event: BridgeProtocolFeeUpdated(uint256) 
+        - event: BridgeProtocolFeeUpdated(uint256)
           handler: handleBridgeProtocolFeeUpdated
-        - event: FlashloanPremiumTotalUpdated(uint256)  
+        - event: FlashloanPremiumTotalUpdated(uint256)
           handler: handleFlashloanPremiumTotalUpdated
-        - event: FlashloanPremiumToProtocolUpdated(uint256)  
+        - event: FlashloanPremiumToProtocolUpdated(uint256)
           handler: handleFlashloanPremiumToProtocolUpdated
-        - event: BorrowableInIsolationChanged(address,bool) 
+        - event: BorrowableInIsolationChanged(address,bool)
           handler: handleBorrowableInIsolationChanged
-      file: src/mapping/lending-pool-configurator/arbitrum.ts
+      file: src/mapping/lending-pool-configurator/v3.ts
   - kind: ethereum/contract
     name: Pool
     network: {{network}}
@@ -439,6 +438,4 @@ templates:
           handler: handleMintedToTreasury
         - event: UserEModeSet(indexed address,uint8)
           handler: handleUserEModeSet
-      file: src/mapping/lending-pool/arbitrum.ts
-
-
+      file: src/mapping/lending-pool/v3.ts
