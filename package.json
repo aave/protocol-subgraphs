@@ -1,7 +1,7 @@
 {
-  "name": "subgraph-protocol-v2",
+  "name": "subgraph-protocol-v2-v3",
   "version": "1.0.0",
-  "description": "This package contains subgraph of the protocol v2",
+  "description": "This package contains subgraphs of the protocol v2 and v3",
   "scripts": {
     "generate:schema": "cp ./schemas/${VERSION:-v2}.schema.graphql  schema.graphql",
     "prepare:all": "npm run prepare:contracts && npm run prepare:subgraph",

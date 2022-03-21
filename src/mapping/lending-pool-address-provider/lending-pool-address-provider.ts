@@ -17,7 +17,7 @@ import {
 } from '../../../generated/templates';
 import { createMapContractToPool, getOrInitPriceOracle } from '../../helpers/initializers';
 import { Pool, PoolConfigurationHistoryItem } from '../../../generated/schema';
-import { EventTypeRef, getHistoryId } from '../../utils/id-generation';
+import { getHistoryEntityId } from '../../utils/id-generation';
 
 let POOL_COMPONENTS = [
   'lendingPoolConfigurator',
@@ -36,9 +36,7 @@ function saveAddressProvider(lendingPool: Pool, timestamp: BigInt, event: ethere
   lendingPool.lastUpdateTimestamp = timestamp.toI32();
   lendingPool.save();
 
-  let configurationHistoryItem = new PoolConfigurationHistoryItem(
-    getHistoryId(event, EventTypeRef.NoType)
-  );
+  let configurationHistoryItem = new PoolConfigurationHistoryItem(getHistoryEntityId(event));
   for (let i = 0; i < POOL_COMPONENTS.length; i++) {
     let param = POOL_COMPONENTS[i];
     let value = lendingPool.get(param);
