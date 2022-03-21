@@ -1,0 +1,7 @@
+{
+  "network": "fantom-testnet",
+  "AaveOracleAddress": "0xA840C768f7143495790eC8dc2D5f32B71B6Dc113",
+  "AaveOracleStartBlock": 8361040,
+  "PoolAddressesProviderRegistryAddress": "0xd79e25047CFD3e75b3Ae7D7AB4758CA315D9d0d1",
+  "PoolAddressesProviderRegistryStartBlock": 8360940
+}

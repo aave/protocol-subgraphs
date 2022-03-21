@@ -1,0 +1,7 @@
+{
+  "network": "arbitrum-one",
+  "AaveOracleAddress": "0xb56c2F0B653B2e0b10C9b928C8580Ac5Df02C7C7",
+  "AaveOracleStartBlock": 7740000,
+  "PoolAddressesProviderRegistryAddress": "0x770ef9f4fe897e59daCc474EF11238303F9552b6",
+  "PoolAddressesProviderRegistryStartBlock": 7736400
+}

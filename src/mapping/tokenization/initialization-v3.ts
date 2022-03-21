@@ -24,7 +24,7 @@ export {
   handleStableTokenBurn,
   handleStableTokenBorrowAllowanceDelegated,
   handleVariableTokenBorrowAllowanceDelegated,
-} from './tokenization-arbitrum';
+} from './tokenization-v3';
 
 function createIncentivesController(
   asset: Address,
