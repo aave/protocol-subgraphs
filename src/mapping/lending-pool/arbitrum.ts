@@ -42,7 +42,7 @@ import {
   UserEModeSet as UserEModeSetAction,
   MintedToTreasury as MintedToTreasuryAction,
 } from '../../../generated/schema';
-import { EventTypeRef, getHistoryId } from '../../utils/id-generation';
+import { getHistoryEntityId } from '../../utils/id-generation';
 import { calculateGrowth } from '../../helpers/math';
 
 export function handleSupply(event: Supply): void {
@@ -50,7 +50,7 @@ export function handleSupply(event: Supply): void {
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let amount = event.params.amount;
 
-  let id = getHistoryId(event, EventTypeRef.Supply);
+  let id = getHistoryEntityId(event);
   if (SupplyAction.load(id)) {
     id = id + '0';
   }
@@ -76,7 +76,7 @@ export function handleWithdraw(event: Withdraw): void {
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let redeemedAmount = event.params.amount;
 
-  let redeemUnderlying = new RedeemUnderlyingAction(getHistoryId(event, EventTypeRef.Redeem));
+  let redeemUnderlying = new RedeemUnderlyingAction(getHistoryEntityId(event));
   redeemUnderlying.pool = poolReserve.pool;
   redeemUnderlying.user = userReserve.user;
   redeemUnderlying.onBehalfOf = toUser.id;
@@ -91,7 +91,7 @@ export function handleBorrow(event: Borrow): void {
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let poolReserve = getOrInitReserve(event.params.reserve, event);
 
-  let borrow = new BorrowAction(getHistoryId(event, EventTypeRef.Borrow));
+  let borrow = new BorrowAction(getHistoryEntityId(event));
   borrow.pool = poolReserve.pool;
   borrow.user = event.params.user.toHexString();
   borrow.onBehalfOf = event.params.onBehalfOf.toHexString();
@@ -114,7 +114,7 @@ export function handleSwap(event: Swap): void {
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let poolReserve = getOrInitReserve(event.params.reserve, event);
 
-  let swapHistoryItem = new SwapAction(getHistoryId(event, EventTypeRef.Swap));
+  let swapHistoryItem = new SwapAction(getHistoryEntityId(event));
   swapHistoryItem.pool = poolReserve.pool;
   swapHistoryItem.borrowRateModeFrom = getBorrowRateMode(event.params.rateMode);
   if (swapHistoryItem.borrowRateModeFrom === BORROW_MODE_STABLE) {
@@ -136,9 +136,7 @@ export function handleRebalanceStableBorrowRate(event: RebalanceStableBorrowRate
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let poolReserve = getOrInitReserve(event.params.reserve, event);
 
-  let rebalance = new RebalanceStableBorrowRateAction(
-    getHistoryId(event, EventTypeRef.RebalanceStableBorrowRate)
-  );
+  let rebalance = new RebalanceStableBorrowRateAction(getHistoryEntityId(event));
 
   rebalance.userReserve = userReserve.id;
   rebalance.borrowRateFrom = userReserve.oldStableBorrowRate;
@@ -157,7 +155,7 @@ export function handleRepay(event: Repay): void {
 
   poolReserve.save();
 
-  let repay = new RepayAction(getHistoryId(event, EventTypeRef.Repay));
+  let repay = new RepayAction(getHistoryEntityId(event));
   repay.pool = poolReserve.pool;
   repay.user = userReserve.user;
   repay.onBehalfOf = onBehalfOf.id;
@@ -191,9 +189,7 @@ export function handleLiquidationCall(event: LiquidationCall): void {
 
   principalPoolReserve.save();
 
-  let liquidationCall = new LiquidationCallAction(
-    getHistoryId(event, EventTypeRef.LiquidationCall)
-  );
+  let liquidationCall = new LiquidationCallAction(getHistoryEntityId(event));
   liquidationCall.pool = collateralPoolReserve.pool;
   liquidationCall.user = user.id;
   liquidationCall.collateralReserve = collateralPoolReserve.id;
@@ -221,7 +217,7 @@ export function handleFlashLoan(event: FlashLoan): void {
 
   poolReserve.save();
 
-  let flashLoan = new FlashLoanAction(getHistoryId(event, EventTypeRef.FlashLoan));
+  let flashLoan = new FlashLoanAction(getHistoryEntityId(event));
   flashLoan.pool = poolReserve.pool;
   flashLoan.reserve = poolReserve.id;
   flashLoan.target = event.params.target;
@@ -237,9 +233,7 @@ export function handleReserveUsedAsCollateralEnabled(event: ReserveUsedAsCollate
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let timestamp = event.block.timestamp.toI32();
 
-  let usageAsCollateral = new UsageAsCollateralAction(
-    getHistoryId(event, EventTypeRef.UsageAsCollateral)
-  );
+  let usageAsCollateral = new UsageAsCollateralAction(getHistoryEntityId(event));
   usageAsCollateral.pool = poolReserve.pool;
   usageAsCollateral.fromState = userReserve.usageAsCollateralEnabledOnUser;
   usageAsCollateral.toState = true;
@@ -261,9 +255,7 @@ export function handleReserveUsedAsCollateralDisabled(
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let timestamp = event.block.timestamp.toI32();
 
-  let usageAsCollateral = new UsageAsCollateralAction(
-    getHistoryId(event, EventTypeRef.UsageAsCollateral)
-  );
+  let usageAsCollateral = new UsageAsCollateralAction(getHistoryEntityId(event));
   usageAsCollateral.pool = poolReserve.pool;
   usageAsCollateral.fromState = userReserve.usageAsCollateralEnabledOnUser;
   usageAsCollateral.toState = false;
@@ -306,7 +298,7 @@ export function handleMintUnbacked(event: MintUnbacked): void {
   let poolReserve = getOrInitReserve(event.params.reserve, event);
   let amount = event.params.amount;
 
-  let id = getHistoryId(event, EventTypeRef.MintUnbacked);
+  let id = getHistoryEntityId(event);
   if (MintUnbackedAction.load(id)) {
     id = id + '0';
   }
@@ -327,7 +319,7 @@ export function handleBackUnbacked(event: BackUnbacked): void {
   let poolReserve = getOrInitReserve(event.params.reserve, event);
   let amount = event.params.amount;
 
-  let id = getHistoryId(event, EventTypeRef.MintUnbacked);
+  let id = getHistoryEntityId(event);
   if (BackUnbackedAction.load(id)) {
     id = id + '0';
   }
@@ -345,7 +337,7 @@ export function handleBackUnbacked(event: BackUnbacked): void {
 
 export function handleUserEModeSet(event: UserEModeSet): void {
   let user = getOrInitUser(event.params.user);
-  let id = getHistoryId(event, EventTypeRef.MintUnbacked);
+  let id = getHistoryEntityId(event);
   if (UserEModeSetAction.load(id)) {
     id = id + '0';
   }
@@ -365,7 +357,7 @@ export function handleMintedToTreasury(event: MintedToTreasury): void {
   let poolReserve = getOrInitReserve(event.params.reserve, event);
   let amount = event.params.amountMinted;
 
-  let id = getHistoryId(event, EventTypeRef.MintUnbacked);
+  let id = getHistoryEntityId(event);
   if (MintedToTreasuryAction.load(id)) {
     id = id + '0';
   }

@@ -21,7 +21,7 @@ import {
   getProtocol,
 } from '../../helpers/initializers';
 import { Pool, PoolConfigurationHistoryItem } from '../../../generated/schema';
-import { EventTypeRef, getHistoryId } from '../../utils/id-generation';
+import { getHistoryEntityId } from '../../utils/id-generation';
 
 let POOL_COMPONENTS = [
   'lendingPoolConfigurator',
@@ -37,9 +37,7 @@ let POOL_COMPONENTS = [
 ] as string[];
 
 function saveAddressProvider(lendingPool: Pool, timestamp: BigInt, event: ethereum.Event): void {
-  let configurationHistoryItem = new PoolConfigurationHistoryItem(
-    getHistoryId(event, EventTypeRef.NoType)
-  );
+  let configurationHistoryItem = new PoolConfigurationHistoryItem(getHistoryEntityId(event));
   for (let i = 0; i < POOL_COMPONENTS.length; i++) {
     let param = POOL_COMPONENTS[i];
     let value = lendingPool.get(param);
