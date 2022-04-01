@@ -411,7 +411,7 @@ type RewardIncentives @entity {
   precision: Int!
   distributionEnd: Int!
   emissionsPerSecond: BigInt!
-  incentivesController: IncentivesController!
+  rewardsController: RewardsController!
   createdAt: Int!
   updatedAt: Int!
 }
@@ -428,22 +428,22 @@ type UserRewardIncentives @entity {
   updatedAt: Int!
 }
 
-type IncentivesController @entity {
+type RewardsController @entity {
   """
   address of the incentives controller
   """
   id: ID!
-  incentives: [RewardIncentives!]! @derivedFrom(field: "incentivesController")
-  incentivizedActions: [IncentivizedAction!]! @derivedFrom(field: "incentivesController")
-  claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "incentivesController")
+  incentives: [RewardIncentives!]! @derivedFrom(field: "rewardsController")
+  rewardedActions: [RewardedAction!]! @derivedFrom(field: "rewardsController")
+  claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "rewardsController")
 }
 
-type IncentivizedAction @entity {
+type RewardedAction @entity {
   """
   txHash
   """
   id: ID!
-  incentivesController: IncentivesController!
+  rewardsController: RewardsController!
   user: User!
   amount: BigInt!
 }
@@ -453,7 +453,7 @@ type ClaimIncentiveCall @entity {
   txHash
   """
   id: ID!
-  incentivesController: IncentivesController!
+  rewardsController: RewardsController!
   user: User!
   amount: BigInt!
 }
@@ -721,7 +721,7 @@ type User @entity {
   repayHistory: [Repay!]! @derivedFrom(field: "user")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "user")
   originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "user")
-  incentivizedActions: [IncentivizedAction!]! @derivedFrom(field: "user")
+  rewardedActions: [RewardedAction!]! @derivedFrom(field: "user")
   claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "user")
 }
 

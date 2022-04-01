@@ -105,10 +105,10 @@ templates:
   #            INCENTIVES
   # --------------------------------------
   - kind: ethereum/contract
-    name: IncentivesControllerV2
+    name: RewardsController
     network: {{network}}
     source:
-      abi: IncentivesControllerV2
+      abi: RewardsController
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -116,23 +116,19 @@ templates:
       entities:
         - IncentivesController
       abis:
-        - name: IncentivesControllerV2
-          file: ./abis/v3/IncentivesControllerV2.json
+        - name: RewardsController
+          file: ./abis/v3/RewardsController.json
         - name: IERC20Detailed
           file: ./abis/helpers/IERC20Detailed.json
         - name: AToken
           file: ./abis/v3/AToken.json
       eventHandlers:
-        - event: AssetConfigUpdated(indexed address,indexed address,uint256,uint256)
+        - event: AssetConfigUpdated(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleAssetConfigUpdated
-        - event: RewardsAccrued(indexed address,indexed address,uint256)
+        - event: Accrued(indexed address,indexed address,indexed address,uint256,uint256,uint256)
           handler: handleRewardsAccrued
         - event: RewardsClaimed(indexed address,indexed address,indexed address,address,uint256)
           handler: handleRewardsClaimed
-        - event: AssetIndexUpdated(indexed address,indexed address,uint256)
-          handler: handleAssetIndexUpdated
-        - event: UserIndexUpdated(indexed address,indexed address,indexed address,uint256)
-          handler: handleUserIndexUpdated
         - event: RewardOracleUpdated(indexed address,indexed address)
           handler: handleRewardOracleUpdated
       file: src/mapping/incentives-controller/v3.ts
@@ -211,7 +207,7 @@ templates:
           handler: handleATokenBurn
         - event: BalanceTransfer(indexed address,indexed address,uint256,uint256)
           handler: handleATokenTransfer
-        - event: Mint(indexed address,uint256,uint256,uint256)
+        - event: Mint(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleATokenMint
         - event: Initialized(indexed address,indexed address,address,address,uint8,string,string,bytes)
           handler: handleATokenInitialized
@@ -330,20 +326,14 @@ templates:
       eventHandlers:
         - event: ReserveInitialized(indexed address,indexed address,address,address,address)
           handler: handleReserveInitialized
-        - event: BorrowingEnabledOnReserve(indexed address,bool)
-          handler: handleBorrowingEnabledOnReserve
-        - event: BorrowingDisabledOnReserve(indexed address)
-          handler: handleBorrowingDisabledOnReserve
+        - event: ReserveBorrowing(indexed address,bool)
+          handler: handleReserveBorrowing
         - event: CollateralConfigurationChanged(indexed address,uint256,uint256,uint256)
           handler: handleCollateralConfigurationChanged
-        - event: StableRateEnabledOnReserve(indexed address)
-          handler: handleStableRateEnabledOnReserve
-        - event: StableRateDisabledOnReserve(indexed address)
-          handler: handleStableRateDisabledOnReserve
-        - event: ReserveActivated(indexed address)
-          handler: handleReserveActivated
-        - event: ReserveDeactivated(indexed address)
-          handler: handleReserveDeactivated
+        - event: ReserveStableRateBorrowing(indexed address,bool)
+          handler: handleReserveStableRateBorrowing
+        - event: ReserveActive(indexed address,bool)
+          handler: handleReserveActive
         - event: ReserveFrozen(indexed address)
           handler: handleReserveFreezed
         - event: ReserveUnfrozen(indexed address)
@@ -412,11 +402,11 @@ templates:
           handler: handleSupply
         - event: Withdraw(indexed address,indexed address,indexed address,uint256)
           handler: handleWithdraw
-        - event: Borrow(indexed address,address,indexed address,uint256,uint256,uint256,indexed uint16)
+        - event: Borrow(indexed address,address,indexed address,uint256,uint8,uint256,indexed uint16)
           handler: handleBorrow
         - event: Repay(indexed address,indexed address,indexed address,uint256,bool)
           handler: handleRepay
-        - event: Swap(indexed address,indexed address,uint256)
+        - event: SwapBorrowRateMode(indexed address,indexed address,uint8)
           handler: handleSwap
         - event: ReserveUsedAsCollateralEnabled(indexed address,indexed address)
           handler: handleReserveUsedAsCollateralEnabled
@@ -424,7 +414,7 @@ templates:
           handler: handleReserveUsedAsCollateralDisabled
         - event: RebalanceStableBorrowRate(indexed address,indexed address)
           handler: handleRebalanceStableBorrowRate
-        - event: FlashLoan(indexed address,indexed address,indexed address,uint256,uint256,uint16)
+        - event: FlashLoan(indexed address,address,indexed address,uint256,uint8,uint256,indexed uint16)
           handler: handleFlashLoan
         - event: LiquidationCall(indexed address,indexed address,indexed address,uint256,uint256,address,bool)
           handler: handleLiquidationCall

@@ -6,11 +6,11 @@ import {
   UserIndexUpdated,
   RewardOracleUpdated,
   IncentivesControllerV2,
-} from '../../../generated/templates/IncentivesControllerV2/IncentivesControllerV2';
+} from '../../../generated/templates/RewardsController/RewardsController';
 import {
   ClaimIncentiveCall,
-  IncentivesController,
-  IncentivizedAction,
+  RewardsController,
+  RewardedAction,
   MapAssetPool,
   Reserve,
   RewardFeedOracle,
@@ -19,7 +19,7 @@ import {
 } from '../../../generated/schema';
 import { getOrInitUser } from '../../helpers/v3/initializers';
 import { getHistoryEntityId, getReserveId } from '../../utils/id-generation';
-import { IERC20Detailed } from '../../../generated/templates/IncentivesControllerV2/IERC20Detailed';
+import { IERC20Detailed } from '../../../generated/templates/RewardsController/IERC20Detailed';
 import { zeroBI } from '../../utils/converters';
 import { Address, log } from '@graphprotocol/graph-ts';
 
