@@ -258,8 +258,8 @@ export function handleBalanceTransfer(event: BalanceTransfer): void {
 
 export function handleVariableTokenBurn(event: VTokenBurn): void {
   let vToken = getOrInitSubToken(event.address);
-  let from = event.params.user;
-  let value = event.params.amount;
+  let from = event.params.from;
+  let value = event.params.value;
   let index = event.params.index;
   let userReserve = getOrInitUserReserve(from, vToken.underlyingAssetAddress, event);
   let poolReserve = getOrInitReserve(vToken.underlyingAssetAddress, event);
@@ -303,17 +303,13 @@ export function handleVariableTokenMint(event: VTokenMint): void {
   let vToken = getOrInitSubToken(event.address);
   let poolReserve = getOrInitReserve(vToken.underlyingAssetAddress, event);
 
-  let from = event.params.from;
-  if (from.toHexString() != event.params.onBehalfOf.toHexString()) {
-    from = event.params.onBehalfOf;
-  }
-
+  let from = event.params.onBehalfOf;
   let value = event.params.value;
   let index = event.params.index;
 
   let userReserve = getOrInitUserReserve(from, vToken.underlyingAssetAddress, event);
 
-  let user = getOrInitUser(event.params.from);
+  let user = getOrInitUser(from);
   if (
     userReserve.scaledVariableDebt.equals(zeroBI()) &&
     userReserve.principalStableDebt.equals(zeroBI())
@@ -408,7 +404,7 @@ export function handleStableTokenMint(event: STokenMint): void {
 export function handleStableTokenBurn(event: STokenBurn): void {
   let sTokenAddress = event.address;
   let sToken = getOrInitSubToken(sTokenAddress);
-  let userReserve = getOrInitUserReserve(event.params.user, sToken.underlyingAssetAddress, event);
+  let userReserve = getOrInitUserReserve(event.params.from, sToken.underlyingAssetAddress, event);
   let poolReserve = getOrInitReserve(sToken.underlyingAssetAddress, event);
   let balanceIncrease = event.params.balanceIncrease;
   let amount = event.params.amount;
@@ -448,7 +444,7 @@ export function handleStableTokenBurn(event: STokenBurn): void {
   userReserve.lastUpdateTimestamp = event.block.timestamp.toI32();
   userReserve.save();
 
-  let user = getOrInitUser(event.params.user);
+  let user = getOrInitUser(event.params.from);
   if (
     userReserve.scaledVariableDebt.equals(zeroBI()) &&
     userReserve.principalStableDebt.equals(zeroBI())

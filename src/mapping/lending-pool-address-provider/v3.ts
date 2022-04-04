@@ -1,4 +1,4 @@
-import { BigInt, ethereum, Value, Address, log } from '@graphprotocol/graph-ts';
+import { ethereum, Value, Address, log } from '@graphprotocol/graph-ts';
 
 import {
   ProxyCreated,
