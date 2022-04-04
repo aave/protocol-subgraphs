@@ -9,10 +9,11 @@ import { getProtocol } from '../../helpers/v3/initializers';
 
 export function handleAddressesProviderRegistered(event: AddressesProviderRegistered): void {
   let protocol = getProtocol();
-  let address = event.params.newAddress.toHexString();
+  let address = event.params.addressesProvider.toHexString();
   if (Pool.load(address) == null) {
     let pool = new Pool(address);
     pool.protocol = protocol.id;
+    pool.addressProviderId = event.params.id;
     pool.active = true;
     pool.paused = false;
     pool.lastUpdateTimestamp = event.block.timestamp.toI32();
@@ -23,7 +24,7 @@ export function handleAddressesProviderRegistered(event: AddressesProviderRegist
 }
 
 export function handleAddressesProviderUnregistered(event: AddressesProviderUnregistered): void {
-  let pool = Pool.load(event.params.newAddress.toHexString());
+  let pool = Pool.load(event.params.addressesProvider.toHexString());
   pool.active = false;
   pool.save();
 }

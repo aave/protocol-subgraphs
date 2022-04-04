@@ -16,6 +16,7 @@ type ContractToPoolMapping @entity {
 
 type Pool @entity {
   id: ID!
+  addressProviderId: BigInt!
   protocol: Protocol!
   pool: Bytes
   poolCollateralManager: Bytes
