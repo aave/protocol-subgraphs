@@ -1,54 +1,46 @@
 import {
   AssetConfigUpdated,
-  AssetIndexUpdated,
-  RewardsAccrued,
+  Accrued,
   RewardsClaimed,
-  UserIndexUpdated,
   RewardOracleUpdated,
-  IncentivesControllerV2,
 } from '../../../generated/templates/RewardsController/RewardsController';
 import {
-  ClaimIncentiveCall,
+  ClaimRewardsCall,
   RewardsController,
   RewardedAction,
-  MapAssetPool,
-  Reserve,
   RewardFeedOracle,
-  RewardIncentives,
-  UserRewardIncentives,
+  Rewards,
+  UserRewards,
 } from '../../../generated/schema';
 import { getOrInitUser } from '../../helpers/v3/initializers';
-import { getHistoryEntityId, getReserveId } from '../../utils/id-generation';
+import { getHistoryEntityId } from '../../utils/id-generation';
 import { IERC20Detailed } from '../../../generated/templates/RewardsController/IERC20Detailed';
-import { zeroBI } from '../../utils/converters';
-import { Address, log } from '@graphprotocol/graph-ts';
 
 export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
-  let emissionsPerSecond = event.params.emission;
+  let emissionsPerSecond = event.params.newEmission;
   let blockTimestamp = event.block.timestamp.toI32();
   let asset = event.params.asset; // a / v / s token
   let reward = event.params.reward;
-  let distributionEnd = event.params.distributionEnd;
-  let incentivesController = event.address;
+  let distributionEnd = event.params.newDistributionEnd;
+  let rewardsController = event.address;
 
   //  update rewards configurations
   let rewardIncentiveId =
-    incentivesController.toHexString() + ':' + asset.toHexString() + ':' + reward.toHexString();
+    rewardsController.toHexString() + ':' + asset.toHexString() + ':' + reward.toHexString();
 
-  let rewardIncentive = RewardIncentives.load(rewardIncentiveId);
+  let rewardIncentive = Rewards.load(rewardIncentiveId);
   if (!rewardIncentive) {
-    rewardIncentive = new RewardIncentives(rewardIncentiveId);
+    rewardIncentive = new Rewards(rewardIncentiveId);
     rewardIncentive.rewardToken = reward;
-    rewardIncentive.index = zeroBI();
     rewardIncentive.asset = asset.toHexString();
-    rewardIncentive.incentivesController = incentivesController.toHexString();
+    rewardIncentive.rewardsController = rewardsController.toHexString();
 
     let IERC20DetailedContract = IERC20Detailed.bind(reward);
     rewardIncentive.rewardTokenDecimals = IERC20DetailedContract.decimals();
     rewardIncentive.rewardTokenSymbol = IERC20DetailedContract.symbol();
 
-    let iController = IncentivesControllerV2.bind(incentivesController);
-    rewardIncentive.precision = iController.PRECISION();
+    let iController = RewardsController.bind(rewardsController);
+    rewardIncentive.precision = iController.getAssetDecimals(asset);
 
     rewardIncentive.createdAt = blockTimestamp;
 
@@ -65,83 +57,79 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
     rewardIncentive.rewardFeedOracle = oracle.id;
   }
 
+  rewardIncentive.index = event.params.assetIndex;
   rewardIncentive.distributionEnd = distributionEnd.toI32();
   rewardIncentive.emissionsPerSecond = emissionsPerSecond;
   rewardIncentive.updatedAt = blockTimestamp;
   rewardIncentive.save();
 }
 
-export function handleRewardsAccrued(event: RewardsAccrued): void {
+export function handleAccrued(event: Accrued): void {
   let userAddress = event.params.user;
-  let amount = event.params.amount;
-  let incentivesController = event.address;
+  let amount = event.params.rewardsAccrued;
+  let asset = event.params.asset;
+  let reward = event.params.reward;
+  let assetIndex = event.params.assetIndex;
+  let userIndex = event.params.userIndex;
+  let rewardsController = event.address;
+  let blockTimestamp = event.block.timestamp.toI32();
 
   let user = getOrInitUser(userAddress);
   user.unclaimedRewards = user.unclaimedRewards.plus(amount);
   user.lifetimeRewards = user.lifetimeRewards.plus(amount);
-  user.incentivesLastUpdated = event.block.timestamp.toI32();
+  user.rewardsLastUpdated = event.block.timestamp.toI32();
   user.save();
 
-  let incentivizedAction = new IncentivizedAction(getHistoryEntityId(event));
-  incentivizedAction.incentivesController = incentivesController.toHexString();
+  let rewardId =
+    rewardsController.toHexString() + ':' + asset.toHexString() + ':' + reward.toHexString();
+  let rewardIncentive = Rewards.load(rewardId);
+  if (rewardIncentive) {
+    rewardIncentive.index = assetIndex;
+    rewardIncentive.updatedAt = blockTimestamp;
+    rewardIncentive.save();
+  }
+
+  let userRewardsId = rewardId + ':' + userAddress.toHexString();
+  let userReward = UserRewards.load(userRewardsId);
+  if (!userReward) {
+    userReward = new UserRewards(userRewardsId);
+    userReward.reward = rewardId;
+    userReward.createdAt = blockTimestamp;
+    userReward.user = userAddress.toHexString();
+  }
+
+  userReward.index = userIndex;
+  userReward.updatedAt = blockTimestamp;
+  userReward.save();
+
+  let incentivizedAction = new RewardedAction(getHistoryEntityId(event));
+  incentivizedAction.rewardsController = rewardsController.toHexString();
   incentivizedAction.user = userAddress.toHexString();
   incentivizedAction.amount = amount;
   incentivizedAction.save();
 }
 
 export function handleRewardsClaimed(event: RewardsClaimed): void {
-  let user = getOrInitUser(event.params.user);
-  user.unclaimedRewards = user.unclaimedRewards.minus(event.params.amount);
-  user.incentivesLastUpdated = event.block.timestamp.toI32();
+  let caller = event.params.claimer;
+  let onBehalfOf = event.params.user;
+  let to = event.params.to;
+  let amount = event.params.amount;
+
+  let user = getOrInitUser(onBehalfOf);
+  user.unclaimedRewards = user.unclaimedRewards.minus(amount);
+  user.rewardsLastUpdated = event.block.timestamp.toI32();
   user.save();
 
-  let claimIncentive = new ClaimIncentiveCall(getHistoryEntityId(event));
-  claimIncentive.incentivesController = event.address.toHexString();
-  claimIncentive.user = event.params.user.toHexString();
-  claimIncentive.amount = event.params.amount;
-  claimIncentive.save();
-}
+  getOrInitUser(to);
+  getOrInitUser(caller);
 
-export function handleAssetIndexUpdated(event: AssetIndexUpdated): void {
-  let asset = event.params.asset;
-  let index = event.params.index;
-  let reward = event.params.reward;
-  let blockTimestamp = event.block.timestamp.toI32();
-  let incentivesController = event.address;
-
-  let rewardIncentiveId =
-    incentivesController.toHexString() + ':' + asset.toHexString() + ':' + reward.toHexString();
-
-  let rewardIncentive = RewardIncentives.load(rewardIncentiveId);
-  rewardIncentive.index = index;
-  rewardIncentive.updatedAt = blockTimestamp;
-
-  rewardIncentive.save();
-}
-
-export function handleUserIndexUpdated(event: UserIndexUpdated): void {
-  let user = event.params.user;
-  let asset = event.params.asset;
-  let index = event.params.index;
-  let reward = event.params.reward;
-  let blockTimestamp = event.block.timestamp.toI32();
-  let incentivesController = event.address;
-
-  let rewardId =
-    incentivesController.toHexString() + ':' + asset.toHexString() + ':' + reward.toHexString();
-  let userRewardsId = rewardId + ':' + user.toHexString();
-
-  let userReward = UserRewardIncentives.load(userRewardsId);
-  if (!userReward) {
-    userReward = new UserRewardIncentives(userRewardsId);
-    userReward.reward = rewardId;
-    userReward.createdAt = blockTimestamp;
-    userReward.user = user.toHexString();
-  }
-
-  userReward.index = index;
-  userReward.updatedAt = blockTimestamp;
-  userReward.save();
+  let claimRewards = new ClaimRewardsCall(getHistoryEntityId(event));
+  claimRewards.rewardsController = event.address.toHexString();
+  claimRewards.user = onBehalfOf.toHexString();
+  claimRewards.amount = amount;
+  claimRewards.to = to.toHexString();
+  claimRewards.caller = caller.toHexString();
+  claimRewards.save();
 }
 
 export function handleRewardOracleUpdated(event: RewardOracleUpdated): void {

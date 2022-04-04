@@ -115,7 +115,7 @@ type SubToken @entity {
   tokenContractImpl: Bytes
   underlyingAssetAddress: Bytes!
   underlyingAssetDecimals: Int!
-  incentives: [RewardIncentives!]! @derivedFrom(field: "asset")
+  rewards: [Rewards!]! @derivedFrom(field: "asset")
 }
 
 enum BorrowRateMode {
@@ -397,7 +397,7 @@ type RewardFeedOracle @entity {
   updatedAt: Int!
 }
 
-type RewardIncentives @entity {
+type Rewards @entity {
   """
   address of ic:asset:reward
   """
@@ -416,14 +416,14 @@ type RewardIncentives @entity {
   updatedAt: Int!
 }
 
-type UserRewardIncentives @entity {
+type UserRewards @entity {
   """
   id: ic:asset:reward:user
   """
   id: ID!
   user: User!
   index: BigInt!
-  reward: RewardIncentives!
+  reward: Rewards!
   createdAt: Int!
   updatedAt: Int!
 }
@@ -433,9 +433,9 @@ type RewardsController @entity {
   address of the incentives controller
   """
   id: ID!
-  incentives: [RewardIncentives!]! @derivedFrom(field: "rewardsController")
+  rewards: [Rewards!]! @derivedFrom(field: "rewardsController")
   rewardedActions: [RewardedAction!]! @derivedFrom(field: "rewardsController")
-  claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "rewardsController")
+  claimIncentives: [ClaimRewardsCall!]! @derivedFrom(field: "rewardsController")
 }
 
 type RewardedAction @entity {
@@ -448,7 +448,7 @@ type RewardedAction @entity {
   amount: BigInt!
 }
 
-type ClaimIncentiveCall @entity {
+type ClaimRewardsCall @entity {
   """
   txHash
   """
@@ -456,6 +456,8 @@ type ClaimIncentiveCall @entity {
   rewardsController: RewardsController!
   user: User!
   amount: BigInt!
+  to: User!
+  caller: User!
 }
 
 type EModeCategory @entity {
@@ -702,11 +704,11 @@ type User @entity {
   id: ID!
   borrowedReservesCount: Int!
 
-  #incentives
+  #rewards
   unclaimedRewards: BigInt!
   lifetimeRewards: BigInt!
-  incentivesLastUpdated: Int!
-  incentives: [UserRewardIncentives!]! @derivedFrom(field: "user")
+  rewardsLastUpdated: Int!
+  rewards: [UserRewards!]! @derivedFrom(field: "user")
 
   #emode
   eModeCategoryId: EModeCategory
@@ -722,7 +724,7 @@ type User @entity {
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "user")
   originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "user")
   rewardedActions: [RewardedAction!]! @derivedFrom(field: "user")
-  claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "user")
+  claimRewards: [ClaimRewardsCall!]! @derivedFrom(field: "user")
 }
 
 type SwapHistory @entity {
