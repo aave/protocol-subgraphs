@@ -301,20 +301,21 @@ templates:
           handler: handlePoolConfiguratorUpdated
         - event: PoolDataProviderUpdated(indexed address,indexed address)
           handler: handlePoolDataProviderUpdated
-        - event: AddressSet(indexed bytes32,indexed address,indexed address)
-          handler: handleAddressSet
-        - event: ACLAdminUpdated(indexed address,indexed address)
-          handler: handleACLAdminUpdated
-        - event: ACLManagerUpdated(indexed address,indexed address)
-          handler: handleACLManagerUpdated
-        - event: AddressSetAsProxy(indexed bytes32,indexed address,address,indexed address)
-          handler: handleAddressSetAsProxy
-        - event: MarketIdSet(indexed string,indexed string)
-          handler: handleMarketIdSet
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
-        - event: PriceOracleSentinelUpdated(indexed address,indexed address)
-          handler: handlePriceOracleSentinelUpdated
+        # not needed for now
+        # - event: AddressSet(indexed bytes32,indexed address,indexed address)
+        #   handler: handleAddressSet
+        # - event: ACLAdminUpdated(indexed address,indexed address)
+        #   handler: handleACLAdminUpdated
+        # - event: ACLManagerUpdated(indexed address,indexed address)
+        #   handler: handleACLManagerUpdated
+        # - event: AddressSetAsProxy(indexed bytes32,indexed address,address,indexed address)
+        #   handler: handleAddressSetAsProxy
+        # - event: MarketIdSet(indexed string,indexed string)
+        #   handler: handleMarketIdSet
+        # - event: OwnershipTransferred(indexed address,indexed address)
+        #   handler: handleOwnershipTransferred
+        # - event: PriceOracleSentinelUpdated(indexed address,indexed address)
+        #   handler: handlePriceOracleSentinelUpdated
       file: src/mapping/lending-pool-address-provider/v3.ts
 
   - kind: ethereum/contract
