@@ -248,13 +248,12 @@ export function getOrInitSubToken(subTokenAddress: Address): SubToken {
 }
 
 export function getOrInitReserveParamsHistoryItem(
-  id: Bytes,
+  id: string,
   reserve: Reserve
 ): ReserveParamsHistoryItem {
-  let itemId = id.toHexString() + reserve.id;
-  let reserveParamsHistoryItem = ReserveParamsHistoryItem.load(itemId);
+  let reserveParamsHistoryItem = ReserveParamsHistoryItem.load(id);
   if (!reserveParamsHistoryItem) {
-    reserveParamsHistoryItem = new ReserveParamsHistoryItem(itemId);
+    reserveParamsHistoryItem = new ReserveParamsHistoryItem(id);
     reserveParamsHistoryItem.variableBorrowRate = zeroBI();
     reserveParamsHistoryItem.variableBorrowIndex = zeroBI();
     reserveParamsHistoryItem.utilizationRate = zeroBD();

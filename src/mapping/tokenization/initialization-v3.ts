@@ -1,17 +1,13 @@
-import {
-  Burn,
-  Initialized as ATokenInitialized,
-  Mint,
-} from '../../../generated/templates/AToken/AToken';
+import { Initialized as ATokenInitialized } from '../../../generated/templates/AToken/AToken';
 import { Initialized as VTokenInitialized } from '../../../generated/templates/VariableDebtToken/VariableDebtToken';
 import { Initialized as STokenInitialized } from '../../../generated/templates/StableDebtToken/StableDebtToken';
-import { IncentivesControllerV2 } from '../../../generated/templates';
+import { RewardsController } from '../../../generated/templates';
 
 import { Address, log } from '@graphprotocol/graph-ts';
 import { zeroAddress } from '../../utils/converters';
 import {
   ContractToPoolMapping,
-  IncentivesController,
+  RewardsController as RewardsControllerEntity,
   MapAssetPool,
 } from '../../../generated/schema';
 export {
@@ -41,11 +37,11 @@ function createIncentivesController(
     return;
   }
 
-  let iController = IncentivesController.load(incentivesController.toHexString());
+  let iController = RewardsControllerEntity.load(incentivesController.toHexString());
   if (!iController) {
-    iController = new IncentivesController(incentivesController.toHexString());
+    iController = new RewardsControllerEntity(incentivesController.toHexString());
     iController.save();
-    IncentivesControllerV2.create(incentivesController);
+    RewardsController.create(incentivesController);
   }
 
   let poolAddressProvider = ContractToPoolMapping.load(pool.toHexString());

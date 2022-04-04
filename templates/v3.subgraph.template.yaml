@@ -104,7 +104,7 @@ dataSources:
   # --------------------------------------
 templates:
   # --------------------------------------
-  #            INCENTIVES
+  #            REWARDS
   # --------------------------------------
   - kind: ethereum/contract
     name: RewardsController
@@ -208,7 +208,7 @@ templates:
         - event: Burn(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleATokenBurn
         - event: BalanceTransfer(indexed address,indexed address,uint256,uint256)
-          handler: handleATokenTransfer
+          handler: handleBalanceTransfer
         - event: Mint(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleATokenMint
         - event: Initialized(indexed address,indexed address,address,address,uint8,string,string,bytes)

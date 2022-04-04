@@ -1,5 +1,5 @@
 import {
-  BalanceTransfer as ATokenTransfer,
+  BalanceTransfer,
   Mint as ATokenMint,
   Burn as ATokenBurn,
 } from '../../../generated/templates/AToken/AToken';
@@ -34,6 +34,7 @@ import { zeroBI } from '../../utils/converters';
 import { calculateUtilizationRate } from '../../helpers/reserve-logic';
 import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
 import { rayDiv, rayMul } from '../../helpers/math';
+import { getHistoryEntityId } from '../../utils/id-generation';
 
 // TODO: check if we need to add stuff to history
 function saveUserReserveAHistory(
@@ -74,9 +75,7 @@ function saveUserReserveSHistory(
   event: ethereum.Event,
   rate: BigInt
 ): void {
-  let sTokenBalanceHistoryItem = new STokenBalanceHistoryItem(
-    userReserve.id + event.transaction.hash.toHexString()
-  );
+  let sTokenBalanceHistoryItem = new STokenBalanceHistoryItem(getHistoryEntityId(event));
   //TODO: add rserve things new stable things
   sTokenBalanceHistoryItem.principalStableDebt = userReserve.principalStableDebt;
   sTokenBalanceHistoryItem.currentStableDebt = userReserve.currentStableDebt;
@@ -90,7 +89,10 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   reserve.utilizationRate = calculateUtilizationRate(reserve);
   reserve.save();
 
-  let reserveParamsHistoryItem = getOrInitReserveParamsHistoryItem(event.transaction.hash, reserve);
+  let reserveParamsHistoryItem = getOrInitReserveParamsHistoryItem(
+    getHistoryEntityId(event),
+    reserve
+  );
   reserveParamsHistoryItem.totalScaledVariableDebt = reserve.totalScaledVariableDebt;
   reserveParamsHistoryItem.totalCurrentVariableDebt = reserve.totalCurrentVariableDebt;
   reserveParamsHistoryItem.totalPrincipalStableDebt = reserve.totalPrincipalStableDebt;
@@ -163,14 +165,20 @@ function tokenBurn(event: ethereum.Event, from: Address, value: BigInt, index: B
   saveUserReserveAHistory(userReserve, event, index);
 }
 
-function tokenMint(event: ethereum.Event, from: Address, value: BigInt, index: BigInt): void {
-  log.error('---------------------------------------------------', []);
+function tokenMint(event: ethereum.Event, onBehalf: Address, value: BigInt, index: BigInt): void {
   let aToken = getOrInitSubToken(event.address);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress, event);
   poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(value);
   // Check if we are minting to treasury for mainnet and polygon
-  if (from.toHexString() != 'TODO: add here arbitrum treasury') {
-    let userReserve = getOrInitUserReserve(from, aToken.underlyingAssetAddress, event);
+  if (
+    onBehalf.toHexString() != '0xB2289E329D2F85F1eD31Adbb30eA345278F21bcf'.toLowerCase() &&
+    onBehalf.toHexString() != '0xe8599F3cc5D38a9aD6F3684cd5CEa72f10Dbc383'.toLowerCase() &&
+    onBehalf.toHexString() != '0xBe85413851D195fC6341619cD68BfDc26a25b928'.toLowerCase() &&
+    onBehalf.toHexString() != '0x5ba7fd868c40c16f7aDfAe6CF87121E13FC2F7a0'.toLowerCase() &&
+    onBehalf.toHexString() != '0x8A020d92D6B119978582BE4d3EdFdC9F7b28BF31'.toLowerCase() &&
+    onBehalf.toHexString() != '0x053D55f9B5AF8694c503EB288a1B7E552f590710'.toLowerCase()
+  ) {
+    let userReserve = getOrInitUserReserve(onBehalf, aToken.underlyingAssetAddress, event);
     let calculatedAmount = rayDiv(value, index);
 
     userReserve.scaledATokenBalance = userReserve.scaledATokenBalance.plus(calculatedAmount);
@@ -211,10 +219,10 @@ export function handleATokenBurn(event: ATokenBurn): void {
 
 export function handleATokenMint(event: ATokenMint): void {
   log.error('Mint ---------------------------------', []);
-  tokenMint(event, event.params.from, event.params.value, event.params.index);
+  tokenMint(event, event.params.onBehalfOf, event.params.value, event.params.index);
 }
 
-export function handleATokenTransfer(event: ATokenTransfer): void {
+export function handleBalanceTransfer(event: BalanceTransfer): void {
   log.error('Transfer ---------------------------------', []);
   tokenBurn(event, event.params.from, event.params.value, event.params.index);
   tokenMint(event, event.params.to, event.params.value, event.params.index);
