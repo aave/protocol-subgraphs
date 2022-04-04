@@ -549,6 +549,8 @@ type Reserve @entity {
   # eMode
   eMode: EModeCategory
 
+  siloedBorrowing: Boolean!
+
   lifetimeLiquidity: BigInt! # default: 0
   lifetimePrincipalStableDebt: BigInt! # default: 0
   lifetimeScaledVariableDebt: BigInt! # default: 0

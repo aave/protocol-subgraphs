@@ -50,7 +50,7 @@ function genericAddressProviderUpdate(
 }
 
 export function handleProxyCreated(event: ProxyCreated): void {
-  let newProxyAddress = event.params.newAddress;
+  let newProxyAddress = event.params.proxyAddress;
   let contractId = event.params.id.toString();
   let poolComponent: string;
 

@@ -15,22 +15,19 @@ import {
 } from '../../helpers/v3/initializers';
 import { Bytes, Address, ethereum, log, BigInt } from '@graphprotocol/graph-ts';
 import {
-  BorrowingDisabledOnReserve,
-  BorrowingEnabledOnReserve,
-  StableRateDisabledOnReserve,
-  StableRateEnabledOnReserve,
-  ReserveActivated,
-  ReserveDeactivated,
+  ReserveActive,
+  ReserveBorrowing,
+  ReserveStableRateBorrowing,
+  ReserveFrozen,
+  SiloedBorrowingChanged,
   CollateralConfigurationChanged,
   ReserveInterestRateStrategyChanged,
   ReserveFactorChanged,
-  ReserveDecimalsChanged,
   ATokenUpgraded,
   StableDebtTokenUpgraded,
   VariableDebtTokenUpgraded,
   ReserveInitialized,
   ReservePaused,
-  ReserveUnpaused,
   ReserveDropped,
   BorrowCapChanged,
   SupplyCapChanged,
@@ -84,7 +81,7 @@ export function updateInterestRateStrategy(
   if (init) {
     reserve.variableBorrowRate = reserve.baseVariableBorrowRate;
   }
-  reserve.optimalUtilisationRate = interestRateStrategyContract.OPTIMAL_UTILIZATION_RATE();
+  reserve.optimalUtilisationRate = interestRateStrategyContract.OPTIMAL_USAGE_RATIO();
   reserve.variableRateSlope1 = interestRateStrategyContract.getVariableRateSlope1();
   reserve.variableRateSlope2 = interestRateStrategyContract.getVariableRateSlope2();
   reserve.stableRateSlope1 = interestRateStrategyContract.getVariableRateSlope1();
@@ -99,52 +96,37 @@ export function handleReserveInterestRateStrategyChanged(
   if (reserve.aToken == zeroAddress().toHexString()) {
     return;
   }
-  updateInterestRateStrategy(reserve, event.params.strategy, false);
+  updateInterestRateStrategy(reserve, event.params.newStrategy, false);
   saveReserve(reserve, event);
 }
 
-export function handleBorrowingDisabledOnReserve(event: BorrowingDisabledOnReserve): void {
+export function handleReserveBorrowing(event: ReserveBorrowing): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.borrowingEnabled = false;
+  reserve.borrowingEnabled = event.params.enabled;
   saveReserve(reserve, event);
 }
 
-export function handleBorrowingEnabledOnReserve(event: BorrowingEnabledOnReserve): void {
+export function handleSiloedBorrowingChanged(event: SiloedBorrowingChanged): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.borrowingEnabled = true;
-  reserve.stableBorrowRateEnabled = event.params.stableRateEnabled;
-  saveReserve(reserve, event);
-}
-export function handleStableRateDisabledOnReserve(event: StableRateDisabledOnReserve): void {
-  let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.stableBorrowRateEnabled = false;
-  saveReserve(reserve, event);
-}
-export function handleStableRateEnabledOnReserve(event: StableRateEnabledOnReserve): void {
-  let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.stableBorrowRateEnabled = true;
+  reserve.siloedBorrowing = event.params.newState;
   saveReserve(reserve, event);
 }
 
-export function handleReserveActivated(event: ReserveActivated): void {
+export function handleReserveStableRateBorrowing(event: ReserveStableRateBorrowing): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.isActive = true;
-  saveReserve(reserve, event);
-}
-export function handleReserveDeactivated(event: ReserveDeactivated): void {
-  let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.isActive = false;
+  reserve.stableBorrowRateEnabled = event.params.enabled;
   saveReserve(reserve, event);
 }
 
-export function handleReserveFreezed(event: ReserveActivated): void {
+export function handleReserveActivated(event: ReserveActive): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.isFrozen = true;
+  reserve.isActive = event.params.active;
   saveReserve(reserve, event);
 }
-export function handleReserveUnfreezed(event: ReserveDeactivated): void {
+
+export function handleReserveFrozen(event: ReserveFrozen): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.isFrozen = false;
+  reserve.isFrozen = event.params.frozen;
   saveReserve(reserve, event);
 }
 
@@ -163,13 +145,7 @@ export function handleCollateralConfigurationChanged(event: CollateralConfigurat
 
 export function handleReserveFactorChanged(event: ReserveFactorChanged): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.reserveFactor = event.params.factor;
-  saveReserve(reserve, event);
-}
-
-export function handleReserveDecimalsChanged(event: ReserveDecimalsChanged): void {
-  let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.decimals = event.params.decimals.toI32();
+  reserve.reserveFactor = event.params.newReserveFactor;
   saveReserve(reserve, event);
 }
 
@@ -192,13 +168,7 @@ export function handleVariableDebtTokenUpgraded(event: VariableDebtTokenUpgraded
 
 export function handleReservePaused(event: ReservePaused): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.isPaused = true;
-  reserve.save();
-}
-
-export function handleReserveUnpaused(event: ReserveUnpaused): void {
-  let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.isPaused = false;
+  reserve.isPaused = event.params.paused;
   reserve.save();
 }
 
@@ -210,17 +180,17 @@ export function handleReserveDropped(event: ReserveDropped): void {
 
 export function handleBorrowCapChanged(event: BorrowCapChanged): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.borrowCap = event.params.borrowCap;
+  reserve.borrowCap = event.params.newBorrowCap;
   reserve.save();
 }
 export function handleSupplyCapChanged(event: SupplyCapChanged): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.supplyCap = event.params.supplyCap;
+  reserve.supplyCap = event.params.newSupplyCap;
   reserve.save();
 }
 export function handleLiquidationProtocolFeeChanged(event: LiquidationProtocolFeeChanged): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.liquidationProtocolFee = event.params.fee;
+  reserve.liquidationProtocolFee = event.params.newFee;
   reserve.save();
 }
 
@@ -232,7 +202,7 @@ export function handleUnbackedMintCapChanged(event: UnbackedMintCapChanged): voi
 
 export function handleEModeAssetCategoryChanged(event: EModeAssetCategoryChanged): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.eMode = BigInt.fromI32(event.params.categoryId).toString();
+  reserve.eMode = BigInt.fromI32(event.params.newCategoryId).toString();
   reserve.save();
 }
 
@@ -256,19 +226,19 @@ export function handleEModeCategoryAdded(event: EModeCategoryAdded): void {
 
 export function handleDebtCeilingChanged(event: DebtCeilingChanged): void {
   let reserve = getOrInitReserve(event.params.asset, event);
-  reserve.debtCeiling = event.params.ceiling;
+  reserve.debtCeiling = event.params.newDebtCeiling;
   reserve.save();
 }
 
 export function handleBridgeProtocolFeeUpdated(event: BridgeProtocolFeeUpdated): void {
   let protocol = getProtocol();
-  protocol.bridgeProtocolFee = event.params.protocolFee;
+  protocol.bridgeProtocolFee = event.params.newBridgeProtocolFee;
   protocol.save();
 }
 
 export function handleFlashloanPremiumTotalUpdated(event: FlashloanPremiumTotalUpdated): void {
   let protocol = getProtocol();
-  protocol.flashloanPremiumTotal = event.params.flashloanPremiumTotal;
+  protocol.flashloanPremiumTotal = event.params.newFlashloanPremiumTotal;
   protocol.save();
 }
 
@@ -276,7 +246,7 @@ export function handleFlashloanPremiumToProtocolUpdated(
   event: FlashloanPremiumToProtocolUpdated
 ): void {
   let protocol = getProtocol();
-  protocol.flashloanPremiumToProtocol = event.params.flashloanPremiumToProtocol;
+  protocol.flashloanPremiumToProtocol = event.params.newFlashloanPremiumToProtocol;
   protocol.save();
 }
 

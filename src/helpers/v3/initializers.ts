@@ -47,7 +47,7 @@ export function getOrInitUser(address: Address): User {
     user = new User(address.toHexString());
     user.borrowedReservesCount = 0;
     user.unclaimedRewards = zeroBI();
-    user.incentivesLastUpdated = 0;
+    user.rewardsLastUpdated = 0;
     user.lifetimeRewards = zeroBI();
     user.save();
   }
@@ -185,6 +185,7 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
 
     reserve.isPaused = false;
     reserve.isDropped = false;
+    reserve.siloedBorrowing = false;
 
     reserve.lifetimePrincipalStableDebt = zeroBI();
     reserve.lifetimeScaledVariableDebt = zeroBI();
