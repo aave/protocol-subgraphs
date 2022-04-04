@@ -91,10 +91,12 @@ dataSources:
         - name: PoolAddressesProviderRegistry
           file: ./abis/v3/PoolAddressesProviderRegistry.json
       eventHandlers:
-        - event: AddressesProviderRegistered(indexed address)
+        - event: AddressesProviderRegistered(indexed address,indexed uint256)
           handler: handleAddressesProviderRegistered
-        - event: AddressesProviderUnregistered(indexed address)
+        - event: AddressesProviderUnregistered(indexed address,indexed uint256)
           handler: handleAddressesProviderUnregistered
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
       file: src/mapping/address-provider-registry/v3.ts
 
   # --------------------------------------
@@ -114,7 +116,7 @@ templates:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - IncentivesController
+        - RewardsController
       abis:
         - name: RewardsController
           file: ./abis/v3/RewardsController.json
@@ -200,8 +202,8 @@ templates:
           file: ./abis/v3/AToken.json
         - name: IERC20Detailed
           file: ./abis/helpers/IERC20Detailed.json
-        - name: IncentivesControllerV2
-          file: ./abis/v3/IncentivesControllerV2.json
+        - name: RewardsController
+          file: ./abis/v3/RewardsController.json
       eventHandlers:
         - event: Burn(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleATokenBurn
@@ -229,14 +231,14 @@ templates:
           file: ./abis/v3/StableDebtToken.json
         - name: IERC20Detailed
           file: ./abis/helpers/IERC20Detailed.json
-        - name: IncentivesController
-          file: ./abis/v3/IncentivesControllerV2.json
+        - name: RewardsController
+          file: ./abis/v3/RewardsController.json
       eventHandlers:
         - event: Burn(indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleStableTokenBurn
         - event: Mint(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleStableTokenMint
-        - event: BorrowAllowanceDelegated(indexed address,indexed address,address,uint256)
+        - event: BorrowAllowanceDelegated(indexed address,indexed address,indexed address,uint256)
           handler: handleStableTokenBorrowAllowanceDelegated
         - event: Initialized(indexed address,indexed address,address,uint8,string,string,bytes)
           handler: handleSTokenInitialized
@@ -258,14 +260,14 @@ templates:
           file: ./abis/v3/VariableDebtToken.json
         - name: IERC20Detailed
           file: ./abis/helpers/IERC20Detailed.json
-        - name: IncentivesControllerV2
-          file: ./abis/v3/IncentivesControllerV2.json
+        - name: RewardsController
+          file: ./abis/v3/RewardsController.json
       eventHandlers:
-        - event: Burn(indexed address,uint256,uint256,uint256)
+        - event: Burn(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleVariableTokenBurn
         - event: Mint(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleVariableTokenMint
-        - event: BorrowAllowanceDelegated(indexed address,indexed address,address,uint256)
+        - event: BorrowAllowanceDelegated(indexed address,indexed address,indexed address,uint256)
           handler: handleVariableTokenBorrowAllowanceDelegated
         - event: Initialized(indexed address,indexed address,address,uint8,string,string,bytes)
           handler: handleVTokenInitialized
@@ -289,18 +291,30 @@ templates:
         - name: PoolAddressesProvider
           file: ./abis/v3/PoolAddressesProvider.json
       eventHandlers:
-        - event: ProxyCreated(bytes32,indexed address)
+        - event: ProxyCreated(indexed bytes32,indexed address,indexed address)
           handler: handleProxyCreated
-        - event: PriceOracleUpdated(indexed address)
+        - event: PriceOracleUpdated(indexed address,indexed address)
           handler: handlePriceOracleUpdated
-        - event: PoolUpdated(indexed address)
+        - event: PoolUpdated(indexed address,indexed address)
           handler: handlePoolUpdated
-        - event: PoolConfiguratorUpdated(indexed address)
+        - event: PoolConfiguratorUpdated(indexed address,indexed address)
           handler: handlePoolConfiguratorUpdated
-        - event: PoolDataProviderUpdated(indexed address)
+        - event: PoolDataProviderUpdated(indexed address,indexed address)
           handler: handlePoolDataProviderUpdated
-        - event: AddressSet(bytes32,indexed address,bool)
+        - event: AddressSet(indexed bytes32,indexed address,indexed address)
           handler: handleAddressSet
+        - event: ACLAdminUpdated(indexed address,indexed address)
+          handler: handleACLAdminUpdated
+        - event: ACLManagerUpdated(indexed address,indexed address)
+          handler: handleACLManagerUpdated
+        - event: AddressSetAsProxy(indexed bytes32,indexed address,address,indexed address)
+          handler: handleAddressSetAsProxy
+        - event: MarketIdSet(indexed string,indexed string)
+          handler: handleMarketIdSet
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: PriceOracleSentinelUpdated(indexed address,indexed address)
+          handler: handlePriceOracleSentinelUpdated
       file: src/mapping/lending-pool-address-provider/v3.ts
 
   - kind: ethereum/contract
@@ -334,50 +348,46 @@ templates:
           handler: handleReserveStableRateBorrowing
         - event: ReserveActive(indexed address,bool)
           handler: handleReserveActive
-        - event: ReserveFrozen(indexed address)
-          handler: handleReserveFreezed
-        - event: ReserveUnfrozen(indexed address)
-          handler: handleReserveUnfreezed
-        - event: ReservePaused(indexed address)
+        - event: ReserveFrozen(indexed address,bool)
+          handler: handleReserveFrozen
+        - event: ReservePaused(indexed address,bool)
           handler: handleReservePaused
-        - event: ReserveUnpaused(indexed address)
-          handler: handleReserveUnpaused
         - event: ReserveDropped(indexed address)
           handler: handleReserveDropped
-        - event: ReserveFactorChanged(indexed address,uint256)
+        - event: ReserveFactorChanged(indexed address,uint256,uint256)
           handler: handleReserveFactorChanged
-        - event: ReserveDecimalsChanged(indexed address,uint256)
-          handler: handleReserveDecimalsChanged
-        - event: ReserveInterestRateStrategyChanged(indexed address,address)
-          handler: handleReserveInterestRateStrategyChanged
         - event: ATokenUpgraded(indexed address,indexed address,indexed address)
           handler: handleATokenUpgraded
-        - event: StableDebtTokenUpgraded(indexed address,indexed address,indexed address)
-          handler: handleStableDebtTokenUpgraded
-        - event: VariableDebtTokenUpgraded(indexed address,indexed address,indexed address)
-          handler: handleVariableDebtTokenUpgraded
-        - event: BorrowCapChanged(indexed address,uint256)
+        - event: BorrowCapChanged(indexed address,uint256,uint256)
           handler: handleBorrowCapChanged
-        - event: SupplyCapChanged(indexed address,uint256)
-          handler: handleSupplyCapChanged
-        - event: LiquidationProtocolFeeChanged(indexed address,uint256)
-          handler: handleLiquidationProtocolFeeChanged
-        - event: UnbackedMintCapChanged(indexed address,uint256)
-          handler: handleUnbackedMintCapChanged
-        - event: EModeAssetCategoryChanged(indexed address,uint8)
+        - event: BorrowableInIsolationChanged(address,bool)
+          handler: handleBorrowableInIsolationChanged
+        - event: BridgeProtocolFeeUpdated(uint256,uint256)
+          handler: handleBridgeProtocolFeeUpdated
+        - event: DebtCeilingChanged(indexed address,uint256,uint256)
+          handler: handleDebtCeilingChanged
+        - event: EModeAssetCategoryChanged(indexed address,uint8,uint8)
           handler: handleEModeAssetCategoryChanged
         - event: EModeCategoryAdded(indexed uint8,uint256,uint256,uint256,address,string)
           handler: handleEModeCategoryAdded
-        - event: DebtCeilingChanged(indexed address,uint256)
-          handler: handleDebtCeilingChanged
-        - event: BridgeProtocolFeeUpdated(uint256)
-          handler: handleBridgeProtocolFeeUpdated
-        - event: FlashloanPremiumTotalUpdated(uint256)
-          handler: handleFlashloanPremiumTotalUpdated
-        - event: FlashloanPremiumToProtocolUpdated(uint256)
+        - event: FlashloanPremiumToProtocolUpdated(uint128,uint128)
           handler: handleFlashloanPremiumToProtocolUpdated
-        - event: BorrowableInIsolationChanged(address,bool)
-          handler: handleBorrowableInIsolationChanged
+        - event: FlashloanPremiumTotalUpdated(uint128,uint128)
+          handler: handleFlashloanPremiumTotalUpdated
+        - event: LiquidationProtocolFeeChanged(indexed address,uint256,uint256)
+          handler: handleLiquidationProtocolFeeChanged
+        - event: ReserveInterestRateStrategyChanged(indexed address,address,address)
+          handler: handleReserveInterestRateStrategyChanged
+        - event: SiloedBorrowingChanged(indexed address,bool,bool)
+          handler: handleSiloedBorrowingChanged
+        - event: StableDebtTokenUpgraded(indexed address,indexed address,indexed address)
+          handler: handleStableDebtTokenUpgraded
+        - event: SupplyCapChanged(indexed address,uint256,uint256)
+          handler: handleSupplyCapChanged
+        - event: UnbackedMintCapChanged(indexed address,uint256,uint256)
+          handler: handleUnbackedMintCapChanged
+        - event: VariableDebtTokenUpgraded(indexed address,indexed address,indexed address)
+          handler: handleVariableDebtTokenUpgraded
       file: src/mapping/lending-pool-configurator/v3.ts
   - kind: ethereum/contract
     name: Pool
@@ -428,4 +438,6 @@ templates:
           handler: handleMintedToTreasury
         - event: UserEModeSet(indexed address,uint8)
           handler: handleUserEModeSet
+        - event: IsolationModeTotalDebtUpdated(indexed address,uint256)
+          handler: handleIsolationModeTotalDebtUpdated
       file: src/mapping/lending-pool/v3.ts
