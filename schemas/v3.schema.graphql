@@ -28,9 +28,14 @@ type Pool @entity {
 
   reserves: [Reserve!]! @derivedFrom(field: "pool")
   supplyHistory: [Supply!]! @derivedFrom(field: "pool")
+  mintUnbackedHistory: [MintUnbacked!]! @derivedFrom(field: "pool")
+  backUnbackedHistory: [BackUnbacked!]! @derivedFrom(field: "pool")
+  mintedToTreasuryHistory: [MintedToTreasury!]! @derivedFrom(field: "pool")
+  isolationModeTotalDebtUpdatedHistory: [IsolationModeTotalDebtUpdated!]!
+    @derivedFrom(field: "pool")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "pool")
   borrowHistory: [Borrow!]! @derivedFrom(field: "pool")
-  swapHistory: [Swap!]! @derivedFrom(field: "pool")
+  swapHistory: [SwapBorrowRate!]! @derivedFrom(field: "pool")
   usageAsCollateralHistory: [UsageAsCollateral!]! @derivedFrom(field: "pool")
   rebalanceStableBorrowRateHistory: [RebalanceStableBorrowRate!]! @derivedFrom(field: "pool")
   repayHistory: [Repay!]! @derivedFrom(field: "pool")
@@ -141,11 +146,11 @@ interface UserTransaction {
 type Supply implements UserTransaction @entity {
   """
   tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
+  """
   id: ID!
   pool: Pool!
   user: User!
-  onBehalfOf: User!
+  caller: User!
   reserve: Reserve!
   referrer: Referrer
   userReserve: UserReserve!
@@ -153,15 +158,14 @@ type Supply implements UserTransaction @entity {
   timestamp: Int!
 }
 
-# TODO: check nomenclature for new v2
 type RedeemUnderlying implements UserTransaction @entity {
   """
   tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
+  """
   id: ID!
   pool: Pool!
   user: User!
-  onBehalfOf: User!
+  to: User!
   reserve: Reserve!
   userReserve: UserReserve!
   amount: BigInt!
@@ -171,11 +175,11 @@ type RedeemUnderlying implements UserTransaction @entity {
 type Borrow implements UserTransaction @entity {
   """
   tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
+  """
   id: ID!
   pool: Pool!
   user: User!
-  onBehalfOf: User!
+  caller: User!
   reserve: Reserve!
   userReserve: UserReserve!
   amount: BigInt!
@@ -187,10 +191,10 @@ type Borrow implements UserTransaction @entity {
   variableTokenDebt: BigInt!
 }
 
-type Swap implements UserTransaction @entity {
+type SwapBorrowRate implements UserTransaction @entity {
   """
   tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
+  """
   id: ID!
   pool: Pool!
   user: User!
@@ -206,7 +210,7 @@ type Swap implements UserTransaction @entity {
 type UsageAsCollateral implements UserTransaction @entity {
   """
   tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
+  """ #
   id: ID!
   pool: Pool!
   user: User!
@@ -220,7 +224,7 @@ type UsageAsCollateral implements UserTransaction @entity {
 type RebalanceStableBorrowRate implements UserTransaction @entity {
   """
   tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
+  """ #
   id: ID!
   pool: Pool!
   user: User!
@@ -235,11 +239,11 @@ type RebalanceStableBorrowRate implements UserTransaction @entity {
 type Repay implements UserTransaction @entity {
   """
   tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
+  """
   id: ID!
   pool: Pool!
   user: User!
-  onBehalfOf: User!
+  repayer: User!
   reserve: Reserve!
   userReserve: UserReserve!
   amount: BigInt!
@@ -247,10 +251,21 @@ type Repay implements UserTransaction @entity {
   useATokens: Boolean!
 }
 
+type IsolationModeTotalDebtUpdated implements UserTransaction @entity {
+  """
+  tx hash
+  """
+  id: ID!
+  pool: Pool!
+  reserve: Reserve!
+  isolatedDebt: BigInt!
+  timestamp: Int!
+}
+
 type FlashLoan @entity {
   """
   tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
+  """ #
   id: ID!
   pool: Pool!
   reserve: Reserve!
@@ -265,7 +280,7 @@ type FlashLoan @entity {
 type LiquidationCall implements UserTransaction @entity {
   """
   tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
+  """ #
   id: ID!
   pool: Pool!
   user: User!
@@ -282,7 +297,7 @@ type LiquidationCall implements UserTransaction @entity {
 type OriginationFeeLiquidation implements UserTransaction @entity {
   """
   tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
+  """ #
   id: ID!
   pool: Pool!
   user: User!
@@ -299,8 +314,9 @@ type MintUnbacked @entity {
   id: ID!
   pool: Pool!
   user: User!
-  onBehalfOf: User!
+  caller: User!
   reserve: Reserve!
+  userReserve: UserReserve!
   amount: BigInt!
   referral: Int!
   timestamp: Int!
@@ -310,6 +326,7 @@ type BackUnbacked @entity {
   id: ID!
   pool: Pool!
   reserve: Reserve!
+  userReserve: UserReserve!
   backer: User!
   amount: BigInt!
   fee: BigInt!
@@ -567,10 +584,15 @@ type Reserve @entity {
   # lifetimeVariableDebtFeeCollected: BigInt!
   userReserves: [UserReserve!]! @derivedFrom(field: "reserve")
   supplyHistory: [Supply!]! @derivedFrom(field: "reserve")
+  mintUnbackedHistory: [MintUnbacked!]! @derivedFrom(field: "reserve")
+  backUnbackedHistory: [BackUnbacked!]! @derivedFrom(field: "reserve")
+  mintedToTreasuryHistory: [MintedToTreasury!]! @derivedFrom(field: "reserve")
+  isolationModeTotalDebtUpdatedHistory: [IsolationModeTotalDebtUpdated!]!
+    @derivedFrom(field: "reserve")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "reserve")
   borrowHistory: [Borrow!]! @derivedFrom(field: "reserve")
   usageAsCollateralHistory: [UsageAsCollateral!]! @derivedFrom(field: "reserve")
-  swapHistory: [Swap!]! @derivedFrom(field: "reserve")
+  swapHistory: [SwapBorrowRate!]! @derivedFrom(field: "reserve")
   rebalanceStableBorrowRateHistory: [RebalanceStableBorrowRate!]! @derivedFrom(field: "reserve")
   repayHistory: [Repay!]! @derivedFrom(field: "reserve")
   flashLoanHistory: [FlashLoan!]! @derivedFrom(field: "reserve")
@@ -690,9 +712,11 @@ type UserReserve @entity {
 
   usageAsCollateralHistory: [UsageAsCollateral!]! @derivedFrom(field: "userReserve")
   supplyHistory: [Supply!]! @derivedFrom(field: "userReserve")
+  mintUnbackedHistory: [MintUnbacked!]! @derivedFrom(field: "userReserve")
+  backUnbackedHistory: [BackUnbacked!]! @derivedFrom(field: "userReserve")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "userReserve")
   borrowHistory: [Borrow!]! @derivedFrom(field: "userReserve")
-  swapHistory: [Swap!]! @derivedFrom(field: "userReserve")
+  swapHistory: [SwapBorrowRate!]! @derivedFrom(field: "userReserve")
   rebalanceStableBorrowRateHistory: [RebalanceStableBorrowRate!]! @derivedFrom(field: "userReserve")
   repayHistory: [Repay!]! @derivedFrom(field: "userReserve")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "collateralUserReserve")
@@ -718,10 +742,13 @@ type User @entity {
 
   reserves: [UserReserve!]! @derivedFrom(field: "user")
   supplyHistory: [Supply!]! @derivedFrom(field: "user")
+  mintUnbackedHistory: [MintUnbacked!]! @derivedFrom(field: "user")
+  backUnbackedHistory: [BackUnbacked!]! @derivedFrom(field: "backer")
+  userEmodeSetHistory: [UserEModeSet!]! @derivedFrom(field: "user")
   redeemUnderlyingHistory: [RedeemUnderlying!]! @derivedFrom(field: "user")
   usageAsCollateralHistory: [UsageAsCollateral!]! @derivedFrom(field: "user")
   borrowHistory: [Borrow!]! @derivedFrom(field: "user")
-  swapHistory: [Swap!]! @derivedFrom(field: "user")
+  swapHistory: [SwapBorrowRate!]! @derivedFrom(field: "user")
   rebalanceStableBorrowRateHistory: [RebalanceStableBorrowRate!]! @derivedFrom(field: "user")
   repayHistory: [Repay!]! @derivedFrom(field: "user")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "user")

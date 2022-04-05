@@ -418,7 +418,7 @@ templates:
         - event: Repay(indexed address,indexed address,indexed address,uint256,bool)
           handler: handleRepay
         - event: SwapBorrowRateMode(indexed address,indexed address,uint8)
-          handler: handleSwap
+          handler: handleSwapBorrowRateMode
         - event: ReserveUsedAsCollateralEnabled(indexed address,indexed address)
           handler: handleReserveUsedAsCollateralEnabled
         - event: ReserveUsedAsCollateralDisabled(indexed address,indexed address)
