@@ -245,7 +245,7 @@ type Repay implements UserTransaction @entity {
   useATokens: Boolean!
 }
 
-type IsolationModeTotalDebtUpdated implements UserTransaction @entity {
+type IsolationModeTotalDebtUpdated @entity {
   """
   tx hash
   """
