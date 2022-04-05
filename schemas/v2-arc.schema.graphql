@@ -214,7 +214,7 @@ type Deposit implements UserTransaction @entity {
   id: ID!
   pool: Pool!
   user: User!
-  onBehalfOf: User!
+  caller: User!
   reserve: Reserve!
   userReserve: UserReserve!
   amount: BigInt!
@@ -230,7 +230,7 @@ type RedeemUnderlying implements UserTransaction @entity {
   id: ID!
   pool: Pool!
   user: User!
-  onBehalfOf: User!
+  to: User!
   reserve: Reserve!
   userReserve: UserReserve!
   amount: BigInt!
@@ -244,7 +244,7 @@ type Borrow implements UserTransaction @entity {
   id: ID!
   pool: Pool!
   user: User!
-  onBehalfOf: User!
+  caller: User!
   reserve: Reserve!
   userReserve: UserReserve!
   amount: BigInt!
@@ -308,7 +308,7 @@ type Repay implements UserTransaction @entity {
   id: ID!
   pool: Pool!
   user: User!
-  onBehalfOf: User!
+  repayer: User!
   reserve: Reserve!
   userReserve: UserReserve!
   amount: BigInt!
