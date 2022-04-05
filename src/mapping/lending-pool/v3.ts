@@ -1,10 +1,5 @@
 import { BigInt } from '@graphprotocol/graph-ts';
 import {
-  BORROW_MODE_STABLE,
-  BORROW_MODE_VARIABLE,
-  getBorrowRateMode,
-} from '../../utils/converters';
-import {
   Borrow,
   Supply,
   FlashLoan,
@@ -111,7 +106,7 @@ export function handleBorrow(event: Borrow): void {
   borrow.stableTokenDebt = userReserve.principalStableDebt;
   borrow.variableTokenDebt = userReserve.scaledVariableDebt;
   borrow.borrowRate = event.params.borrowRate;
-  borrow.borrowRateMode = getBorrowRateMode(event.params.interestRateMode);
+  borrow.borrowRateMode = event.params.interestRateMode;
   borrow.timestamp = event.block.timestamp.toI32();
   if (event.params.referralCode) {
     let referrer = getOrInitReferrer(event.params.referralCode);
@@ -126,11 +121,11 @@ export function handleSwapBorrowRateMode(event: SwapBorrowRateMode): void {
 
   let swapHistoryItem = new SwapBorrowRateAction(getHistoryEntityId(event));
   swapHistoryItem.pool = poolReserve.pool;
-  swapHistoryItem.borrowRateModeFrom = getBorrowRateMode(event.params.interestRateMode);
-  if (swapHistoryItem.borrowRateModeFrom === BORROW_MODE_STABLE) {
-    swapHistoryItem.borrowRateModeTo = BORROW_MODE_VARIABLE;
+  swapHistoryItem.borrowRateModeFrom = event.params.interestRateMode;
+  if (swapHistoryItem.borrowRateModeFrom === 1) {
+    swapHistoryItem.borrowRateModeTo = 2;
   } else {
-    swapHistoryItem.borrowRateModeTo = BORROW_MODE_STABLE;
+    swapHistoryItem.borrowRateModeTo = 1;
   }
 
   swapHistoryItem.variableBorrowRate = poolReserve.variableBorrowRate;

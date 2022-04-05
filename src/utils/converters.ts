@@ -1,4 +1,4 @@
-import { BigInt, BigDecimal, Bytes, ByteArray, crypto, log, Value } from '@graphprotocol/graph-ts';
+import { BigInt, BigDecimal, Bytes, ByteArray, crypto, log } from '@graphprotocol/graph-ts';
 
 export function zeroBD(): BigDecimal {
   return BigDecimal.fromString('0');

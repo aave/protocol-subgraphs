@@ -3,10 +3,10 @@ import {
   Accrued,
   RewardsClaimed,
   RewardOracleUpdated,
+  RewardsController as RewardsControllerContract,
 } from '../../../generated/templates/RewardsController/RewardsController';
 import {
   ClaimRewardsCall,
-  RewardsController,
   RewardedAction,
   RewardFeedOracle,
   Rewards,
@@ -39,7 +39,7 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
     rewardIncentive.rewardTokenDecimals = IERC20DetailedContract.decimals();
     rewardIncentive.rewardTokenSymbol = IERC20DetailedContract.symbol();
 
-    let iController = RewardsController.bind(rewardsController);
+    let iController = RewardsControllerContract.bind(rewardsController);
     rewardIncentive.precision = iController.getAssetDecimals(asset);
 
     rewardIncentive.createdAt = blockTimestamp;

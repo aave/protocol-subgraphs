@@ -30,6 +30,7 @@ import { MOCK_USD_ADDRESS, ZERO_ADDRESS } from '../../utils/constants';
 
 export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void {
   let priceOracle = getOrInitPriceOracle();
+  let address = event.address;
 
   priceOracle.fallbackPriceOracle = event.params.fallbackOracle;
   if (event.params.fallbackOracle.toHexString() != ZERO_ADDRESS) {
@@ -37,13 +38,15 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
 
     // update prices on assets which use fallback
 
-    priceOracle.tokensWithFallback.forEach(token => {
+    let proxyPriceProvider = AaveOracle.bind(address);
+    for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
+      // priceOracle.tokensWithFallback.forEach(token => {
+      let token = priceOracle.tokensWithFallback[i];
       let priceOracleAsset = getPriceOracleAsset(token);
       if (
         priceOracleAsset.priceSource.equals(zeroAddress()) ||
         priceOracleAsset.isFallbackRequired
       ) {
-        let proxyPriceProvider = AaveOracle.bind(event.address);
         let price = proxyPriceProvider.try_getAssetPrice(Address.fromString(priceOracleAsset.id));
         if (!price.reverted) {
           genericPriceUpdate(priceOracleAsset, price.value, event);
@@ -59,7 +62,7 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
           );
         }
       }
-    });
+    }
 
     // update USDETH price
     let fallbackOracle = FallbackPriceOracle.bind(event.params.fallbackOracle);
@@ -193,9 +196,13 @@ export function priceFeedUpdated(
       priceOracle.tokensWithFallback.includes(sAssetAddress) &&
       !priceOracleAsset.isFallbackRequired
     ) {
-      priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-        token => token != assetAddress.toHexString()
-      );
+      let tokensWithFallback: string[] = [];
+      for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
+        if (priceOracle.tokensWithFallback[i] != sAssetAddress) {
+          tokensWithFallback.push(priceOracle.tokensWithFallback[i]);
+        }
+      }
+      priceOracle.tokensWithFallback = tokensWithFallback;
     }
 
     if (

@@ -1,4 +1,4 @@
-import { Address, Bytes, ethereum, log } from '@graphprotocol/graph-ts';
+import { Bytes, ethereum, log } from '@graphprotocol/graph-ts';
 import {
   SubToken,
   PriceOracle,
@@ -41,7 +41,7 @@ export function getPoolByContract(event: ethereum.Event): string {
   return contractToPoolMapping.pool;
 }
 
-export function getOrInitUser(address: Address): User {
+export function getOrInitUser(address: Bytes): User {
   let user = User.load(address.toHexString());
   if (!user) {
     user = new User(address.toHexString());
@@ -55,8 +55,8 @@ export function getOrInitUser(address: Address): User {
 }
 
 function initUserReserve(
-  underlyingAssetAddress: Address,
-  userAddress: Address,
+  underlyingAssetAddress: Bytes,
+  userAddress: Bytes,
   poolId: string,
   reserveId: string
 ): UserReserve {
@@ -89,8 +89,8 @@ function initUserReserve(
 }
 
 export function getOrInitUserReserveWithIds(
-  userAddress: Address,
-  underlyingAssetAddress: Address,
+  userAddress: Bytes,
+  underlyingAssetAddress: Bytes,
   pool: string
 ): UserReserve {
   let reserveId = getReserveId(underlyingAssetAddress, pool);
@@ -135,7 +135,7 @@ export function getPriceOracleAsset(id: string, save: boolean = true): PriceOrac
   return priceOracleReserve as PriceOracleAsset;
 }
 
-export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event): Reserve {
+export function getOrInitReserve(underlyingAsset: Bytes, event: ethereum.Event): Reserve {
   let poolId = getPoolByContract(event);
   let reserveId = getReserveId(underlyingAsset, poolId);
   let reserve = Reserve.load(reserveId);
@@ -218,8 +218,8 @@ export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event
 }
 
 export function getOrInitUserReserve(
-  _user: Address,
-  _underlyingAsset: Address,
+  _user: Bytes,
+  _underlyingAsset: Bytes,
   event: ethereum.Event
 ): UserReserve {
   let poolId = getPoolByContract(event);
@@ -236,7 +236,7 @@ export function getChainlinkAggregator(id: string): ChainlinkAggregator {
   return chainlinkAggregator as ChainlinkAggregator;
 }
 
-export function getOrInitSubToken(subTokenAddress: Address): SubToken {
+export function getOrInitSubToken(subTokenAddress: Bytes): SubToken {
   let sTokenId = subTokenAddress.toHexString();
   let sToken = SubToken.load(sTokenId);
   if (!sToken) {
@@ -320,7 +320,7 @@ export function getOrInitReferrer(id: i32): Referrer {
   return referrer as Referrer;
 }
 
-export function createMapContractToPool(_contractAddress: Address, pool: string): void {
+export function createMapContractToPool(_contractAddress: Bytes, pool: string): void {
   let contractAddress = _contractAddress.toHexString();
   let contractToPoolMapping = ContractToPoolMapping.load(contractAddress);
 

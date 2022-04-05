@@ -124,12 +124,6 @@ type SubToken @entity {
   rewards: [Rewards!]! @derivedFrom(field: "asset")
 }
 
-enum BorrowRateMode {
-  None
-  Stable
-  Variable
-}
-
 type Referrer @entity {
   id: ID!
   supplies: [Supply!]! @derivedFrom(field: "referrer")
@@ -184,7 +178,7 @@ type Borrow implements UserTransaction @entity {
   userReserve: UserReserve!
   amount: BigInt!
   borrowRate: BigInt!
-  borrowRateMode: BorrowRateMode!
+  borrowRateMode: Int!
   referrer: Referrer
   timestamp: Int!
   stableTokenDebt: BigInt!
@@ -200,8 +194,8 @@ type SwapBorrowRate implements UserTransaction @entity {
   user: User!
   reserve: Reserve!
   userReserve: UserReserve!
-  borrowRateModeFrom: BorrowRateMode!
-  borrowRateModeTo: BorrowRateMode!
+  borrowRateModeFrom: Int!
+  borrowRateModeTo: Int!
   stableBorrowRate: BigInt!
   variableBorrowRate: BigInt!
   timestamp: Int!

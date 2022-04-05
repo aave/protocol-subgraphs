@@ -13,7 +13,7 @@ import {
 export {
   handleATokenBurn,
   handleATokenMint,
-  handleATokenTransfer,
+  handleBalanceTransfer,
   handleVariableTokenBurn,
   handleVariableTokenMint,
   handleStableTokenMint,
@@ -45,11 +45,13 @@ function createIncentivesController(
   }
 
   let poolAddressProvider = ContractToPoolMapping.load(pool.toHexString());
-  // save asset pool mapping
-  let mapAssetPool = new MapAssetPool(asset.toHexString());
-  mapAssetPool.pool = poolAddressProvider.pool;
-  mapAssetPool.underlyingAsset = underlyingAsset;
-  mapAssetPool.save();
+  if (poolAddressProvider != null) {
+    // save asset pool mapping
+    let mapAssetPool = new MapAssetPool(asset.toHexString());
+    mapAssetPool.pool = poolAddressProvider.pool;
+    mapAssetPool.underlyingAsset = underlyingAsset;
+    mapAssetPool.save();
+  }
 }
 
 // export function handleATokenBurn(event: Burn): void {

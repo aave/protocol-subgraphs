@@ -24,7 +24,11 @@ export function handleAddressesProviderRegistered(event: AddressesProviderRegist
 }
 
 export function handleAddressesProviderUnregistered(event: AddressesProviderUnregistered): void {
-  let pool = Pool.load(event.params.addressesProvider.toHexString());
-  pool.active = false;
-  pool.save();
+  let address = event.params.addressesProvider.toHexString();
+  let pool = Pool.load(address);
+  if (pool != null) {
+    pool.active = false;
+    pool.lastUpdateTimestamp = event.block.timestamp.toI32();
+    pool.save();
+  }
 }
