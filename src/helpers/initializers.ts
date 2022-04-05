@@ -120,16 +120,6 @@ export function getOrInitUserReserveWithIds(
   return initUserReserve(underlyingAssetAddress, userAddress, pool, reserveId);
 }
 
-export function getOrInitUserReserve(
-  _user: Bytes,
-  _underlyingAsset: Bytes,
-  event: ethereum.Event
-): UserReserve {
-  let poolId = getPoolByContract(event);
-  let reserve = getOrInitReserve(_underlyingAsset, event);
-  return initUserReserve(_underlyingAsset, _user, poolId, reserve.id);
-}
-
 export function getOrInitPriceOracle(): PriceOracle {
   let priceOracle = PriceOracle.load('1');
   if (!priceOracle) {
@@ -255,6 +245,16 @@ export function getOrInitReserve(underlyingAsset: Bytes, event: ethereum.Event):
     // TODO: think about AToken
   }
   return reserve as Reserve;
+}
+
+export function getOrInitUserReserve(
+  _user: Bytes,
+  _underlyingAsset: Bytes,
+  event: ethereum.Event
+): UserReserve {
+  let poolId = getPoolByContract(event);
+  let reserve = getOrInitReserve(_underlyingAsset, event);
+  return initUserReserve(_underlyingAsset, _user, poolId, reserve.id);
 }
 
 export function getChainlinkAggregator(id: string): ChainlinkAggregator {

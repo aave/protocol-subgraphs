@@ -40,7 +40,6 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
 
     let proxyPriceProvider = AaveOracle.bind(address);
     for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
-      // priceOracle.tokensWithFallback.forEach(token => {
       let token = priceOracle.tokensWithFallback[i];
       let priceOracleAsset = getPriceOracleAsset(token);
       if (

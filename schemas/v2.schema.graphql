@@ -131,6 +131,8 @@ type PriceOracle @entity {
   tokensWithFallback: [PriceOracleAsset!]!
   lastUpdateTimestamp: Int!
   version: Int!
+  baseCurrency: Bytes
+  baseCurrencyUnit: BigInt
 }
 
 type SToken @entity {
