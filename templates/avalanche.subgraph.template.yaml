@@ -61,7 +61,7 @@ dataSources:
         - name: AaveOracle
           file: ./abis/v2/AaveOracle.json
         - name: GenericOracleI
-          file: ./abis/helpers/GenericOracleI.json
+          file: ./abis/v2/GenericOracleI.json
         - name: IExtendedPriceAggregator
           file: ./abis/helpers/IExtendedPriceAggregator.json
         - name: EACAggregatorProxy
@@ -153,7 +153,7 @@ templates:
         - PriceOracleReserve
       abis:
         - name: GenericOracleI
-          file: ./abis/helpers/GenericOracleI.json
+          file: ./abis/v2/GenericOracleI.json
         - name: AaveOracle
           file: ./abis/v2/AaveOracle.json
       eventHandlers:
