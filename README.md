@@ -4,6 +4,12 @@
 - [mainnet](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2)
 - [polygon](https://thegraph.com/hosted-service/subgraph/aave/aave-v2-matic)
 - [avalanche](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2-avalanche)
+- [Polygon V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-polygon)
+- [Avalanche V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-avalanche)
+- [Arbitrum V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-arbitrum)
+- [Optimism V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-optimism)
+- [Fantom V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-fantom)
+- Harmony V3 not supported
 
 ## Development
 
