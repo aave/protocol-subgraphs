@@ -95,8 +95,8 @@ dataSources:
           handler: handleAddressesProviderRegistered
         - event: AddressesProviderUnregistered(indexed address,indexed uint256)
           handler: handleAddressesProviderUnregistered
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
+        # - event: OwnershipTransferred(indexed address,indexed address)
+        #   handler: handleOwnershipTransferred
       file: src/mapping/address-provider-registry/v3.ts
 
   # --------------------------------------
