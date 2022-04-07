@@ -48,16 +48,15 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
 
     // update prices on assets which use fallback
 
-    priceOracle.tokensWithFallback.forEach(token => {
+    let proxyPriceProvider = AaveOracle.bind(event.address);
+    for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
+      let token = priceOracle.tokensWithFallback[i];
       let priceOracleAsset = getPriceOracleAsset(token);
       if (
         priceOracleAsset.priceSource.equals(zeroAddress()) ||
         priceOracleAsset.isFallbackRequired
       ) {
-        let proxyPriceProvider = AaveOracle.bind(event.address);
-        let price = proxyPriceProvider.try_getAssetPrice(
-          Bytes.fromHexString(priceOracleAsset.id) as Address
-        );
+        let price = proxyPriceProvider.try_getAssetPrice(Address.fromString(priceOracleAsset.id));
         if (!price.reverted) {
           genericPriceUpdate(priceOracleAsset, price.value, event);
         } else {
@@ -72,7 +71,7 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
           );
         }
       }
-    });
+    }
 
     // update USDETH price
     let fallbackOracle = FallbackPriceOracle.bind(event.params.fallbackOracle);

@@ -138,9 +138,13 @@ export function priceFeedUpdated(
       priceOracle.tokensWithFallback.includes(sAssetAddress) &&
       !priceOracleAsset.isFallbackRequired
     ) {
-      priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-        token => token != assetAddress.toHexString()
-      );
+      let tokensWithFallback: string[] = [];
+      for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
+        if (priceOracle.tokensWithFallback[i] != sAssetAddress) {
+          tokensWithFallback.push(priceOracle.tokensWithFallback[i]);
+        }
+      }
+      priceOracle.tokensWithFallback = tokensWithFallback;
     }
 
     if (
@@ -168,7 +172,6 @@ export function handleAssetSourceUpdated(event: AssetSourceUpdated): void {
 
   let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
   priceOracleAsset.fromChainlinkSourcesRegistry = false;
-  log.error('1 ------------------------', []);
   priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
 }
 
@@ -179,6 +182,5 @@ export function handleChainlinkAggregatorUpdated(event: AggregatorUpdated): void
   let priceOracle = getOrInitPriceOracle();
   let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
   priceOracleAsset.fromChainlinkSourcesRegistry = true;
-  log.error('2 ------------------------', []);
   priceFeedUpdated(event, assetAddress, assetOracleAddress, priceOracleAsset, priceOracle);
 }

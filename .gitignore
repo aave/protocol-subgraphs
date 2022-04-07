@@ -3,5 +3,5 @@ subgraph.yaml
 build
 generated
 .idea
-abis
 .env
+schema.graphql

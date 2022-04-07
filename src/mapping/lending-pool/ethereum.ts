@@ -1,7 +1,7 @@
 import { Swapped as SwappedRepay } from '../../../generated/UniswapRepayAdapter/UniswapRepayAdapter';
 import { Swapped as SwappedLiquidity } from '../../../generated/UniswapLiquiditySwapAdapter/UniswapLiquiditySwapAdapter';
 import { SwapHistory } from '../../../generated/schema';
-import { EventTypeRef, getHistoryId } from '../../utils/id-generation';
+import { getHistoryEntityId } from '../../utils/id-generation';
 export {
   handleDeposit,
   handleWithdraw,
@@ -19,7 +19,7 @@ export {
 } from './lending-pool';
 
 export function handleSwappedRepay(event: SwappedRepay): void {
-  let swap = new SwapHistory(getHistoryId(event, EventTypeRef.SwapAdapter));
+  let swap = new SwapHistory(getHistoryEntityId(event));
 
   swap.fromAsset = event.params.fromAsset.toHexString();
   swap.toAsset = event.params.toAsset.toHexString();
@@ -31,7 +31,7 @@ export function handleSwappedRepay(event: SwappedRepay): void {
 }
 
 export function handleSwappedLiquidity(event: SwappedLiquidity): void {
-  let swap = new SwapHistory(getHistoryId(event, EventTypeRef.SwapAdapter));
+  let swap = new SwapHistory(getHistoryEntityId(event));
 
   swap.fromAsset = event.params.fromAsset.toHexString();
   swap.toAsset = event.params.toAsset.toHexString();

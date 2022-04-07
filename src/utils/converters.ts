@@ -1,4 +1,4 @@
-import { BigInt, BigDecimal, Bytes, ByteArray, crypto, log, Value } from '@graphprotocol/graph-ts';
+import { BigInt, BigDecimal, Bytes, ByteArray, crypto, log } from '@graphprotocol/graph-ts';
 
 export function zeroBD(): BigDecimal {
   return BigDecimal.fromString('0');
@@ -126,7 +126,10 @@ export function byteArrayFromHex(s: string): ByteArray {
   for (var i = 0; i < s.length; i += 2) {
     out[i / 2] = parseInt(s.substring(i, i + 2), 16) as u32;
   }
-  return out as ByteArray;
+
+  let bytes = Bytes.fromUint8Array(out);
+  let hex = bytes.toHexString();
+  return ByteArray.fromHexString(hex);
 }
 
 // Helper for concatenating two byte arrays
@@ -138,7 +141,10 @@ export function concat(a: ByteArray, b: ByteArray): ByteArray {
   for (let j = 0; j < b.length; j++) {
     out[a.length + j] = b[j];
   }
-  return out as ByteArray;
+
+  let bytes = Bytes.fromUint8Array(out);
+  let hex = bytes.toHexString();
+  return ByteArray.fromHexString(hex);
 }
 
 const Zeros = new ByteArray(32);
