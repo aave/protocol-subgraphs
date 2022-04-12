@@ -38,23 +38,20 @@ import {
   Swap as SwapAction,
   UsageAsCollateral as UsageAsCollateralAction,
 } from '../../../generated/schema';
-import { EventTypeRef, getHistoryId } from '../../utils/id-generation';
+import { getHistoryEntityId } from '../../utils/id-generation';
 import { calculateGrowth } from '../../helpers/math';
 
 export function handleDeposit(event: Deposit): void {
+  let caller = event.params.user;
+  let user = event.params.onBehalfOf;
   let poolReserve = getOrInitReserve(event.params.reserve, event);
-  let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
+  let userReserve = getOrInitUserReserve(user, event.params.reserve, event);
   let depositedAmount = event.params.amount;
 
-  let id = getHistoryId(event, EventTypeRef.Deposit);
-  if (DepositAction.load(id)) {
-    id = id + '0';
-  }
-
-  let deposit = new DepositAction(id);
+  let deposit = new DepositAction(getHistoryEntityId(event));
   deposit.pool = poolReserve.pool;
   deposit.user = userReserve.user;
-  deposit.onBehalfOf = event.params.onBehalfOf.toHexString();
+  deposit.caller = getOrInitUser(caller).id;
   deposit.userReserve = userReserve.id;
   deposit.reserve = poolReserve.id;
   deposit.amount = depositedAmount;
@@ -72,10 +69,10 @@ export function handleWithdraw(event: Withdraw): void {
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let redeemedAmount = event.params.amount;
 
-  let redeemUnderlying = new RedeemUnderlyingAction(getHistoryId(event, EventTypeRef.Redeem));
+  let redeemUnderlying = new RedeemUnderlyingAction(getHistoryEntityId(event));
   redeemUnderlying.pool = poolReserve.pool;
   redeemUnderlying.user = userReserve.user;
-  redeemUnderlying.onBehalfOf = toUser.id;
+  redeemUnderlying.to = toUser.id;
   redeemUnderlying.userReserve = userReserve.id;
   redeemUnderlying.reserve = poolReserve.id;
   redeemUnderlying.amount = redeemedAmount;
@@ -84,13 +81,15 @@ export function handleWithdraw(event: Withdraw): void {
 }
 
 export function handleBorrow(event: Borrow): void {
-  let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
+  let caller = event.params.user;
+  let user = event.params.onBehalfOf;
+  let userReserve = getOrInitUserReserve(user, event.params.reserve, event);
   let poolReserve = getOrInitReserve(event.params.reserve, event);
 
-  let borrow = new BorrowAction(getHistoryId(event, EventTypeRef.Borrow));
+  let borrow = new BorrowAction(getHistoryEntityId(event));
   borrow.pool = poolReserve.pool;
-  borrow.user = event.params.user.toHexString();
-  borrow.onBehalfOf = event.params.onBehalfOf.toHexString();
+  borrow.user = userReserve.user;
+  borrow.caller = getOrInitUser(caller).id;
   borrow.userReserve = userReserve.id;
   borrow.reserve = poolReserve.id;
   borrow.amount = event.params.amount;
@@ -109,8 +108,12 @@ export function handleBorrow(event: Borrow): void {
 export function handlePaused(event: Paused): void {
   let poolId = getPoolByContract(event);
   let lendingPool = Pool.load(poolId);
+<<<<<<< HEAD
 
   if(lendingPool){
+=======
+  if (lendingPool) {
+>>>>>>> upstream/main
     lendingPool.paused = true;
     lendingPool.save();
   }
@@ -119,7 +122,12 @@ export function handlePaused(event: Paused): void {
 export function handleUnpaused(event: Unpaused): void {
   let poolId = getPoolByContract(event);
   let lendingPool = Pool.load(poolId);
+<<<<<<< HEAD
   if(lendingPool){
+=======
+
+  if (lendingPool) {
+>>>>>>> upstream/main
     lendingPool.paused = false;
     lendingPool.save();
   }
@@ -129,7 +137,7 @@ export function handleSwap(event: Swap): void {
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let poolReserve = getOrInitReserve(event.params.reserve, event);
 
-  let swapHistoryItem = new SwapAction(getHistoryId(event, EventTypeRef.Swap));
+  let swapHistoryItem = new SwapAction(getHistoryEntityId(event));
   swapHistoryItem.pool = poolReserve.pool;
   swapHistoryItem.borrowRateModeFrom = getBorrowRateMode(event.params.rateMode);
   if (swapHistoryItem.borrowRateModeFrom === BORROW_MODE_STABLE) {
@@ -151,9 +159,7 @@ export function handleRebalanceStableBorrowRate(event: RebalanceStableBorrowRate
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let poolReserve = getOrInitReserve(event.params.reserve, event);
 
-  let rebalance = new RebalanceStableBorrowRateAction(
-    getHistoryId(event, EventTypeRef.RebalanceStableBorrowRate)
-  );
+  let rebalance = new RebalanceStableBorrowRateAction(getHistoryEntityId(event));
 
   rebalance.userReserve = userReserve.id;
   rebalance.borrowRateFrom = userReserve.oldStableBorrowRate;
@@ -172,10 +178,10 @@ export function handleRepay(event: Repay): void {
 
   poolReserve.save();
 
-  let repay = new RepayAction(getHistoryId(event, EventTypeRef.Repay));
+  let repay = new RepayAction(getHistoryEntityId(event));
   repay.pool = poolReserve.pool;
   repay.user = userReserve.user;
-  repay.onBehalfOf = repayer.id;
+  repay.repayer = repayer.id;
   repay.userReserve = userReserve.id;
   repay.reserve = poolReserve.id;
   repay.amount = event.params.amount;
@@ -205,9 +211,7 @@ export function handleLiquidationCall(event: LiquidationCall): void {
 
   principalPoolReserve.save();
 
-  let liquidationCall = new LiquidationCallAction(
-    getHistoryId(event, EventTypeRef.LiquidationCall)
-  );
+  let liquidationCall = new LiquidationCallAction(getHistoryEntityId(event));
   liquidationCall.pool = collateralPoolReserve.pool;
   liquidationCall.user = user.id;
   liquidationCall.collateralReserve = collateralPoolReserve.id;
@@ -235,7 +239,7 @@ export function handleFlashLoan(event: FlashLoan): void {
 
   poolReserve.save();
 
-  let flashLoan = new FlashLoanAction(getHistoryId(event, EventTypeRef.FlashLoan));
+  let flashLoan = new FlashLoanAction(getHistoryEntityId(event));
   flashLoan.pool = poolReserve.pool;
   flashLoan.reserve = poolReserve.id;
   flashLoan.target = event.params.target;
@@ -251,9 +255,7 @@ export function handleReserveUsedAsCollateralEnabled(event: ReserveUsedAsCollate
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let timestamp = event.block.timestamp.toI32();
 
-  let usageAsCollateral = new UsageAsCollateralAction(
-    getHistoryId(event, EventTypeRef.UsageAsCollateral)
-  );
+  let usageAsCollateral = new UsageAsCollateralAction(getHistoryEntityId(event));
   usageAsCollateral.pool = poolReserve.pool;
   usageAsCollateral.fromState = userReserve.usageAsCollateralEnabledOnUser;
   usageAsCollateral.toState = true;
@@ -275,9 +277,7 @@ export function handleReserveUsedAsCollateralDisabled(
   let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let timestamp = event.block.timestamp.toI32();
 
-  let usageAsCollateral = new UsageAsCollateralAction(
-    getHistoryId(event, EventTypeRef.UsageAsCollateral)
-  );
+  let usageAsCollateral = new UsageAsCollateralAction(getHistoryEntityId(event));
   usageAsCollateral.pool = poolReserve.pool;
   usageAsCollateral.fromState = userReserve.usageAsCollateralEnabledOnUser;
   usageAsCollateral.toState = false;

@@ -51,7 +51,9 @@ export function updateInterestRateStrategy(
   strategy: Bytes,
   init: boolean = false
 ): void {
-  let interestRateStrategyContract = DefaultReserveInterestRateStrategy.bind(strategy as Address);
+  let interestRateStrategyContract = DefaultReserveInterestRateStrategy.bind(
+    Address.fromString(strategy.toHexString())
+  );
 
   reserve.reserveInterestRateStrategy = strategy;
   reserve.baseVariableBorrowRate = interestRateStrategyContract.baseVariableBorrowRate();
