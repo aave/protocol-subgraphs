@@ -1,114 +1,217 @@
-# Subgraph for Aave Protocol V2
 
+# Aave Protocol Subgraphs
+
+The Aave Protocol subgraphs index data from the protocol smart contracts, and expose a GraphQL endpoint hosted by [The Graph](https://thegraph.com).
+
+- [Active Deployments](#active-deployments)
+- [Usage](#usage)
+- [Development](#deployment)
+
+ 
 ## Active deployments
-- [mainnet](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2)
-- [polygon](https://thegraph.com/hosted-service/subgraph/aave/aave-v2-matic)
-- [avalanche](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2-avalanche)
-- [Polygon V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-polygon)
-- [Avalanche V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-avalanche)
-- [Arbitrum V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-arbitrum)
-- [Optimism V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-optimism)
-- [Fantom V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-fantom)
-- Harmony V3 not supported
+-  [ETH Mainnet V2](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2)
+-  [Polygon V2](https://thegraph.com/hosted-service/subgraph/aave/aave-v2-matic)
+-  [Avalanche V2](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2-avalanche)
+-  [Polygon V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-polygon)
+-  [Avalanche V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-avalanche)
+-  [Arbitrum V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-arbitrum)
+-  [Optimism V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-optimism)
+-  [Fantom V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-fantom)
+- TheGraph is not available yet on Harmony
+
+## Usage
+  
+Subgraphs can be queried directly from the graph explorer, or from [another application](https://thegraph.com/docs/en/developer/querying-from-your-app/). The following section gives common queries for Aave protocol data.
+
+### Queries
+
+See [TheGraph API](https://thegraph.com/docs/en/developer/graphql-api/) docs for a complete guide on querying capabilities.
+
+<details>
+  <summary>Reserve Data</summary>
+
+#### Reserve Summary
+
+The `reserve` entity gives data on the assets of the protocol including rates, configuration, and total supply/borrow amounts.
+
+The aave-utilities library includes a [`formatReserves`](https://github.com/aave/aave-utilities/#formatReserves) function which can be used to format all data into a human readable format. The queries to fetch data for passing into this function can be found [here](https://github.com/aave/aave-utilities#subgraph).
+
+
+Why does the raw subgraph data not match app.aave.com?
+
+ - aToken and debtToken balances are continuously increasing. The subgraph provides a snapshot of the balance at the time of indexing (not querying), which means fields affected by interest such as `totalLiquidity`, `availableLiquidity`, and `totalCurrentVariableDebt` will need to be formatted to get real-time values
+ - All rates (liquidityRate, variableBorrowRate, stableBorrowRate) are expressed as *APR* with RAY units (10**27). To convert to the APY percentage as shown on the Aave frontend: `supplyAPY = (((1  +  ((liquidityRate / 10**27) /  31536000))  ^  31536000)  -  1) * 100`. [`formatReserves`](https://github.com/aave/aave-utilities/#formatReserves) will perform this calculation for you.
+
+</details>
+
+
+<details>
+  <summary>User Data</summary>
+  
+#### User Summary
+
+The `userReserve` entity gives the supply and borrow balances for a particular user along with the underlying reserve data.
+
+The aave-utilities library includes a [`formatUserSummary`](https://github.com/aave/aave-utilities#formatUserSummary) function which can be used to format all data into a human readable format. The queries to fetch data for passing into this function can be found [here](https://github.com/aave/aave-utilities#subgraph).
+
+Why does the raw subgraph data not match my account balances on app.aave.com?
+
+ - aToken and debtToken balances are continuously increasing. The subgraph provides a snapshot of the balance at the time of indexing (not querying), which means fields affected by interest such as `currentATokenBalance`, `currentVariableDebt`, and `currentStableDebt` will need to be formatted to get the real-time values
+
+
+#### Transaction History
+
+
+The `pool` parameter is the LendingPoolAddressesProvider (V2) or PoolAddressesProvider (V3) address which you can get from the [deployed contracts](https://docs.aave.com/developers/deployed-contracts/deployed-contracts) page.
+
+```
+userTransactions(
+    where: { user: "lowercase_user_address", pool: "lowercase_pool_addresses_provider" }
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    id
+    timestamp
+    ... on Deposit {
+      amount
+      reserve {
+        symbol
+        decimals
+      }
+    }
+    ... on RedeemUnderlying {
+      amount
+      reserve {
+        symbol
+        decimals
+      }
+    }
+    ... on Borrow {
+      amount
+      borrowRateMode
+      borrowRate
+      stableTokenDebt
+      variableTokenDebt
+      reserve {
+        symbol
+        decimals
+      }
+    }
+    ... on UsageAsCollateral {
+      fromState
+      toState
+      reserve {
+        symbol
+      }
+    }
+    ... on Repay {
+      amount
+      reserve {
+        symbol
+        decimals
+      }
+    }
+    ... on Swap {
+      borrowRateModeFrom
+      borrowRateModeTo
+      variableBorrowRate
+      stableBorrowRate
+      reserve {
+        symbol
+        decimals
+      }
+    }
+    ... on LiquidationCall {
+      collateralAmount
+      collateralReserve {
+        symbol
+        decimals
+      }
+      principalAmount
+      principalReserve {
+        symbol
+        decimals
+      }
+    }
+  }
+```
+
+</details>
+
+<details>
+  <summary>Querying Tips</summary>
+
+### Historical Queries
+
+You can query for historical data by specifying a block number:
+
+```
+{
+	reserves(block: {number: 14568297}){
+  	symbol
+  	liquidityRate
+	}
+}
+```
+
+To query based on a historical timestamp, you will need to convert the timstamp to the most recent block number, you will need to use an external tool such as [this](https://www.npmjs.com/package/ethereum-block-by-date).
+
+
+### Pagination
+  
+ The Graph places a limit on the number of items which can returned by a single query (currently 100). To fetch a larger number of items, the `first` and `skip` parameters can be used to create paginated queries. 
+
+For example, if you wanted to fetch the first 200 transactions for an Aave market, you can't query 200 items at once, but you can achieve the same thing by concatenating the output of these queries:
+```
+{
+  userTransactions(orderBy: timestamp, orderDirection: asc, first: 100, skip: 0){
+    timestamp
+  }
+}
+```
+```
+{
+  userTransactions(orderBy: timestamp, orderDirection: asc, first: 100, skip: 100){
+    timestamp
+  }
+}
+```
+</details>
 
 ## Development
 
 ```bash
-# copy env and adjust its content
+
+# copy env and adjust its content with your personal access token and subgraph name
+
 # you can get an access token from https://thegraph.com/explorer/dashboard
 cp .env.test .env
+
 # install project dependencies
 npm i
-# fetch current contracts as submodule
-npm run prepare:all
-# run codegen
+
+# to regenrate types if schema.graphql has changed
 npm run subgraph:codegen
-# now you're able to deploy to thegraph via
+
+# to run a test build of your subgraph
+npm run subgraph:build
+
+# now you're able to deploy to thegraph hosted service with one of the deploy commands:
 npm run deploy:hosted:mainnet
 
 ```
 
-## Deployment
+### Troubleshooting
 
-To be able to deploy the subgraph in any environment for any network first we will need to prepare the local env:
+If a subgraph encounters an error while indexing, the logs on the explorer may not display the error. You can check for errors on a pending or synced subgraph with the following commands, replacing `aave/protocol-v2` with your subgraph name:
 
-- get the protocol v2 contracts and compile them
-
+Pending:
 ```
-npm run prepare:contracts
-```
-
-### Self-hosted
-
-- The first time you will deploy the subgraph you need to first create it in the TheGraph node:
-
-```
-// For Kovan:
-npm run subgraph:create:self-hosted:kovan
-
-// for Mainnet
-npm run subgraph:create:self-hosted:mainnet
+curl --location --request POST 'https://api.thegraph.com/index-node/graphql' --data-raw '{"query":"{ indexingStatusForPendingVersion(subgraphName: \"aave/protocol-v2\") { subgraph fatalError { message } nonFatalErrors {message } } }"}'
 ```
 
-- Before any deployment you need to generate the types and schemas:
+Synced:
 
 ```
-npm run subgraph:codegen
-```
-
-- When / If the subgraph is created you can then deploy
-
-```
-// For Kovan:
-  npm run deploy:self-hosted:kovan
-
-// For Mainnet:
-  npm run deploy:self-hosted:mainnet
-```
-
-### Hosted
-
-To be able to deploy to the hosted solution you will need to create a .env file and add `ACCESS_TOKEN` environment variable. You can find this in the dashboard of the TheGraph
-
-```
-// For Kovan:
-npm run deploy:hosted:kovan
-
-// For Mainnet:
-npm run deploy:hosted:mainnet
-```
-
-### Local
-
-TODO:
-
-- refactor get addresses after local deployment
-- refactor npm scripts
-
-1. Start docker environment for a buidler node and TheGraph infrastructure:
-
-```
-docker-compose up
-```
-
-Remember that before runing `docker-compose up` you need to run `docker-compose down` if it is not the first time. That is because the postgres database needs to not be persistant, so we need to delete the docker volumes.
-
-2. Deploy local subgraph:
-
-```
-
-```
-
-3. To check or query the subgraph use:
-
-```
-Queries (HTTP):     http://localhost:8000/subgraphs/name/aave/migrator
-Subscriptions (WS): http://localhost:8001/subgraphs/name/aave/migrator
-
-INFO Starting JSON-RPC admin server at: http://localhost:8020, component: JsonRpcServer
-INFO Starting GraphQL HTTP server at: http://localhost:8000, component: GraphQLServer
-INFO Starting index node server at: http://localhost:8030, component: IndexNodeServer
-INFO Starting GraphQL WebSocket server at: ws://localhost:8001, component: SubscriptionServer
-INFO Starting metrics server at: http://localhost:8040, component: MetricsServer
-
+curl --location --request POST 'https://api.thegraph.com/index-node/graphql' --data-raw '{"query":"{ indexingStatusForCurrentVersion(subgraphName: \"aave/protocol-v2\") { subgraph fatalError { message } nonFatalErrors {message } } }"}'
 ```
