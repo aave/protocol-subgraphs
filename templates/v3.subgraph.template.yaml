@@ -1,6 +1,6 @@
 specVersion: 0.0.4
 description: Protocol v3 subgraph
-repository: https://github.com/aave/protocol-v2-subgraph
+repository: https://github.com/aave/protocol-subgraphs
 schema:
   file: ./schema.graphql
 dataSources:
