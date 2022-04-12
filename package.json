@@ -1,10 +1,10 @@
 {
-  "name": "subgraph-protocol-v2-v3",
+  "name": "protocol-subgraphs",
   "version": "1.0.0",
-  "description": "This package contains subgraphs of the protocol v2 and v3",
+  "description": "This package contains subgraphs of the Aave protocol v2 and v3",
   "scripts": {
-    "generate:schema": "cp ./schemas/${VERSION:-v2}.schema.graphql  schema.graphql",
-    "prepare:subgraph": "mustache ./config/${NETWORK}-${VERSION}.json ./templates/${BLOCKCHAIN:-ethereum}.subgraph.template.yaml > subgraph.yaml && rm -rf generated && npm run generate:schema && npm run subgraph:codegen && npm run subgraph:build",
+    "generate:schema": "cp ./schemas/${VERSION}.schema.graphql  schema.graphql",
+    "prepare:subgraph": "mustache ./config/${NETWORK}-${VERSION}.json ./templates/${BLOCKCHAIN}.subgraph.template.yaml > subgraph.yaml && rm -rf generated && npm run generate:schema && npm run subgraph:codegen && npm run subgraph:build",
     "subgraph:codegen": "graph codegen --output-dir ./generated",
     "subgraph:build": "graph build",
     "subgraph:deploy:hosted": "graph deploy $SLUG --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token $ACCESS_TOKEN",
@@ -31,7 +31,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/aave/protocol-v2-subgraph"
+    "url": "https://github.com/aave/protocol-subgraphs"
   },
   "author": "AAVE <tech@aave.com>",
   "contributors": [
@@ -46,6 +46,10 @@
     {
       "name": "Andrey Kozlov",
       "email": "andrey@aave.com"
+    },
+    {
+      "name": "Andrew Schmidt",
+      "email": "andrew@aave.com"
     }
   ],
   "license": "MIT",
