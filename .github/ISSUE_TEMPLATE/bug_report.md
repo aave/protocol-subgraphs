@@ -11,7 +11,7 @@ assignees: ''
 A clear and concise description of what the bug is.
 
 **To Reproduce**
-If related to a specific entity or field, provide a query to reproduce
+If related to a specific entity or field, provide a query to reproduce.
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
