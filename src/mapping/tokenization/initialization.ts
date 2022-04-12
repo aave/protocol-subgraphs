@@ -59,19 +59,11 @@ function createIncentivesController(
   let poolAddressProvider = ContractToPoolMapping.load(pool.toHexString());
   // save asset pool mapping
   let mapAssetPool = new MapAssetPool(asset.toHexString());
-<<<<<<< HEAD
-  if(poolAddressProvider){
-    mapAssetPool.pool = poolAddressProvider.pool;
-    mapAssetPool.underlyingAsset = underlyingAsset;
-    mapAssetPool.save();
-  }
-=======
   if (poolAddressProvider) {
     mapAssetPool.pool = poolAddressProvider.pool;
   }
   mapAssetPool.underlyingAsset = underlyingAsset;
   mapAssetPool.save();
->>>>>>> upstream/main
 }
 
 export function handleATokenInitialized(event: ATokenInitialized): void {

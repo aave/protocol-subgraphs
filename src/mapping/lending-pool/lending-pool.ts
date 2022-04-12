@@ -108,12 +108,7 @@ export function handleBorrow(event: Borrow): void {
 export function handlePaused(event: Paused): void {
   let poolId = getPoolByContract(event);
   let lendingPool = Pool.load(poolId);
-<<<<<<< HEAD
-
-  if(lendingPool){
-=======
   if (lendingPool) {
->>>>>>> upstream/main
     lendingPool.paused = true;
     lendingPool.save();
   }
@@ -122,12 +117,8 @@ export function handlePaused(event: Paused): void {
 export function handleUnpaused(event: Unpaused): void {
   let poolId = getPoolByContract(event);
   let lendingPool = Pool.load(poolId);
-<<<<<<< HEAD
-  if(lendingPool){
-=======
 
   if (lendingPool) {
->>>>>>> upstream/main
     lendingPool.paused = false;
     lendingPool.save();
   }

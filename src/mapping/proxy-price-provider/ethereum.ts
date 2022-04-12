@@ -195,21 +195,6 @@ export function priceFeedUpdated(
       priceOracle.tokensWithFallback.includes(sAssetAddress) &&
       !priceOracleAsset.isFallbackRequired
     ) {
-<<<<<<< HEAD
-      // priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-      //   token => token != assetAddress.toHexString()
-      // );
-
-      let tokensWithFallback = new Array<string>();
-        
-      for(let i = 0; i < priceOracle.tokensWithFallback.length; i++){
-        if(priceOracle.tokensWithFallback[i] != assetAddress.toHexString()){
-          tokensWithFallback.push(priceOracle.tokensWithFallback[i])
-        }
-      }
-
-      priceOracle.tokensWithFallback = tokensWithFallback
-=======
       let tokensWithFallback: string[] = [];
       for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
         if (priceOracle.tokensWithFallback[i] != sAssetAddress) {
@@ -217,7 +202,6 @@ export function priceFeedUpdated(
         }
       }
       priceOracle.tokensWithFallback = tokensWithFallback;
->>>>>>> upstream/main
     }
 
     if (
@@ -397,21 +381,6 @@ function chainLinkAggregatorUpdated(
       priceOracle.tokensWithFallback.includes(sAssetAddress) &&
       !priceOracleAsset.isFallbackRequired
     ) {
-<<<<<<< HEAD
-      // priceOracle.tokensWithFallback = priceOracle.tokensWithFallback.filter(
-      //   token => token != assetAddress.toHexString()
-      // );
-
-      let tokensWithFallback = new Array<string>();
-        
-        for(let i = 0; i < priceOracle.tokensWithFallback.length; i++){
-          if(priceOracle.tokensWithFallback[i] != assetAddress.toHexString()){
-            tokensWithFallback.push(priceOracle.tokensWithFallback[i])
-          }
-        }
-
-        priceOracle.tokensWithFallback = tokensWithFallback
-=======
       let tokensWithFallback: string[] = [];
       for (let i = 0; i < priceOracle.tokensWithFallback.length; i++) {
         if (priceOracle.tokensWithFallback[i] != sAssetAddress) {
@@ -419,7 +388,6 @@ function chainLinkAggregatorUpdated(
         }
       }
       priceOracle.tokensWithFallback = tokensWithFallback;
->>>>>>> upstream/main
     }
 
     if (
