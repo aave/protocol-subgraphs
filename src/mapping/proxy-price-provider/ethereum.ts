@@ -1,4 +1,4 @@
- import { Address, log, ethereum } from '@graphprotocol/graph-ts';
+import { Address, log, ethereum } from '@graphprotocol/graph-ts';
 
 import { AssetSourceUpdated, AaveOracle } from '../../../generated/AaveOracle/AaveOracle';
 import { IExtendedPriceAggregator } from '../../../generated/AaveOracle/IExtendedPriceAggregator';
@@ -403,5 +403,3 @@ function chainLinkAggregatorUpdated(
     genericPriceUpdate(priceOracleAsset, priceFromProxy, event);
   }
 }
-
-
