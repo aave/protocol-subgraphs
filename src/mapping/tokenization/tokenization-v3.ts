@@ -213,17 +213,14 @@ function tokenMint(event: ethereum.Event, onBehalf: Address, value: BigInt, inde
 }
 
 export function handleATokenBurn(event: ATokenBurn): void {
-  log.error('Burn ---------------------------------', []);
   tokenBurn(event, event.params.from, event.params.value, event.params.index);
 }
 
 export function handleATokenMint(event: ATokenMint): void {
-  log.error('Mint ---------------------------------', []);
   tokenMint(event, event.params.onBehalfOf, event.params.value, event.params.index);
 }
 
 export function handleBalanceTransfer(event: BalanceTransfer): void {
-  log.error('Transfer ---------------------------------', []);
   tokenBurn(event, event.params.from, event.params.value, event.params.index);
   tokenMint(event, event.params.to, event.params.value, event.params.index);
 
