@@ -125,7 +125,7 @@ dataSources:
         - event: AssetConfigUpdated(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleAssetConfigUpdated
         - event: Accrued(indexed address,indexed address,indexed address,uint256,uint256,uint256)
-          handler: handleRewardsAccrued
+          handler: handleAccrued
         - event: RewardsClaimed(indexed address,indexed address,indexed address,address,uint256)
           handler: handleRewardsClaimed
         - event: RewardOracleUpdated(indexed address,indexed address)
