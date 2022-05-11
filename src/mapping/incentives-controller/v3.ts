@@ -4,17 +4,28 @@ import {
   RewardsClaimed,
   RewardOracleUpdated,
   RewardsController as RewardsControllerContract,
-} from '../../../generated/templates/RewardsController/RewardsController';
+  EmissionManagerUpdated,
+} from '../../../generated/RewardsController/RewardsController';
 import {
   ClaimRewardsCall,
   RewardedAction,
   RewardFeedOracle,
   Rewards,
   UserRewards,
+  RewardsController as RewardsControllerEntity,
 } from '../../../generated/schema';
 import { getOrInitUser } from '../../helpers/v3/initializers';
 import { getHistoryEntityId } from '../../utils/id-generation';
-import { IERC20Detailed } from '../../../generated/templates/RewardsController/IERC20Detailed';
+import { IERC20Detailed } from '../../../generated/RewardsController/IERC20Detailed';
+
+export function handleEmissionManagerUpdated(event: EmissionManagerUpdated): void {
+  const rewardsController = event.address;
+  let iController = RewardsControllerEntity.load(rewardsController.toHexString());
+  if (!iController) {
+    iController = new RewardsControllerEntity(rewardsController.toHexString());
+    iController.save();
+  }
+}
 
 export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let emissionsPerSecond = event.params.newEmission;
@@ -23,6 +34,12 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let reward = event.params.reward;
   let distributionEnd = event.params.newDistributionEnd;
   let rewardsController = event.address;
+
+  let iController = RewardsControllerEntity.load(rewardsController.toHexString());
+  if (!iController) {
+    iController = new RewardsControllerEntity(rewardsController.toHexString());
+    iController.save();
+  }
 
   //  update rewards configurations
   let rewardIncentiveId =
