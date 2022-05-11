@@ -121,7 +121,7 @@ type SubToken @entity {
   tokenContractImpl: Bytes
   underlyingAssetAddress: Bytes!
   underlyingAssetDecimals: Int!
-  rewards: [Rewards!]! @derivedFrom(field: "asset")
+  rewards: [Reward!]! @derivedFrom(field: "asset")
 }
 
 type Referrer @entity {
@@ -409,7 +409,7 @@ type RewardFeedOracle @entity {
   updatedAt: Int!
 }
 
-type Rewards @entity {
+type Reward @entity {
   """
   address of ic:asset:reward
   """
@@ -428,14 +428,14 @@ type Rewards @entity {
   updatedAt: Int!
 }
 
-type UserRewards @entity {
+type UserReward @entity {
   """
   id: ic:asset:reward:user
   """
   id: ID!
   user: User!
   index: BigInt!
-  reward: Rewards!
+  reward: Reward!
   createdAt: Int!
   updatedAt: Int!
 }
@@ -445,7 +445,7 @@ type RewardsController @entity {
   address of the incentives controller
   """
   id: ID!
-  rewards: [Rewards!]! @derivedFrom(field: "rewardsController")
+  rewards: [Reward!]! @derivedFrom(field: "rewardsController")
   rewardedActions: [RewardedAction!]! @derivedFrom(field: "rewardsController")
   claimIncentives: [ClaimRewardsCall!]! @derivedFrom(field: "rewardsController")
 }
@@ -729,7 +729,7 @@ type User @entity {
   unclaimedRewards: BigInt!
   lifetimeRewards: BigInt!
   rewardsLastUpdated: Int!
-  rewards: [UserRewards!]! @derivedFrom(field: "user")
+  rewards: [UserReward!]! @derivedFrom(field: "user")
 
   #emode
   eModeCategoryId: EModeCategory
