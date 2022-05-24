@@ -1,7 +1,0 @@
-{
-  "network": "fantom",
-  "AaveOracleAddress": "0xfd6f3c1845604C8AE6c6E402ad17fb9885160754",
-  "AaveOracleStartBlock": 33140000,
-  "PoolAddressesProviderRegistryAddress": "0x770ef9f4fe897e59daCc474EF11238303F9552b6",
-  "PoolAddressesProviderRegistryStartBlock": 33130000
-}

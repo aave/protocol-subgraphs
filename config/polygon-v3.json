@@ -1,7 +1,0 @@
-{
-  "network": "matic",
-  "AaveOracleAddress": "0xb023e699F5a33916Ea823A16485e259257cA8Bd1",
-  "AaveOracleStartBlock": 25825990,
-  "PoolAddressesProviderRegistryAddress": "0x770ef9f4fe897e59daCc474EF11238303F9552b6",
-  "PoolAddressesProviderRegistryStartBlock": 25824300
-}

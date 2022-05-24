@@ -1,9 +1,0 @@
-{
-  "network": "fuji",
-  "AaveOracleAddress": "0xfa4f5B081632c4709667D467F817C09d9008A46A",
-  "AaveOracleStartBlock": 864430,
-  "LendingPoolAddressesProviderRegistryAddress": "0x04A6Fa9999E3C807Ee7b6Ca58eFAb93713d405BF",
-  "LendingPoolAddressesProviderRegistryStartBlock": 864400,
-  "ChainlinkSourcesRegistryAddress": "0x4EdfC8fAf56B4e26ec4956135166650917d2AaAC",
-  "ChainlinkSourcesRegistryStartBlock": 862640
-}
