@@ -204,6 +204,8 @@ templates:
           file: ./abis/helpers/IERC20Detailed.json
         - name: RewardsController
           file: ./abis/v3/RewardsController.json
+        - name: Pool
+          file: ./abis/v3/Pool.json
       eventHandlers:
         - event: Burn(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleATokenBurn
