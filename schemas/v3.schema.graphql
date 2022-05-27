@@ -380,6 +380,7 @@ type ReserveParamsHistoryItem @entity {
   priceInEth: BigInt!
   priceInUsd: BigDecimal!
   timestamp: Int!
+  accruedToTreasury: BigInt!
   totalScaledVariableDebt: BigInt!
   totalCurrentVariableDebt: BigInt!
   totalPrincipalStableDebt: BigInt!
@@ -531,6 +532,7 @@ type Reserve @entity {
   totalCurrentVariableDebt: BigInt! # default: 0
   totalSupplies: BigInt! # default: 0
   liquidityRate: BigInt! # suppliers interest
+  accruedToTreasury: BigInt!
   averageStableRate: BigInt!
   variableBorrowRate: BigInt!
   stableBorrowRate: BigInt!

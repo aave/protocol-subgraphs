@@ -1,3 +1,4 @@
+import { Pool } from '../../../generated/templates/Pool/Pool';
 import {
   BalanceTransfer,
   Mint as ATokenMint,
@@ -169,6 +170,15 @@ function tokenMint(event: ethereum.Event, onBehalf: Address, value: BigInt, inde
   let aToken = getOrInitSubToken(event.address);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress, event);
   poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(value);
+
+  let pool = Pool.bind(Address.fromString(poolReserve.pool));
+  const reserveData = pool.try_getReserveData(
+    Address.fromString(aToken.underlyingAssetAddress.toHexString())
+  );
+  if (!reserveData.reverted) {
+    poolReserve.accruedToTreasury = reserveData.value.accruedToTreasury;
+  }
+
   // Check if we are minting to treasury for mainnet and polygon
   if (
     onBehalf.toHexString() != '0xB2289E329D2F85F1eD31Adbb30eA345278F21bcf'.toLowerCase() &&

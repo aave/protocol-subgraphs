@@ -182,6 +182,7 @@ export function getOrInitReserve(underlyingAsset: Bytes, event: ethereum.Event):
     reserve.totalCurrentVariableDebt = zeroBI();
     reserve.totalPrincipalStableDebt = zeroBI();
     reserve.totalSupplies = zeroBI();
+    reserve.accruedToTreasury = zeroBI();
 
     reserve.isPaused = false;
     reserve.isDropped = false;
@@ -263,6 +264,7 @@ export function getOrInitReserveParamsHistoryItem(
     reserveParamsHistoryItem.liquidityIndex = zeroBI();
     reserveParamsHistoryItem.liquidityRate = zeroBI();
     reserveParamsHistoryItem.totalLiquidity = zeroBI();
+    reserveParamsHistoryItem.accruedToTreasury = zeroBI();
     reserveParamsHistoryItem.totalATokenSupply = zeroBI();
     reserveParamsHistoryItem.availableLiquidity = zeroBI();
     reserveParamsHistoryItem.totalLiquidityAsCollateral = zeroBI();
