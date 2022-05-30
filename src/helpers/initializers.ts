@@ -228,6 +228,11 @@ export function getOrInitReserve(underlyingAsset: Bytes, event: ethereum.Event):
     reserve.lifetimeLiquidated = zeroBI();
     reserve.lifetimeFlashLoans = zeroBI();
     reserve.lifetimeFlashLoanPremium = zeroBI();
+    reserve.lifetimeFlashLoanLPPremium = zeroBI();
+    reserve.lifetimeFlashLoanProtocolPremium = zeroBI();
+
+    reserve.lifetimePortalLPFee = zeroBI();
+    reserve.lifetimePortalProtocolFee = zeroBI();
 
     reserve.stableDebtLastUpdateTimestamp = 0;
     reserve.lastUpdateTimestamp = 0;
@@ -340,6 +345,10 @@ export function getOrInitReserveParamsHistoryItem(
     reserveParamsHistoryItem.lifetimeLiquidated = zeroBI();
     reserveParamsHistoryItem.lifetimeFlashLoans = zeroBI();
     reserveParamsHistoryItem.lifetimeFlashLoanPremium = zeroBI();
+    reserveParamsHistoryItem.lifetimeFlashLoanLPPremium = zeroBI();
+    reserveParamsHistoryItem.lifetimeFlashLoanProtocolPremium = zeroBI();
+    reserveParamsHistoryItem.lifetimePortalLPFee = zeroBI();
+    reserveParamsHistoryItem.lifetimePortalProtocolFee = zeroBI();
     reserveParamsHistoryItem.lifetimeReserveFactorAccrued = zeroBI();
     reserveParamsHistoryItem.lifetimeDepositorsInterestEarned = zeroBI();
     // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = zeroBI();

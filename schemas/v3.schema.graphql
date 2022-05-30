@@ -398,6 +398,8 @@ type ReserveParamsHistoryItem @entity {
   lifetimeFlashLoanLPPremium: BigInt!
   lifetimeFlashLoanProtocolPremium: BigInt!
   lifetimeReserveFactorAccrued: BigInt!
+  lifetimePortalLPFee: BigInt!
+  lifetimePortalProtocolFee: BigInt!
   lifetimeSuppliersInterestEarned: BigInt!
   # lifetimeStableDebFeeCollected: BigInt!
   # lifetimeVariableDebtFeeCollected: BigInt!
@@ -579,6 +581,8 @@ type Reserve @entity {
   lifetimeFlashLoanPremium: BigInt! # deprecated
   lifetimeFlashLoanLPPremium: BigInt! # default: 0
   lifetimeFlashLoanProtocolPremium: BigInt!
+  lifetimePortalLPFee: BigInt!
+  lifetimePortalProtocolFee: BigInt!
   lifetimeSuppliersInterestEarned: BigInt!
   lifetimeReserveFactorAccrued: BigInt!
   # lifetimeStableDebFeeCollected: BigInt!
