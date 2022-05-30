@@ -347,6 +347,21 @@ export function handleBackUnbacked(event: BackUnbacked): void {
   backUnbacked.timestamp = event.block.timestamp.toI32();
   backUnbacked.fee = event.params.fee;
 
+  let poolId = getPoolByContract(event);
+  let pool = Pool.load(poolId) as Pool;
+
+  let premium = event.params.fee;
+  let premiumToProtocol = premium
+    .times(pool.bridgeProtocolFee as BigInt)
+    .plus(new BigInt(5000))
+    .div(new BigInt(10000));
+  let premiumToLP = premium.minus(premiumToProtocol);
+  poolReserve.lifetimePortalLPFee = poolReserve.lifetimePortalLPFee.plus(premiumToLP);
+  poolReserve.lifetimePortalProtocolFee = poolReserve.lifetimePortalProtocolFee.plus(
+    premiumToProtocol
+  );
+  poolReserve.save();
+
   backUnbacked.save();
 }
 
