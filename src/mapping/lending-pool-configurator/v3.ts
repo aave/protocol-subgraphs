@@ -11,7 +11,7 @@ import {
   getOrInitSubToken,
   getOrInitReserve,
   getOrInitReserveConfigurationHistoryItem,
-  getProtocol,
+  getPool,
 } from '../../helpers/v3/initializers';
 import { Bytes, Address, ethereum, log, BigInt } from '@graphprotocol/graph-ts';
 import {
@@ -231,23 +231,23 @@ export function handleDebtCeilingChanged(event: DebtCeilingChanged): void {
 }
 
 export function handleBridgeProtocolFeeUpdated(event: BridgeProtocolFeeUpdated): void {
-  let protocol = getProtocol();
-  protocol.bridgeProtocolFee = event.params.newBridgeProtocolFee;
-  protocol.save();
+  let pool = getPool(event.address.toHexString());
+  pool.bridgeProtocolFee = event.params.newBridgeProtocolFee;
+  pool.save();
 }
 
 export function handleFlashloanPremiumTotalUpdated(event: FlashloanPremiumTotalUpdated): void {
-  let protocol = getProtocol();
-  protocol.flashloanPremiumTotal = event.params.newFlashloanPremiumTotal;
-  protocol.save();
+  let pool = getPool(event.address.toHexString());
+  pool.flashloanPremiumTotal = event.params.newFlashloanPremiumTotal;
+  pool.save();
 }
 
 export function handleFlashloanPremiumToProtocolUpdated(
   event: FlashloanPremiumToProtocolUpdated
 ): void {
-  let protocol = getProtocol();
-  protocol.flashloanPremiumToProtocol = event.params.newFlashloanPremiumToProtocol;
-  protocol.save();
+  let pool = getPool(event.address.toHexString());
+  pool.flashloanPremiumToProtocol = event.params.newFlashloanPremiumToProtocol;
+  pool.save();
 }
 
 export function handleBorrowableInIsolationChanged(event: BorrowableInIsolationChanged): void {

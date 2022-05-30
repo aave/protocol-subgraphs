@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts';
+import { BigInt, log } from '@graphprotocol/graph-ts';
 import {
   Borrow,
   Supply,
@@ -22,6 +22,8 @@ import {
   getOrInitReserve,
   getOrInitUser,
   getOrInitUserReserve,
+  getPool,
+  getPoolByContract,
 } from '../../helpers/v3/initializers';
 import {
   Borrow as BorrowAction,
@@ -212,7 +214,10 @@ export function handleLiquidationCall(event: LiquidationCall): void {
 export function handleFlashLoan(event: FlashLoan): void {
   let initiator = getOrInitUser(event.params.initiator);
   let poolReserve = getOrInitReserve(event.params.asset, event);
+  let poolId = getPoolByContract(event);
+  let pool = getPool(poolId);
 
+  log.error('premium {}', [(pool.flashloanPremiumToProtocol as BigInt).toString()]);
   let premium = event.params.premium;
 
   poolReserve.availableLiquidity = poolReserve.availableLiquidity.plus(premium);

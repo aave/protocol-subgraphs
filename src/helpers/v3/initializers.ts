@@ -12,6 +12,7 @@ import {
   ChainlinkAggregator,
   ContractToPoolMapping,
   Protocol,
+  Pool,
 } from '../../../generated/schema';
 import {
   PRICE_ORACLE_ASSET_PLATFORM_SIMPLE,
@@ -39,6 +40,11 @@ export function getPoolByContract(event: ethereum.Event): string {
     throw new Error(contractAddress + 'is not registered in ContractToPoolMapping');
   }
   return contractToPoolMapping.pool;
+}
+
+export function getPool(address: string): Pool {
+  let contractAddress = address;
+  return Pool.load(contractAddress) as Pool;
 }
 
 export function getOrInitUser(address: Bytes): User {

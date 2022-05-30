@@ -184,7 +184,7 @@ function tokenMint(event: ethereum.Event, onBehalf: Address, value: BigInt, inde
       poolReserve.accruedToTreasury = reserveData.value.accruedToTreasury;
     } else {
       log.error('error reading reserveData. Pool: {}, Underlying: {}', [
-        pool.pool.toHexString(),
+        (pool.pool as Bytes).toHexString(),
         aToken.underlyingAssetAddress.toHexString(),
       ]);
     }
