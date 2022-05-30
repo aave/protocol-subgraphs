@@ -42,11 +42,6 @@ export function getPoolByContract(event: ethereum.Event): string {
   return contractToPoolMapping.pool;
 }
 
-export function getPool(address: string): Pool {
-  let contractAddress = address;
-  return Pool.load(contractAddress) as Pool;
-}
-
 export function getOrInitUser(address: Bytes): User {
   let user = User.load(address.toHexString());
   if (!user) {

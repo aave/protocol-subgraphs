@@ -13,7 +13,7 @@ import {
   PoolConfigurator as PoolConfiguratorContract,
 } from '../../../generated/templates';
 import { createMapContractToPool, getOrInitPriceOracle } from '../../helpers/v3/initializers';
-import { Pool } from '../../../generated/schema';
+import { ContractToPoolMapping, Pool } from '../../../generated/schema';
 
 let POOL_COMPONENTS = [
   'poolDataProvider',
@@ -47,6 +47,14 @@ function genericAddressProviderUpdate(
   }
   pool.lastUpdateTimestamp = event.block.timestamp.toI32();
   pool.save();
+  if (component == 'poolConfigurator') {
+    const configuratorMapping = ContractToPoolMapping.load(newAddress.toHexString());
+    if (!configuratorMapping) {
+      const mapping = new ContractToPoolMapping(newAddress.toHexString());
+      mapping.pool = poolAddress;
+      mapping.save();
+    }
+  }
 }
 
 export function handleProxyCreated(event: ProxyCreated): void {

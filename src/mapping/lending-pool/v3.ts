@@ -22,7 +22,6 @@ import {
   getOrInitReserve,
   getOrInitUser,
   getOrInitUserReserve,
-  getPool,
   getPoolByContract,
 } from '../../helpers/v3/initializers';
 import {
@@ -40,6 +39,7 @@ import {
   UserEModeSet as UserEModeSetAction,
   MintedToTreasury as MintedToTreasuryAction,
   IsolationModeTotalDebtUpdated as IsolationModeTotalDebtUpdatedAction,
+  Pool,
 } from '../../../generated/schema';
 import { getHistoryEntityId } from '../../utils/id-generation';
 import { calculateGrowth } from '../../helpers/math';
@@ -215,7 +215,7 @@ export function handleFlashLoan(event: FlashLoan): void {
   let initiator = getOrInitUser(event.params.initiator);
   let poolReserve = getOrInitReserve(event.params.asset, event);
   let poolId = getPoolByContract(event);
-  let pool = getPool(poolId);
+  let pool = Pool.load(poolId) as Pool;
 
   log.error('premium {}', [(pool.flashloanPremiumToProtocol as BigInt).toString()]);
   let premium = event.params.premium;
