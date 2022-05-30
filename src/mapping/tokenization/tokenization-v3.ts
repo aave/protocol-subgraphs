@@ -20,6 +20,7 @@ import {
   STokenBalanceHistoryItem,
   UserReserve,
   Reserve,
+  Pool as PoolSchema,
   StableTokenDelegatedAllowance,
   VariableTokenDelegatedAllowance,
 } from '../../../generated/schema';
@@ -30,10 +31,11 @@ import {
   getOrInitUser,
   getPriceOracleAsset,
   getOrInitReserveParamsHistoryItem,
+  getPoolByContract,
 } from '../../helpers/v3/initializers';
 import { zeroBI } from '../../utils/converters';
 import { calculateUtilizationRate } from '../../helpers/reserve-logic';
-import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
+import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts';
 import { rayDiv, rayMul } from '../../helpers/math';
 import { getHistoryEntityId } from '../../utils/id-generation';
 
@@ -171,13 +173,21 @@ function tokenMint(event: ethereum.Event, onBehalf: Address, value: BigInt, inde
   let aToken = getOrInitSubToken(event.address);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress, event);
   poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(value);
-
-  let pool = Pool.bind(Address.fromString(poolReserve.pool));
-  const reserveData = pool.try_getReserveData(
-    Address.fromString(aToken.underlyingAssetAddress.toHexString())
-  );
-  if (!reserveData.reverted) {
-    poolReserve.accruedToTreasury = reserveData.value.accruedToTreasury;
+  let poolId = getPoolByContract(event);
+  let pool = PoolSchema.load(poolId);
+  if (pool && pool.pool) {
+    let poolContract = Pool.bind(Address.fromString((pool.pool as Bytes).toHexString()));
+    const reserveData = poolContract.try_getReserveData(
+      Address.fromString(aToken.underlyingAssetAddress.toHexString())
+    );
+    if (!reserveData.reverted) {
+      poolReserve.accruedToTreasury = reserveData.value.accruedToTreasury;
+    } else {
+      log.error('error reading reserveData. Pool: {}, Underlying: {}', [
+        pool.pool.toHexString(),
+        aToken.underlyingAssetAddress.toHexString(),
+      ]);
+    }
   }
 
   // Check if we are minting to treasury for mainnet and polygon
