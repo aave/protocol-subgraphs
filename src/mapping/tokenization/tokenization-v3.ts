@@ -108,6 +108,9 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   reserveParamsHistoryItem.lifetimeWithdrawals = reserve.lifetimeWithdrawals;
   reserveParamsHistoryItem.lifetimeLiquidated = reserve.lifetimeLiquidated;
   reserveParamsHistoryItem.lifetimeFlashLoanPremium = reserve.lifetimeFlashLoanPremium;
+  reserveParamsHistoryItem.lifetimeFlashLoanLPPremium = reserve.lifetimeFlashLoanLPPremium;
+  reserveParamsHistoryItem.lifetimeFlashLoanProtocolPremium =
+    reserve.lifetimeFlashLoanProtocolPremium;
   reserveParamsHistoryItem.lifetimeFlashLoans = reserve.lifetimeFlashLoans;
   // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = reserve.lifetimeStableDebFeeCollected;
   // reserveParamsHistoryItem.lifetimeVariableDebtFeeCollected = reserve.lifetimeVariableDebtFeeCollected;

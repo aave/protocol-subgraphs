@@ -217,13 +217,20 @@ export function handleFlashLoan(event: FlashLoan): void {
   let poolId = getPoolByContract(event);
   let pool = Pool.load(poolId) as Pool;
 
-  log.error('premium {}', [(pool.flashloanPremiumToProtocol as BigInt).toString()]);
   let premium = event.params.premium;
-
+  let premiumToProtocol = premium
+    .times(pool.flashloanPremiumToProtocol as BigInt)
+    .plus(new BigInt(5000))
+    .div(new BigInt(10000));
+  let premiumToLP = premium.minus(premiumToProtocol);
   poolReserve.availableLiquidity = poolReserve.availableLiquidity.plus(premium);
 
   poolReserve.lifetimeFlashLoans = poolReserve.lifetimeFlashLoans.plus(event.params.amount);
   poolReserve.lifetimeFlashLoanPremium = poolReserve.lifetimeFlashLoanPremium.plus(premium);
+  poolReserve.lifetimeFlashLoanLPPremium = poolReserve.lifetimeFlashLoanLPPremium.plus(premiumToLP);
+  poolReserve.lifetimeFlashLoanProtocolPremium = poolReserve.lifetimeFlashLoanProtocolPremium.plus(
+    premiumToProtocol
+  );
   poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(premium);
 
   poolReserve.save();
