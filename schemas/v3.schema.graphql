@@ -267,6 +267,8 @@ type FlashLoan @entity {
   target: Bytes!
   amount: BigInt!
   totalFee: BigInt!
+  lpFee: BigInt!
+  protocolFee: BigInt!
   #protocolFee: BigInt!
   initiator: User!
   timestamp: Int!
@@ -325,6 +327,8 @@ type BackUnbacked @entity {
   backer: User!
   amount: BigInt!
   fee: BigInt!
+  lpFee: BigInt!
+  protocolFee: BigInt!
   timestamp: Int!
 }
 

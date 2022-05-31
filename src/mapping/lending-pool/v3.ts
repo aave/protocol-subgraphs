@@ -220,9 +220,14 @@ export function handleFlashLoan(event: FlashLoan): void {
   let premium = event.params.premium;
   let premiumToProtocol = premium
     .times(pool.flashloanPremiumToProtocol as BigInt)
-    .plus(new BigInt(5000))
-    .div(new BigInt(10000));
+    .plus(BigInt.fromI32(5000))
+    .div(BigInt.fromI32(10000));
   let premiumToLP = premium.minus(premiumToProtocol);
+  log.error('premium {},{},{}', [
+    premium.toString(),
+    premiumToProtocol.toString(),
+    premiumToLP.toString(),
+  ]);
   poolReserve.availableLiquidity = poolReserve.availableLiquidity.plus(premium);
 
   poolReserve.lifetimeFlashLoans = poolReserve.lifetimeFlashLoans.plus(event.params.amount);
@@ -241,6 +246,8 @@ export function handleFlashLoan(event: FlashLoan): void {
   flashLoan.target = event.params.target;
   flashLoan.initiator = initiator.id;
   flashLoan.totalFee = premium;
+  flashLoan.lpFee = premiumToLP;
+  flashLoan.protocolFee = premiumToProtocol;
   flashLoan.amount = event.params.amount;
   flashLoan.timestamp = event.block.timestamp.toI32();
   flashLoan.save();
@@ -338,6 +345,21 @@ export function handleBackUnbacked(event: BackUnbacked): void {
   let userReserve = getOrInitUserReserve(backer, event.params.reserve, event);
   let amount = event.params.amount;
 
+  let poolId = getPoolByContract(event);
+  let pool = Pool.load(poolId) as Pool;
+
+  let premium = event.params.fee;
+  let premiumToProtocol = premium
+    .times(pool.bridgeProtocolFee as BigInt)
+    .plus(BigInt.fromI32(5000))
+    .div(BigInt.fromI32(10000));
+  let premiumToLP = premium.minus(premiumToProtocol);
+  poolReserve.lifetimePortalLPFee = poolReserve.lifetimePortalLPFee.plus(premiumToLP);
+  poolReserve.lifetimePortalProtocolFee = poolReserve.lifetimePortalProtocolFee.plus(
+    premiumToProtocol
+  );
+  poolReserve.save();
+
   let backUnbacked = new BackUnbackedAction(getHistoryEntityId(event));
   backUnbacked.pool = poolReserve.pool;
   backUnbacked.backer = userReserve.user;
@@ -346,21 +368,8 @@ export function handleBackUnbacked(event: BackUnbacked): void {
   backUnbacked.amount = amount;
   backUnbacked.timestamp = event.block.timestamp.toI32();
   backUnbacked.fee = event.params.fee;
-
-  let poolId = getPoolByContract(event);
-  let pool = Pool.load(poolId) as Pool;
-
-  let premium = event.params.fee;
-  let premiumToProtocol = premium
-    .times(pool.bridgeProtocolFee as BigInt)
-    .plus(new BigInt(5000))
-    .div(new BigInt(10000));
-  let premiumToLP = premium.minus(premiumToProtocol);
-  poolReserve.lifetimePortalLPFee = poolReserve.lifetimePortalLPFee.plus(premiumToLP);
-  poolReserve.lifetimePortalProtocolFee = poolReserve.lifetimePortalProtocolFee.plus(
-    premiumToProtocol
-  );
-  poolReserve.save();
+  backUnbacked.lpFee = premiumToLP;
+  backUnbacked.protocolFee = premiumToProtocol;
 
   backUnbacked.save();
 }
