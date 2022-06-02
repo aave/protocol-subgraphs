@@ -4,17 +4,28 @@ import {
   RewardsClaimed,
   RewardOracleUpdated,
   RewardsController as RewardsControllerContract,
-} from '../../../generated/templates/RewardsController/RewardsController';
+  EmissionManagerUpdated,
+} from '../../../generated/RewardsController/RewardsController';
 import {
   ClaimRewardsCall,
   RewardedAction,
   RewardFeedOracle,
-  Rewards,
-  UserRewards,
+  Reward,
+  UserReward,
+  RewardsController as RewardsControllerEntity,
 } from '../../../generated/schema';
 import { getOrInitUser } from '../../helpers/v3/initializers';
 import { getHistoryEntityId } from '../../utils/id-generation';
-import { IERC20Detailed } from '../../../generated/templates/RewardsController/IERC20Detailed';
+import { IERC20Detailed } from '../../../generated/RewardsController/IERC20Detailed';
+
+export function handleEmissionManagerUpdated(event: EmissionManagerUpdated): void {
+  const rewardsController = event.address;
+  let iController = RewardsControllerEntity.load(rewardsController.toHexString());
+  if (!iController) {
+    iController = new RewardsControllerEntity(rewardsController.toHexString());
+    iController.save();
+  }
+}
 
 export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let emissionsPerSecond = event.params.newEmission;
@@ -24,13 +35,19 @@ export function handleAssetConfigUpdated(event: AssetConfigUpdated): void {
   let distributionEnd = event.params.newDistributionEnd;
   let rewardsController = event.address;
 
+  let iController = RewardsControllerEntity.load(rewardsController.toHexString());
+  if (!iController) {
+    iController = new RewardsControllerEntity(rewardsController.toHexString());
+    iController.save();
+  }
+
   //  update rewards configurations
   let rewardIncentiveId =
     rewardsController.toHexString() + ':' + asset.toHexString() + ':' + reward.toHexString();
 
-  let rewardIncentive = Rewards.load(rewardIncentiveId);
+  let rewardIncentive = Reward.load(rewardIncentiveId);
   if (!rewardIncentive) {
-    rewardIncentive = new Rewards(rewardIncentiveId);
+    rewardIncentive = new Reward(rewardIncentiveId);
     rewardIncentive.rewardToken = reward;
     rewardIncentive.asset = asset.toHexString();
     rewardIncentive.rewardsController = rewardsController.toHexString();
@@ -82,7 +99,7 @@ export function handleAccrued(event: Accrued): void {
 
   let rewardId =
     rewardsController.toHexString() + ':' + asset.toHexString() + ':' + reward.toHexString();
-  let rewardIncentive = Rewards.load(rewardId);
+  let rewardIncentive = Reward.load(rewardId);
   if (rewardIncentive) {
     rewardIncentive.index = assetIndex;
     rewardIncentive.updatedAt = blockTimestamp;
@@ -90,9 +107,9 @@ export function handleAccrued(event: Accrued): void {
   }
 
   let userRewardsId = rewardId + ':' + userAddress.toHexString();
-  let userReward = UserRewards.load(userRewardsId);
+  let userReward = UserReward.load(userRewardsId);
   if (!userReward) {
-    userReward = new UserRewards(userRewardsId);
+    userReward = new UserReward(userRewardsId);
     userReward.reward = rewardId;
     userReward.createdAt = blockTimestamp;
     userReward.user = userAddress.toHexString();

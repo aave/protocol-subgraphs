@@ -98,11 +98,6 @@ dataSources:
         # - event: OwnershipTransferred(indexed address,indexed address)
         #   handler: handleOwnershipTransferred
       file: src/mapping/address-provider-registry/v3.ts
-
-  # --------------------------------------
-  #
-  # --------------------------------------
-templates:
   # --------------------------------------
   #            REWARDS
   # --------------------------------------
@@ -110,7 +105,9 @@ templates:
     name: RewardsController
     network: {{network}}
     source:
+      address: '{{RewardsControllerAddress}}'
       abi: RewardsController
+      startBlock: {{RewardsControllerStartBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -128,12 +125,18 @@ templates:
         - event: AssetConfigUpdated(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleAssetConfigUpdated
         - event: Accrued(indexed address,indexed address,indexed address,uint256,uint256,uint256)
-          handler: handleRewardsAccrued
+          handler: handleAccrued
         - event: RewardsClaimed(indexed address,indexed address,indexed address,address,uint256)
           handler: handleRewardsClaimed
         - event: RewardOracleUpdated(indexed address,indexed address)
           handler: handleRewardOracleUpdated
+        - event: EmissionManagerUpdated(indexed address,indexed address)
+          handler: handleEmissionManagerUpdated
       file: src/mapping/incentives-controller/v3.ts
+  # --------------------------------------
+  #
+  # --------------------------------------
+templates:
   # --------------------------------------
   #      ORACLES / PRICE PROVIDERS
   # --------------------------------------
