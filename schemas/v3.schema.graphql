@@ -2,9 +2,6 @@ type Protocol @entity {
   # just 1 for now
   id: ID!
   pools: [Pool!]! @derivedFrom(field: "protocol")
-  bridgeProtocolFee: BigInt
-  flashloanPremiumTotal: BigInt
-  flashloanPremiumToProtocol: BigInt
 }
 
 # service entity, when we receiving an event we should wknow which pool is it
@@ -25,6 +22,10 @@ type Pool @entity {
   poolConfigurator: Bytes
   proxyPriceProvider: Bytes
   lastUpdateTimestamp: Int!
+
+  bridgeProtocolFee: BigInt
+  flashloanPremiumTotal: BigInt
+  flashloanPremiumToProtocol: BigInt
 
   reserves: [Reserve!]! @derivedFrom(field: "pool")
   supplyHistory: [Supply!]! @derivedFrom(field: "pool")
@@ -266,6 +267,8 @@ type FlashLoan @entity {
   target: Bytes!
   amount: BigInt!
   totalFee: BigInt!
+  lpFee: BigInt!
+  protocolFee: BigInt!
   #protocolFee: BigInt!
   initiator: User!
   timestamp: Int!
@@ -324,6 +327,8 @@ type BackUnbacked @entity {
   backer: User!
   amount: BigInt!
   fee: BigInt!
+  lpFee: BigInt!
+  protocolFee: BigInt!
   timestamp: Int!
 }
 
@@ -380,6 +385,7 @@ type ReserveParamsHistoryItem @entity {
   priceInEth: BigInt!
   priceInUsd: BigDecimal!
   timestamp: Int!
+  accruedToTreasury: BigInt!
   totalScaledVariableDebt: BigInt!
   totalCurrentVariableDebt: BigInt!
   totalPrincipalStableDebt: BigInt!
@@ -392,8 +398,12 @@ type ReserveParamsHistoryItem @entity {
   lifetimeBorrows: BigInt! # default: 0
   lifetimeLiquidated: BigInt! # default: 0
   lifetimeFlashLoans: BigInt!
-  lifetimeFlashLoanPremium: BigInt!
+  lifetimeFlashLoanPremium: BigInt! #deprecated
+  lifetimeFlashLoanLPPremium: BigInt!
+  lifetimeFlashLoanProtocolPremium: BigInt!
   lifetimeReserveFactorAccrued: BigInt!
+  lifetimePortalLPFee: BigInt!
+  lifetimePortalProtocolFee: BigInt!
   lifetimeSuppliersInterestEarned: BigInt!
   # lifetimeStableDebFeeCollected: BigInt!
   # lifetimeVariableDebtFeeCollected: BigInt!
@@ -531,6 +541,7 @@ type Reserve @entity {
   totalCurrentVariableDebt: BigInt! # default: 0
   totalSupplies: BigInt! # default: 0
   liquidityRate: BigInt! # suppliers interest
+  accruedToTreasury: BigInt!
   averageStableRate: BigInt!
   variableBorrowRate: BigInt!
   stableBorrowRate: BigInt!
@@ -571,7 +582,11 @@ type Reserve @entity {
   lifetimeBorrows: BigInt! # default: 0
   lifetimeLiquidated: BigInt! # default: 0
   lifetimeFlashLoans: BigInt! # default: 0
-  lifetimeFlashLoanPremium: BigInt! # default: 0
+  lifetimeFlashLoanPremium: BigInt! # deprecated
+  lifetimeFlashLoanLPPremium: BigInt! # default: 0
+  lifetimeFlashLoanProtocolPremium: BigInt!
+  lifetimePortalLPFee: BigInt!
+  lifetimePortalProtocolFee: BigInt!
   lifetimeSuppliersInterestEarned: BigInt!
   lifetimeReserveFactorAccrued: BigInt!
   # lifetimeStableDebFeeCollected: BigInt!

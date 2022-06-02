@@ -1,3 +1,4 @@
+import { Pool } from '../../../generated/templates/Pool/Pool';
 import {
   BalanceTransfer,
   Mint as ATokenMint,
@@ -19,6 +20,7 @@ import {
   STokenBalanceHistoryItem,
   UserReserve,
   Reserve,
+  Pool as PoolSchema,
   StableTokenDelegatedAllowance,
   VariableTokenDelegatedAllowance,
 } from '../../../generated/schema';
@@ -29,10 +31,11 @@ import {
   getOrInitUser,
   getPriceOracleAsset,
   getOrInitReserveParamsHistoryItem,
+  getPoolByContract,
 } from '../../helpers/v3/initializers';
 import { zeroBI } from '../../utils/converters';
 import { calculateUtilizationRate } from '../../helpers/reserve-logic';
-import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
+import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts';
 import { rayDiv, rayMul } from '../../helpers/math';
 import { getHistoryEntityId } from '../../utils/id-generation';
 
@@ -105,6 +108,9 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   reserveParamsHistoryItem.lifetimeWithdrawals = reserve.lifetimeWithdrawals;
   reserveParamsHistoryItem.lifetimeLiquidated = reserve.lifetimeLiquidated;
   reserveParamsHistoryItem.lifetimeFlashLoanPremium = reserve.lifetimeFlashLoanPremium;
+  reserveParamsHistoryItem.lifetimeFlashLoanLPPremium = reserve.lifetimeFlashLoanLPPremium;
+  reserveParamsHistoryItem.lifetimeFlashLoanProtocolPremium =
+    reserve.lifetimeFlashLoanProtocolPremium;
   reserveParamsHistoryItem.lifetimeFlashLoans = reserve.lifetimeFlashLoans;
   // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = reserve.lifetimeStableDebFeeCollected;
   // reserveParamsHistoryItem.lifetimeVariableDebtFeeCollected = reserve.lifetimeVariableDebtFeeCollected;
@@ -122,6 +128,7 @@ function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   reserveParamsHistoryItem.liquidityRate = reserve.liquidityRate;
   reserveParamsHistoryItem.totalATokenSupply = reserve.totalATokenSupply;
   reserveParamsHistoryItem.averageStableBorrowRate = reserve.averageStableRate;
+  reserveParamsHistoryItem.accruedToTreasury = reserve.accruedToTreasury;
   let priceOracleAsset = getPriceOracleAsset(reserve.price);
   reserveParamsHistoryItem.priceInEth = priceOracleAsset.priceInEth;
 
@@ -169,6 +176,23 @@ function tokenMint(event: ethereum.Event, onBehalf: Address, value: BigInt, inde
   let aToken = getOrInitSubToken(event.address);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress, event);
   poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(value);
+  let poolId = getPoolByContract(event);
+  let pool = PoolSchema.load(poolId);
+  if (pool && pool.pool) {
+    let poolContract = Pool.bind(Address.fromString((pool.pool as Bytes).toHexString()));
+    const reserveData = poolContract.try_getReserveData(
+      Address.fromString(aToken.underlyingAssetAddress.toHexString())
+    );
+    if (!reserveData.reverted) {
+      poolReserve.accruedToTreasury = reserveData.value.accruedToTreasury;
+    } else {
+      log.error('error reading reserveData. Pool: {}, Underlying: {}', [
+        (pool.pool as Bytes).toHexString(),
+        aToken.underlyingAssetAddress.toHexString(),
+      ]);
+    }
+  }
+
   // Check if we are minting to treasury for mainnet and polygon
   if (
     onBehalf.toHexString() != '0xB2289E329D2F85F1eD31Adbb30eA345278F21bcf'.toLowerCase() &&

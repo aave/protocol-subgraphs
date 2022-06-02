@@ -11,7 +11,7 @@ import {
   getOrInitSubToken,
   getOrInitReserve,
   getOrInitReserveConfigurationHistoryItem,
-  getProtocol,
+  getPoolByContract,
 } from '../../helpers/v3/initializers';
 import { Bytes, Address, ethereum, log, BigInt } from '@graphprotocol/graph-ts';
 import {
@@ -43,7 +43,7 @@ import {
 } from '../../../generated/templates/PoolConfigurator/PoolConfigurator';
 import { DefaultReserveInterestRateStrategy } from '../../../generated/templates/PoolConfigurator/DefaultReserveInterestRateStrategy';
 
-import { EModeCategory, Reserve } from '../../../generated/schema';
+import { EModeCategory, Pool, Reserve } from '../../../generated/schema';
 import { zeroAddress, zeroBI } from '../../utils/converters';
 
 export function saveReserve(reserve: Reserve, event: ethereum.Event): void {
@@ -231,23 +231,26 @@ export function handleDebtCeilingChanged(event: DebtCeilingChanged): void {
 }
 
 export function handleBridgeProtocolFeeUpdated(event: BridgeProtocolFeeUpdated): void {
-  let protocol = getProtocol();
-  protocol.bridgeProtocolFee = event.params.newBridgeProtocolFee;
-  protocol.save();
+  let poolId = getPoolByContract(event);
+  let pool = Pool.load(poolId) as Pool;
+  pool.bridgeProtocolFee = event.params.newBridgeProtocolFee;
+  pool.save();
 }
 
 export function handleFlashloanPremiumTotalUpdated(event: FlashloanPremiumTotalUpdated): void {
-  let protocol = getProtocol();
-  protocol.flashloanPremiumTotal = event.params.newFlashloanPremiumTotal;
-  protocol.save();
+  let poolId = getPoolByContract(event);
+  let pool = Pool.load(poolId) as Pool;
+  pool.flashloanPremiumTotal = event.params.newFlashloanPremiumTotal;
+  pool.save();
 }
 
 export function handleFlashloanPremiumToProtocolUpdated(
   event: FlashloanPremiumToProtocolUpdated
 ): void {
-  let protocol = getProtocol();
-  protocol.flashloanPremiumToProtocol = event.params.newFlashloanPremiumToProtocol;
-  protocol.save();
+  let poolId = getPoolByContract(event);
+  let pool = Pool.load(poolId) as Pool;
+  pool.flashloanPremiumToProtocol = event.params.newFlashloanPremiumToProtocol;
+  pool.save();
 }
 
 export function handleBorrowableInIsolationChanged(event: BorrowableInIsolationChanged): void {

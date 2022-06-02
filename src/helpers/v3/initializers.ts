@@ -12,6 +12,7 @@ import {
   ChainlinkAggregator,
   ContractToPoolMapping,
   Protocol,
+  Pool,
 } from '../../../generated/schema';
 import {
   PRICE_ORACLE_ASSET_PLATFORM_SIMPLE,
@@ -182,6 +183,7 @@ export function getOrInitReserve(underlyingAsset: Bytes, event: ethereum.Event):
     reserve.totalCurrentVariableDebt = zeroBI();
     reserve.totalPrincipalStableDebt = zeroBI();
     reserve.totalSupplies = zeroBI();
+    reserve.accruedToTreasury = zeroBI();
 
     reserve.isPaused = false;
     reserve.isDropped = false;
@@ -198,6 +200,8 @@ export function getOrInitReserve(underlyingAsset: Bytes, event: ethereum.Event):
     reserve.lifetimeLiquidated = zeroBI();
     reserve.lifetimeFlashLoans = zeroBI();
     reserve.lifetimeFlashLoanPremium = zeroBI();
+    reserve.lifetimeFlashLoanLPPremium = zeroBI();
+    reserve.lifetimeFlashLoanProtocolPremium = zeroBI();
 
     reserve.stableDebtLastUpdateTimestamp = 0;
     reserve.lastUpdateTimestamp = 0;
@@ -263,6 +267,7 @@ export function getOrInitReserveParamsHistoryItem(
     reserveParamsHistoryItem.liquidityIndex = zeroBI();
     reserveParamsHistoryItem.liquidityRate = zeroBI();
     reserveParamsHistoryItem.totalLiquidity = zeroBI();
+    reserveParamsHistoryItem.accruedToTreasury = zeroBI();
     reserveParamsHistoryItem.totalATokenSupply = zeroBI();
     reserveParamsHistoryItem.availableLiquidity = zeroBI();
     reserveParamsHistoryItem.totalLiquidityAsCollateral = zeroBI();
@@ -282,6 +287,8 @@ export function getOrInitReserveParamsHistoryItem(
     reserveParamsHistoryItem.lifetimeLiquidated = zeroBI();
     reserveParamsHistoryItem.lifetimeFlashLoans = zeroBI();
     reserveParamsHistoryItem.lifetimeFlashLoanPremium = zeroBI();
+    reserveParamsHistoryItem.lifetimeFlashLoanLPPremium = zeroBI();
+    reserveParamsHistoryItem.lifetimeFlashLoanProtocolPremium = zeroBI();
     reserveParamsHistoryItem.lifetimeReserveFactorAccrued = zeroBI();
     reserveParamsHistoryItem.lifetimeSuppliersInterestEarned = zeroBI();
     // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = zeroBI();
