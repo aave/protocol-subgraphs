@@ -27,7 +27,7 @@
     "deploy:hosted:mumbai-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=mumbai env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-polygon-mumbai env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:fuji-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=fuji env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-fuji env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:avalanche-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=avalanche env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-avalanche env-cmd npm run subgraph:deploy:hosted",
-    "deploy:hosted:v3": "npm run deploy:hosted:avalanche-v3 && npm run deploy:hosted:polygon-v3 && npm run deploy:hosted:optimism-v3 && npm run deploy:hosted:fantom-v3 && npm run deploy:hosted:arbitrum-v3"
+    "deploy:hosted:v3": "npm run deploy:hosted:avalanche-v3 && npm run deploy:hosted:polygon-v3 && npm run deploy:hosted:optimism-v3 && npm run deploy:hosted:fantom-v3 && npm run deploy:hosted:arbitrum-v3 && npm run deploy:hosted:harmony-v3"
   },
   "repository": {
     "type": "git",
