@@ -1,0 +1,9 @@
+{
+  "network": "harmony",
+  "AaveOracleAddress": "0x3C90887Ede8D65ccb2777A5d577beAb2548280AD",
+  "AaveOracleStartBlock": 23930344,
+  "PoolAddressesProviderRegistryAddress": "0x770ef9f4fe897e59daCc474EF11238303F9552b6",
+  "PoolAddressesProviderRegistryStartBlock": 23930102,
+  "RewardsControllerAddress": "0x929EC64c34a17401F460460D4B9390518E5B473e",
+  "RewardsControllerStartBlock": 24097683
+}

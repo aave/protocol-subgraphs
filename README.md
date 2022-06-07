@@ -17,7 +17,8 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 -  [Arbitrum V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-arbitrum)
 -  [Optimism V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-optimism)
 -  [Fantom V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-fantom)
-- TheGraph is not available yet on Harmony
+-  [Harmony V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-harmony)
+
 
 ## Usage
   
