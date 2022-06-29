@@ -39,7 +39,6 @@ import {
   Repay as RepayAction,
   Swap as SwapAction,
   UsageAsCollateral as UsageAsCollateralAction,
-  Action,
 } from '../../../generated/schema';
 import { getHistoryEntityId } from '../../utils/id-generation';
 import { calculateGrowth } from '../../helpers/math';
@@ -53,7 +52,7 @@ export function handleDeposit(event: Deposit): void {
 
   let deposit = new DepositAction(getHistoryEntityId(event));
   deposit.txHash = event.transaction.hash;
-  deposit.action = Action.Deposit;
+  deposit.action = 'Deposit';
   deposit.pool = poolReserve.pool;
   deposit.user = userReserve.user;
   deposit.caller = getOrInitUser(caller).id;
@@ -62,9 +61,11 @@ export function handleDeposit(event: Deposit): void {
   deposit.amount = depositedAmount;
   deposit.timestamp = event.block.timestamp.toI32();
   let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
-  let usdPriceEth = PriceOracle.load('1').usdPriceEth;
-  let ethPriceUsd = BigInt.fromString('1').div(usdPriceEth);
-  deposit.assetPriceUSD = ethPriceUsd.times(priceOracleAsset.priceInEth);
+  let usdPriceEth = PriceOracle.load('1');
+  if (usdPriceEth) {
+    let ethPriceUsd = BigInt.fromString('1').div(usdPriceEth.usdPriceEth);
+    deposit.assetPriceUSD = ethPriceUsd.times(priceOracleAsset.priceInEth);
+  }
   if (event.params.referral) {
     let referrer = getOrInitReferrer(event.params.referral);
     deposit.referrer = referrer.id;
@@ -80,7 +81,7 @@ export function handleWithdraw(event: Withdraw): void {
 
   let redeemUnderlying = new RedeemUnderlyingAction(getHistoryEntityId(event));
   redeemUnderlying.txHash = event.transaction.hash;
-  redeemUnderlying.action = Action.RedeemUnderlying;
+  redeemUnderlying.action = 'RedeemUnderlying';
   redeemUnderlying.pool = poolReserve.pool;
   redeemUnderlying.user = userReserve.user;
   redeemUnderlying.to = toUser.id;
@@ -89,9 +90,11 @@ export function handleWithdraw(event: Withdraw): void {
   redeemUnderlying.amount = redeemedAmount;
   redeemUnderlying.timestamp = event.block.timestamp.toI32();
   let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
-  let usdPriceEth = PriceOracle.load('1').usdPriceEth;
-  let ethPriceUsd = BigInt.fromString('1').div(usdPriceEth);
-  redeemUnderlying.assetPriceUSD = ethPriceUsd.times(priceOracleAsset.priceInEth);
+  let usdPriceEth = PriceOracle.load('1');
+  if (usdPriceEth) {
+    let ethPriceUsd = BigInt.fromString('1').div(usdPriceEth.usdPriceEth);
+    redeemUnderlying.assetPriceUSD = ethPriceUsd.times(priceOracleAsset.priceInEth);
+  }
   redeemUnderlying.save();
 }
 
@@ -103,7 +106,7 @@ export function handleBorrow(event: Borrow): void {
 
   let borrow = new BorrowAction(getHistoryEntityId(event));
   borrow.txHash = event.transaction.hash;
-  boeeow.action = Action.Borrow;
+  borrow.action = 'Borrow';
   borrow.pool = poolReserve.pool;
   borrow.user = userReserve.user;
   borrow.caller = getOrInitUser(caller).id;
@@ -120,9 +123,11 @@ export function handleBorrow(event: Borrow): void {
     borrow.referrer = referrer.id;
   }
   let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
-  let usdPriceEth = PriceOracle.load('1').usdPriceEth;
-  let ethPriceUsd = BigInt.fromString('1').div(usdPriceEth);
-  borrow.assetPriceUSD = ethPriceUsd.times(priceOracleAsset.priceInEth);
+  let usdPriceEth = PriceOracle.load('1');
+  if (usdPriceEth) {
+    let ethPriceUsd = BigInt.fromString('1').div(usdPriceEth.usdPriceEth);
+    borrow.assetPriceUSD = ethPriceUsd.times(priceOracleAsset.priceInEth);
+  }
   borrow.save();
 }
 
@@ -151,7 +156,7 @@ export function handleSwap(event: Swap): void {
 
   let swapHistoryItem = new SwapAction(getHistoryEntityId(event));
   swapHistoryItem.txHash = event.transaction.hash;
-  swapHistoryItem.action = Action.Swap;
+  swapHistoryItem.action = 'Swap';
   swapHistoryItem.pool = poolReserve.pool;
   swapHistoryItem.borrowRateModeFrom = getBorrowRateMode(event.params.rateMode);
   if (swapHistoryItem.borrowRateModeFrom === BORROW_MODE_STABLE) {
@@ -175,7 +180,7 @@ export function handleRebalanceStableBorrowRate(event: RebalanceStableBorrowRate
 
   let rebalance = new RebalanceStableBorrowRateAction(getHistoryEntityId(event));
   rebalance.txHash = event.transaction.hash;
-  rebalance.action = Action.RebalanceStableBorrowRate;
+  rebalance.action = 'RebalanceStableBorrowRate';
   rebalance.userReserve = userReserve.id;
   rebalance.borrowRateFrom = userReserve.oldStableBorrowRate;
   rebalance.borrowRateTo = userReserve.stableBorrowRate;
@@ -195,7 +200,7 @@ export function handleRepay(event: Repay): void {
 
   let repay = new RepayAction(getHistoryEntityId(event));
   repay.txHash = event.transaction.hash;
-  repay.action = Action.Repay;
+  repay.action = 'Repay';
   repay.pool = poolReserve.pool;
   repay.user = userReserve.user;
   repay.repayer = repayer.id;
@@ -204,9 +209,11 @@ export function handleRepay(event: Repay): void {
   repay.amount = event.params.amount;
   repay.timestamp = event.block.timestamp.toI32();
   let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
-  let usdPriceEth = PriceOracle.load('1').usdPriceEth;
-  let ethPriceUsd = BigInt.fromString('1').div(usdPriceEth);
-  repay.assetPriceUSD = ethPriceUsd.times(priceOracleAsset.priceInEth);
+  let usdPriceEth = PriceOracle.load('1');
+  if (usdPriceEth) {
+    let ethPriceUsd = BigInt.fromString('1').div(usdPriceEth.usdPriceEth);
+    repay.assetPriceUSD = ethPriceUsd.times(priceOracleAsset.priceInEth);
+  }
   repay.save();
 }
 
@@ -234,7 +241,7 @@ export function handleLiquidationCall(event: LiquidationCall): void {
 
   let liquidationCall = new LiquidationCallAction(getHistoryEntityId(event));
   liquidationCall.txHash = event.transaction.hash;
-  liquidationCall.action = Action.LiquidationCall;
+  liquidationCall.action = 'LiquidationCall';
   liquidationCall.pool = collateralPoolReserve.pool;
   liquidationCall.user = user.id;
   liquidationCall.collateralReserve = collateralPoolReserve.id;
@@ -245,14 +252,16 @@ export function handleLiquidationCall(event: LiquidationCall): void {
   liquidationCall.principalAmount = event.params.debtToCover;
   liquidationCall.liquidator = event.params.liquidator;
   liquidationCall.timestamp = event.block.timestamp.toI32();
-  let usdPriceEth = PriceOracle.load('1').usdPriceEth;
-  let ethPriceUsd = BigInt.fromString('1').div(usdPriceEth);
-  let collateralPriceOracleAsset = getPriceOracleAsset(collateralPoolReserve.price);
-  liquidationCall.collateralAssetPriceUSD = ethPriceUsd.times(
-    collateralPriceOracleAsset.priceInEth
-  );
-  let borrowPriceOracleAsset = getPriceOracleAsset(principalPoolReserve.price);
-  liquidationCall.borrowAssetPriceUSD = ethPriceUsd.times(borrowPriceOracleAsset.priceInEth);
+  let usdPriceEth = PriceOracle.load('1');
+  if (usdPriceEth) {
+    let ethPriceUsd = BigInt.fromString('1').div(usdPriceEth.usdPriceEth);
+    let collateralPriceOracleAsset = getPriceOracleAsset(collateralPoolReserve.price);
+    liquidationCall.collateralAssetPriceUSD = ethPriceUsd.times(
+      collateralPriceOracleAsset.priceInEth
+    );
+    let borrowPriceOracleAsset = getPriceOracleAsset(principalPoolReserve.price);
+    liquidationCall.borrowAssetPriceUSD = ethPriceUsd.times(borrowPriceOracleAsset.priceInEth);
+  }
   liquidationCall.save();
 }
 
@@ -288,7 +297,7 @@ export function handleReserveUsedAsCollateralEnabled(event: ReserveUsedAsCollate
 
   let usageAsCollateral = new UsageAsCollateralAction(getHistoryEntityId(event));
   usageAsCollateral.txHash = event.transaction.hash;
-  usageAsCollateral.action = Action.UsageAsCollateral;
+  usageAsCollateral.action = 'UsageAsCollateral';
   usageAsCollateral.pool = poolReserve.pool;
   usageAsCollateral.fromState = userReserve.usageAsCollateralEnabledOnUser;
   usageAsCollateral.toState = true;
@@ -312,7 +321,7 @@ export function handleReserveUsedAsCollateralDisabled(
 
   let usageAsCollateral = new UsageAsCollateralAction(getHistoryEntityId(event));
   usageAsCollateral.txHash = event.transaction.hash;
-  usageAsCollateral.action = Action.UsageAsCollateral;
+  usageAsCollateral.action = 'UsageAsCollateral';
   usageAsCollateral.pool = poolReserve.pool;
   usageAsCollateral.fromState = userReserve.usageAsCollateralEnabledOnUser;
   usageAsCollateral.toState = false;

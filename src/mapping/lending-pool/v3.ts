@@ -41,7 +41,6 @@ import {
   MintedToTreasury as MintedToTreasuryAction,
   IsolationModeTotalDebtUpdated as IsolationModeTotalDebtUpdatedAction,
   Pool,
-  Action,
 } from '../../../generated/schema';
 import { getHistoryEntityId } from '../../utils/id-generation';
 import { calculateGrowth } from '../../helpers/math';
@@ -61,7 +60,7 @@ export function handleSupply(event: Supply): void {
 
   let supply = new SupplyAction(id);
   supply.txHash = event.transaction.hash;
-  supply.action = Action.Supply;
+  supply.action = 'Supply';
   supply.pool = poolReserve.pool;
   supply.user = userReserve.user;
   supply.caller = getOrInitUser(caller).id;
@@ -89,7 +88,7 @@ export function handleWithdraw(event: Withdraw): void {
 
   let redeemUnderlying = new RedeemUnderlyingAction(getHistoryEntityId(event));
   redeemUnderlying.txHash = event.transaction.hash;
-  redeemUnderlying.action = Action.RedeemUnderlying;
+  redeemUnderlying.action = 'RedeemUnderlying';
   redeemUnderlying.pool = poolReserve.pool;
   redeemUnderlying.user = userReserve.user;
   redeemUnderlying.to = toUser.id;
@@ -110,7 +109,7 @@ export function handleBorrow(event: Borrow): void {
 
   let borrow = new BorrowAction(getHistoryEntityId(event));
   borrow.txHash = event.transaction.hash;
-  borrow.action = Action.Borrow;
+  borrow.action = 'Borrow';
   borrow.pool = poolReserve.pool;
   borrow.user = userReserve.user;
   borrow.caller = getOrInitUser(caller).id;
@@ -137,7 +136,7 @@ export function handleSwapBorrowRateMode(event: SwapBorrowRateMode): void {
 
   let swapHistoryItem = new SwapBorrowRateAction(getHistoryEntityId(event));
   swapHistoryItem.txHash = event.transaction.hash;
-  swapHistoryItem.action = Action.SwapBorrowRate;
+  swapHistoryItem.action = 'SwapBorrowRate';
   swapHistoryItem.pool = poolReserve.pool;
   swapHistoryItem.borrowRateModeFrom = event.params.interestRateMode;
   if (swapHistoryItem.borrowRateModeFrom === 1) {
@@ -161,7 +160,7 @@ export function handleRebalanceStableBorrowRate(event: RebalanceStableBorrowRate
 
   let rebalance = new RebalanceStableBorrowRateAction(getHistoryEntityId(event));
   rebalance.txHash = event.transaction.hash;
-  rebalance.action = Action.RebalanceStableBorrowRate;
+  rebalance.action = 'RebalanceStableBorrowRate';
   rebalance.userReserve = userReserve.id;
   rebalance.borrowRateFrom = userReserve.oldStableBorrowRate;
   rebalance.borrowRateTo = userReserve.stableBorrowRate;
@@ -182,7 +181,7 @@ export function handleRepay(event: Repay): void {
 
   let repay = new RepayAction(getHistoryEntityId(event));
   repay.txHash = event.transaction.hash;
-  repay.action = Action.Repay;
+  repay.action = 'Repay';
   repay.pool = poolReserve.pool;
   repay.user = userReserve.user;
   repay.repayer = getOrInitUser(repayer).id;
@@ -220,7 +219,7 @@ export function handleLiquidationCall(event: LiquidationCall): void {
 
   let liquidationCall = new LiquidationCallAction(getHistoryEntityId(event));
   liquidationCall.txHash = event.transaction.hash;
-  liquidationCall.action = Action.LiquidationCall;
+  liquidationCall.action = 'LiquidationCall';
   liquidationCall.pool = collateralPoolReserve.pool;
   liquidationCall.user = user.id;
   liquidationCall.collateralReserve = collateralPoolReserve.id;
@@ -287,7 +286,7 @@ export function handleReserveUsedAsCollateralEnabled(event: ReserveUsedAsCollate
 
   let usageAsCollateral = new UsageAsCollateralAction(getHistoryEntityId(event));
   usageAsCollateral.txHash = event.transaction.hash;
-  usageAsCollateral.action = Action.UsageAsCollateral;
+  usageAsCollateral.action = 'UsageAsCollateral';
   usageAsCollateral.pool = poolReserve.pool;
   usageAsCollateral.fromState = userReserve.usageAsCollateralEnabledOnUser;
   usageAsCollateral.toState = true;
@@ -311,7 +310,7 @@ export function handleReserveUsedAsCollateralDisabled(
 
   let usageAsCollateral = new UsageAsCollateralAction(getHistoryEntityId(event));
   usageAsCollateral.txHash = event.transaction.hash;
-  usageAsCollateral.action = Action.UsageAsCollateral;
+  usageAsCollateral.action = 'UsageAsCollateral';
   usageAsCollateral.pool = poolReserve.pool;
   usageAsCollateral.fromState = userReserve.usageAsCollateralEnabledOnUser;
   usageAsCollateral.toState = false;
