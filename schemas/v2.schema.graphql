@@ -212,7 +212,7 @@ enum Action {
 
 interface UserTransaction {
   id: ID!
-  txHash: String!
+  txHash: Bytes!
   action: Action!
   pool: Pool!
   user: User!
@@ -224,6 +224,8 @@ type Deposit implements UserTransaction @entity {
   tx hash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   caller: User!
@@ -241,6 +243,8 @@ type RedeemUnderlying implements UserTransaction @entity {
   tx hash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   to: User!
@@ -256,6 +260,8 @@ type Borrow implements UserTransaction @entity {
   tx hash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   caller: User!
@@ -276,6 +282,8 @@ type Swap implements UserTransaction @entity {
   tx hash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   reserve: Reserve!
@@ -292,6 +300,8 @@ type UsageAsCollateral implements UserTransaction @entity {
   tx hash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   reserve: Reserve!
@@ -306,6 +316,8 @@ type RebalanceStableBorrowRate implements UserTransaction @entity {
   tx hash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   reserve: Reserve!
@@ -321,6 +333,8 @@ type Repay implements UserTransaction @entity {
   tx hash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   repayer: User!
@@ -352,6 +366,8 @@ type LiquidationCall implements UserTransaction @entity {
   tx hash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   collateralReserve: Reserve!
