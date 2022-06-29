@@ -55,7 +55,6 @@ type Pool @entity {
   repayHistory: [Repay!]! @derivedFrom(field: "pool")
   flashLoanHistory: [FlashLoan!]! @derivedFrom(field: "pool")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "pool")
-  originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "pool")
 
   active: Boolean!
   paused: Boolean!
@@ -200,8 +199,21 @@ type Referrer @entity {
   borrows: [Borrow!]! @derivedFrom(field: "referrer")
 }
 
+enum Action {
+  Deposit
+  RedeemUnderlying
+  Repay
+  Borrow
+  Swap
+  UsageAsCollateral
+  RebalanceStableBorrowRate
+  LiquidationCall
+}
+
 interface UserTransaction {
   id: ID!
+  txHash: String!
+  action: Action!
   pool: Pool!
   user: User!
   timestamp: Int!
@@ -220,6 +232,7 @@ type Deposit implements UserTransaction @entity {
   amount: BigInt!
   referrer: Referrer
   timestamp: Int!
+  assetPriceUSD: BigInt!
 }
 
 # TODO: check nomenclature for new v2
@@ -235,6 +248,7 @@ type RedeemUnderlying implements UserTransaction @entity {
   userReserve: UserReserve!
   amount: BigInt!
   timestamp: Int!
+  assetPriceUSD: BigInt!
 }
 
 type Borrow implements UserTransaction @entity {
@@ -254,6 +268,7 @@ type Borrow implements UserTransaction @entity {
   timestamp: Int!
   stableTokenDebt: BigInt!
   variableTokenDebt: BigInt!
+  assetPriceUSD: BigInt!
 }
 
 type Swap implements UserTransaction @entity {
@@ -313,6 +328,7 @@ type Repay implements UserTransaction @entity {
   userReserve: UserReserve!
   amount: BigInt!
   timestamp: Int!
+  assetPriceUSD: BigInt!
 }
 
 type FlashLoan @entity {
@@ -328,6 +344,7 @@ type FlashLoan @entity {
   #protocolFee: BigInt!
   initiator: User!
   timestamp: Int!
+  assetPriceUSD: BigInt!
 }
 
 type LiquidationCall implements UserTransaction @entity {
@@ -345,22 +362,8 @@ type LiquidationCall implements UserTransaction @entity {
   principalAmount: BigInt!
   liquidator: Bytes!
   timestamp: Int!
-}
-
-type OriginationFeeLiquidation implements UserTransaction @entity {
-  """
-  tx hash
-  """ # TODO: replace with blockNumber/timestamp + blockPosition
-  id: ID!
-  pool: Pool!
-  user: User!
-  collateralReserve: Reserve!
-  collateralUserReserve: UserReserve!
-  principalReserve: Reserve!
-  principalUserReserve: UserReserve!
-  feeLiquidated: BigInt!
-  liquidatedCollateralForFee: BigInt!
-  timestamp: Int!
+  collateralAssetPriceUSD: BigInt!
+  borrowAssetPriceUSD: BigInt!
 }
 
 type ReserveConfigurationHistoryItem @entity {
@@ -549,8 +552,6 @@ type Reserve @entity {
   repayHistory: [Repay!]! @derivedFrom(field: "reserve")
   flashLoanHistory: [FlashLoan!]! @derivedFrom(field: "reserve")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "collateralReserve")
-  originationFeeLiquidationHistory: [OriginationFeeLiquidation!]!
-    @derivedFrom(field: "collateralReserve")
   paramsHistory: [ReserveParamsHistoryItem!]! @derivedFrom(field: "reserve")
   configurationHistory: [ReserveConfigurationHistoryItem!]! @derivedFrom(field: "reserve")
   deposits: [Deposit!]! @derivedFrom(field: "reserve")
@@ -691,8 +692,6 @@ type UserReserve @entity {
   rebalanceStableBorrowRateHistory: [RebalanceStableBorrowRate!]! @derivedFrom(field: "userReserve")
   repayHistory: [Repay!]! @derivedFrom(field: "userReserve")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "collateralUserReserve")
-  originationFeeLiquidationHistory: [OriginationFeeLiquidation!]!
-    @derivedFrom(field: "collateralUserReserve")
 }
 
 type User @entity {
@@ -716,7 +715,6 @@ type User @entity {
   rebalanceStableBorrowRateHistory: [RebalanceStableBorrowRate!]! @derivedFrom(field: "user")
   repayHistory: [Repay!]! @derivedFrom(field: "user")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "user")
-  originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "user")
   incentivizedActions: [IncentivizedAction!]! @derivedFrom(field: "user")
   claimIncentives: [ClaimIncentiveCall!]! @derivedFrom(field: "user")
 }
