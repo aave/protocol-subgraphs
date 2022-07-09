@@ -42,7 +42,7 @@ import {
 } from '../../../generated/schema';
 import { getHistoryEntityId } from '../../utils/id-generation';
 import { calculateGrowth } from '../../helpers/math';
-import { ETH_PRECISION } from '../../utils/constants';
+import { ETH_PRECISION, USD_PRECISION } from '../../utils/constants';
 
 export function handleDeposit(event: Deposit): void {
   let caller = event.params.user;
@@ -70,6 +70,8 @@ export function handleDeposit(event: Deposit): void {
     deposit.assetPriceUSD = priceOracleAsset.priceInEth
       .divDecimal(ETH_PRECISION)
       .times(ethPriceUSD);
+  } else {
+    deposit.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
   }
   if (event.params.referral) {
     let referrer = getOrInitReferrer(event.params.referral);
@@ -103,6 +105,8 @@ export function handleWithdraw(event: Withdraw): void {
     redeemUnderlying.assetPriceUSD = priceOracleAsset.priceInEth
       .divDecimal(ETH_PRECISION)
       .times(ethPriceUSD);
+  } else {
+    redeemUnderlying.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
   }
   redeemUnderlying.save();
 }
@@ -138,6 +142,8 @@ export function handleBorrow(event: Borrow): void {
       usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
     );
     borrow.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(ETH_PRECISION).times(ethPriceUSD);
+  } else {
+    borrow.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
   }
   borrow.save();
 }
@@ -226,6 +232,8 @@ export function handleRepay(event: Repay): void {
       usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
     );
     repay.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(ETH_PRECISION).times(ethPriceUSD);
+  } else {
+    repay.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
   }
   repay.save();
 }
@@ -266,18 +274,25 @@ export function handleLiquidationCall(event: LiquidationCall): void {
   liquidationCall.liquidator = event.params.liquidator;
   liquidationCall.timestamp = event.block.timestamp.toI32();
   let usdPriceEth = PriceOracle.load('1');
+  let collateralPriceOracleAsset = getPriceOracleAsset(collateralPoolReserve.price);
+  let borrowPriceOracleAsset = getPriceOracleAsset(principalPoolReserve.price);
   if (usdPriceEth) {
     const ethPriceUSD = BigDecimal.fromString('1').div(
       usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
     );
-    let collateralPriceOracleAsset = getPriceOracleAsset(collateralPoolReserve.price);
-    let borrowPriceOracleAsset = getPriceOracleAsset(principalPoolReserve.price);
     liquidationCall.collateralAssetPriceUSD = collateralPriceOracleAsset.priceInEth
       .divDecimal(ETH_PRECISION)
       .times(ethPriceUSD);
     liquidationCall.borrowAssetPriceUSD = borrowPriceOracleAsset.priceInEth
       .divDecimal(ETH_PRECISION)
       .times(ethPriceUSD);
+  } else {
+    liquidationCall.collateralAssetPriceUSD = collateralPriceOracleAsset.priceInEth.divDecimal(
+      USD_PRECISION
+    );
+    liquidationCall.borrowAssetPriceUSD = borrowPriceOracleAsset.priceInEth.divDecimal(
+      USD_PRECISION
+    );
   }
   liquidationCall.save();
 }
