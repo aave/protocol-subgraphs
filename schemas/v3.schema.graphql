@@ -164,7 +164,7 @@ type Supply implements UserTransaction @entity {
   userReserve: UserReserve!
   amount: BigInt!
   timestamp: Int!
-  assetPriceUSD: BigInt!
+  assetPriceUSD: BigDecimal!
 }
 
 type RedeemUnderlying implements UserTransaction @entity {
@@ -181,7 +181,7 @@ type RedeemUnderlying implements UserTransaction @entity {
   userReserve: UserReserve!
   amount: BigInt!
   timestamp: Int!
-  assetPriceUSD: BigInt!
+  assetPriceUSD: BigDecimal!
 }
 
 type Borrow implements UserTransaction @entity {
@@ -203,7 +203,7 @@ type Borrow implements UserTransaction @entity {
   timestamp: Int!
   stableTokenDebt: BigInt!
   variableTokenDebt: BigInt!
-  assetPriceUSD: BigInt!
+  assetPriceUSD: BigDecimal!
 }
 
 type SwapBorrowRate implements UserTransaction @entity {
@@ -272,7 +272,7 @@ type Repay implements UserTransaction @entity {
   amount: BigInt!
   timestamp: Int!
   useATokens: Boolean!
-  assetPriceUSD: BigInt!
+  assetPriceUSD: BigDecimal!
 }
 
 type IsolationModeTotalDebtUpdated @entity {
@@ -320,8 +320,8 @@ type LiquidationCall implements UserTransaction @entity {
   principalAmount: BigInt!
   liquidator: Bytes!
   timestamp: Int!
-  collateralAssetPriceUSD: BigInt!
-  borrowAssetPriceUSD: BigInt!
+  collateralAssetPriceUSD: BigDecimal!
+  borrowAssetPriceUSD: BigDecimal!
 }
 
 type MintUnbacked @entity {

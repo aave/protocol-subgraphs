@@ -44,6 +44,7 @@ import {
 } from '../../../generated/schema';
 import { getHistoryEntityId } from '../../utils/id-generation';
 import { calculateGrowth } from '../../helpers/math';
+import { USD_PRECISION } from '../../utils/constants';
 
 export function handleSupply(event: Supply): void {
   let caller = event.params.user;
@@ -69,7 +70,7 @@ export function handleSupply(event: Supply): void {
   supply.amount = amount;
   supply.timestamp = event.block.timestamp.toI32();
   let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
-  supply.assetPriceUSD = priceOracleAsset.priceInEth;
+  supply.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
   if (event.params.referralCode) {
     let referrer = getOrInitReferrer(event.params.referralCode);
     supply.referrer = referrer.id;
@@ -97,7 +98,7 @@ export function handleWithdraw(event: Withdraw): void {
   redeemUnderlying.amount = redeemedAmount;
   redeemUnderlying.timestamp = event.block.timestamp.toI32();
   let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
-  redeemUnderlying.assetPriceUSD = priceOracleAsset.priceInEth;
+  redeemUnderlying.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
   redeemUnderlying.save();
 }
 
@@ -126,7 +127,7 @@ export function handleBorrow(event: Borrow): void {
     borrow.referrer = referrer.id;
   }
   let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
-  borrow.assetPriceUSD = priceOracleAsset.priceInEth;
+  borrow.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
   borrow.save();
 }
 
@@ -191,7 +192,7 @@ export function handleRepay(event: Repay): void {
   repay.timestamp = event.block.timestamp.toI32();
   repay.useATokens = event.params.useATokens;
   let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
-  repay.assetPriceUSD = priceOracleAsset.priceInEth;
+  repay.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
   repay.save();
 }
 
@@ -232,8 +233,10 @@ export function handleLiquidationCall(event: LiquidationCall): void {
   liquidationCall.timestamp = event.block.timestamp.toI32();
   let collateralPriceOracleAsset = getPriceOracleAsset(collateralPoolReserve.price);
   let borrowPriceOracleAsset = getPriceOracleAsset(principalPoolReserve.price);
-  liquidationCall.collateralAssetPriceUSD = collateralPriceOracleAsset.priceInEth;
-  liquidationCall.borrowAssetPriceUSD = borrowPriceOracleAsset.priceInEth;
+  liquidationCall.collateralAssetPriceUSD = collateralPriceOracleAsset.priceInEth.divDecimal(
+    USD_PRECISION
+  );
+  liquidationCall.borrowAssetPriceUSD = borrowPriceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
   liquidationCall.save();
 }
 
