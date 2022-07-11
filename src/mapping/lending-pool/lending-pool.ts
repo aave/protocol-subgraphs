@@ -63,7 +63,7 @@ export function handleDeposit(event: Deposit): void {
   deposit.timestamp = event.block.timestamp.toI32();
   let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
   let usdPriceEth = PriceOracle.load('1');
-  if (usdPriceEth) {
+  if (usdPriceEth && usdPriceEth.usdPriceEth.toString() != '0') {
     const ethPriceUSD = BigDecimal.fromString('1').div(
       usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
     );
@@ -98,7 +98,7 @@ export function handleWithdraw(event: Withdraw): void {
   redeemUnderlying.timestamp = event.block.timestamp.toI32();
   let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
   let usdPriceEth = PriceOracle.load('1');
-  if (usdPriceEth) {
+  if (usdPriceEth && usdPriceEth.usdPriceEth.toString() != '0') {
     const ethPriceUSD = BigDecimal.fromString('1').div(
       usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
     );
@@ -137,7 +137,7 @@ export function handleBorrow(event: Borrow): void {
   }
   let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
   let usdPriceEth = PriceOracle.load('1');
-  if (usdPriceEth) {
+  if (usdPriceEth && usdPriceEth.usdPriceEth.toString() != '0') {
     const ethPriceUSD = BigDecimal.fromString('1').div(
       usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
     );
@@ -227,7 +227,7 @@ export function handleRepay(event: Repay): void {
   repay.timestamp = event.block.timestamp.toI32();
   let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
   let usdPriceEth = PriceOracle.load('1');
-  if (usdPriceEth) {
+  if (usdPriceEth && usdPriceEth.usdPriceEth.toString() != '0') {
     const ethPriceUSD = BigDecimal.fromString('1').div(
       usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
     );
@@ -276,7 +276,7 @@ export function handleLiquidationCall(event: LiquidationCall): void {
   let usdPriceEth = PriceOracle.load('1');
   let collateralPriceOracleAsset = getPriceOracleAsset(collateralPoolReserve.price);
   let borrowPriceOracleAsset = getPriceOracleAsset(principalPoolReserve.price);
-  if (usdPriceEth) {
+  if (usdPriceEth && usdPriceEth.usdPriceEth.toString() != '0') {
     const ethPriceUSD = BigDecimal.fromString('1').div(
       usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
     );
