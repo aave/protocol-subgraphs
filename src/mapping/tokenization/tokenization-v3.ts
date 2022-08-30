@@ -149,8 +149,8 @@ function tokenBurn(
   let userReserve = getOrInitUserReserve(from, aToken.underlyingAssetAddress, event);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress, event);
 
-  const balanceChange = value.plus(balanceIncrease);
-  let calculatedAmount = rayDiv(balanceChange, index);
+  const userBalanceChange = value.plus(balanceIncrease);
+  let calculatedAmount = rayDiv(userBalanceChange, index);
 
   userReserve.scaledATokenBalance = userReserve.scaledATokenBalance.minus(calculatedAmount);
   userReserve.currentATokenBalance = rayMul(userReserve.scaledATokenBalance, index);
@@ -158,20 +158,20 @@ function tokenBurn(
   userReserve.liquidityRate = poolReserve.liquidityRate;
 
   // TODO: review liquidity?
-  poolReserve.totalSupplies = poolReserve.totalSupplies.minus(balanceChange);
+  poolReserve.totalSupplies = poolReserve.totalSupplies.minus(userBalanceChange);
   // poolReserve.availableLiquidity = poolReserve.totalDeposits
   //   .minus(poolReserve.totalPrincipalStableDebt)
   //   .minus(poolReserve.totalScaledVariableDebt);
 
-  poolReserve.availableLiquidity = poolReserve.availableLiquidity.minus(balanceChange);
-  poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.minus(balanceChange);
+  poolReserve.availableLiquidity = poolReserve.availableLiquidity.minus(userBalanceChange);
+  poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.minus(userBalanceChange);
 
-  poolReserve.totalLiquidity = poolReserve.totalLiquidity.minus(balanceChange);
-  poolReserve.lifetimeWithdrawals = poolReserve.lifetimeWithdrawals.plus(balanceChange);
+  poolReserve.totalLiquidity = poolReserve.totalLiquidity.minus(userBalanceChange);
+  poolReserve.lifetimeWithdrawals = poolReserve.lifetimeWithdrawals.plus(userBalanceChange);
 
   if (userReserve.usageAsCollateralEnabledOnUser) {
     poolReserve.totalLiquidityAsCollateral =
-      poolReserve.totalLiquidityAsCollateral.minus(balanceChange);
+      poolReserve.totalLiquidityAsCollateral.minus(userBalanceChange);
   }
   saveReserve(poolReserve, event);
 
@@ -189,9 +189,9 @@ function tokenMint(
 ): void {
   let aToken = getOrInitSubToken(event.address);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress, event);
-  const balanceChange = value.minus(balanceIncrease);
+  const userBalanceChange = value.minus(balanceIncrease);
 
-  poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(balanceChange);
+  poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(userBalanceChange);
   let poolId = getPoolByContract(event);
   let pool = PoolSchema.load(poolId);
   if (pool && pool.pool) {
@@ -219,7 +219,7 @@ function tokenMint(
     onBehalf.toHexString() != '0x053D55f9B5AF8694c503EB288a1B7E552f590710'.toLowerCase()
   ) {
     let userReserve = getOrInitUserReserve(onBehalf, aToken.underlyingAssetAddress, event);
-    let calculatedAmount = rayDiv(balanceChange, index);
+    let calculatedAmount = rayDiv(userBalanceChange, index);
 
     userReserve.scaledATokenBalance = userReserve.scaledATokenBalance.plus(calculatedAmount);
     userReserve.currentATokenBalance = rayMul(userReserve.scaledATokenBalance, index);
@@ -231,24 +231,24 @@ function tokenMint(
     userReserve.save();
 
     // TODO: review
-    poolReserve.totalSupplies = poolReserve.totalSupplies.plus(balanceChange);
+    poolReserve.totalSupplies = poolReserve.totalSupplies.plus(userBalanceChange);
     // poolReserve.availableLiquidity = poolReserve.totalDeposits
     //   .minus(poolReserve.totalPrincipalStableDebt)
     //   .minus(poolReserve.totalScaledVariableDebt);
 
-    poolReserve.availableLiquidity = poolReserve.availableLiquidity.plus(balanceChange);
-    poolReserve.totalLiquidity = poolReserve.totalLiquidity.plus(balanceChange);
-    poolReserve.lifetimeLiquidity = poolReserve.lifetimeLiquidity.plus(balanceChange);
+    poolReserve.availableLiquidity = poolReserve.availableLiquidity.plus(userBalanceChange);
+    poolReserve.totalLiquidity = poolReserve.totalLiquidity.plus(userBalanceChange);
+    poolReserve.lifetimeLiquidity = poolReserve.lifetimeLiquidity.plus(userBalanceChange);
 
     if (userReserve.usageAsCollateralEnabledOnUser) {
       poolReserve.totalLiquidityAsCollateral =
-        poolReserve.totalLiquidityAsCollateral.plus(balanceChange);
+        poolReserve.totalLiquidityAsCollateral.plus(userBalanceChange);
     }
     saveReserve(poolReserve, event);
     saveUserReserveAHistory(userReserve, event, index);
   } else {
     poolReserve.lifetimeReserveFactorAccrued =
-      poolReserve.lifetimeReserveFactorAccrued.plus(balanceChange);
+      poolReserve.lifetimeReserveFactorAccrued.plus(userBalanceChange);
     saveReserve(poolReserve, event);
     // log.error('Minting to treasuey {} an amount of: {}', [from.toHexString(), value.toString()]);
   }
@@ -312,12 +312,12 @@ export function handleVariableTokenBurn(event: VTokenBurn): void {
   let from = event.params.from;
   let value = event.params.value;
   let balanceIncrease = event.params.balanceIncrease;
-  const balanceChange = value.plus(balanceIncrease);
+  const userBalanceChange = value.plus(balanceIncrease);
   let index = event.params.index;
   let userReserve = getOrInitUserReserve(from, vToken.underlyingAssetAddress, event);
   let poolReserve = getOrInitReserve(vToken.underlyingAssetAddress, event);
 
-  let calculatedAmount = rayDiv(balanceChange, index);
+  let calculatedAmount = rayDiv(userBalanceChange, index);
   userReserve.scaledVariableDebt = userReserve.scaledVariableDebt.minus(calculatedAmount);
   userReserve.currentVariableDebt = rayMul(userReserve.scaledVariableDebt, index);
   userReserve.currentTotalDebt = userReserve.currentStableDebt.plus(
@@ -330,8 +330,8 @@ export function handleVariableTokenBurn(event: VTokenBurn): void {
   //  value.minus(calculatedAmount)
   // );
 
-  poolReserve.availableLiquidity = poolReserve.availableLiquidity.plus(balanceChange);
-  poolReserve.lifetimeRepayments = poolReserve.lifetimeRepayments.plus(balanceChange);
+  poolReserve.availableLiquidity = poolReserve.availableLiquidity.plus(userBalanceChange);
+  poolReserve.lifetimeRepayments = poolReserve.lifetimeRepayments.plus(userBalanceChange);
 
   userReserve.liquidityRate = poolReserve.liquidityRate;
   userReserve.variableBorrowIndex = poolReserve.variableBorrowIndex;
@@ -359,7 +359,7 @@ export function handleVariableTokenMint(event: VTokenMint): void {
   let from = event.params.onBehalfOf;
   let value = event.params.value;
   const balanceIncrease = event.params.balanceIncrease;
-  const balanceChange = value.minus(balanceIncrease);
+  const userBalanceChange = value.minus(balanceIncrease);
   let index = event.params.index;
 
   let userReserve = getOrInitUserReserve(from, vToken.underlyingAssetAddress, event);
@@ -373,7 +373,7 @@ export function handleVariableTokenMint(event: VTokenMint): void {
     user.save();
   }
 
-  let calculatedAmount = rayDiv(balanceChange, index);
+  let calculatedAmount = rayDiv(userBalanceChange, index);
   userReserve.scaledVariableDebt = userReserve.scaledVariableDebt.plus(calculatedAmount);
   userReserve.currentVariableDebt = rayMul(userReserve.scaledVariableDebt, index);
 
@@ -393,8 +393,8 @@ export function handleVariableTokenMint(event: VTokenMint): void {
     poolReserve.lifetimeScaledVariableDebt.plus(calculatedAmount);
   poolReserve.lifetimeCurrentVariableDebt = rayMul(poolReserve.lifetimeScaledVariableDebt, index);
 
-  poolReserve.availableLiquidity = poolReserve.availableLiquidity.minus(balanceChange);
-  poolReserve.lifetimeBorrows = poolReserve.lifetimeBorrows.plus(balanceChange);
+  poolReserve.availableLiquidity = poolReserve.availableLiquidity.minus(userBalanceChange);
+  poolReserve.lifetimeBorrows = poolReserve.lifetimeBorrows.plus(userBalanceChange);
 
   saveReserve(poolReserve, event);
 
