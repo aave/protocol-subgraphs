@@ -402,7 +402,8 @@ export function handleVariableTokenMint(event: VTokenMint): void {
 }
 
 export function handleStableTokenMint(event: STokenMint): void {
-  let borrowedAmount = event.params.amount;
+  let balanceChangeIncludingInterest = event.params.amount;
+  let borrowedAmount = event.params.amount.minus(event.params.balanceIncrease);
   let sToken = getOrInitSubToken(event.address);
   let from = event.params.user;
   if (from.toHexString() != event.params.onBehalfOf.toHexString()) {
@@ -421,10 +422,9 @@ export function handleStableTokenMint(event: STokenMint): void {
     user.save();
   }
 
-  let calculatedAmount = event.params.amount.plus(event.params.balanceIncrease);
   poolReserve.totalPrincipalStableDebt = event.params.newTotalSupply;
   poolReserve.lifetimePrincipalStableDebt = poolReserve.lifetimePrincipalStableDebt.plus(
-    calculatedAmount
+    balanceChangeIncludingInterest
   );
 
   poolReserve.averageStableRate = event.params.avgStableRate;
@@ -437,7 +437,9 @@ export function handleStableTokenMint(event: STokenMint): void {
 
   saveReserve(poolReserve, event);
 
-  userReserve.principalStableDebt = userReserve.principalStableDebt.plus(calculatedAmount);
+  userReserve.principalStableDebt = userReserve.principalStableDebt.plus(
+    balanceChangeIncludingInterest
+  );
   userReserve.currentStableDebt = userReserve.principalStableDebt;
   userReserve.currentTotalDebt = userReserve.currentStableDebt.plus(
     userReserve.currentVariableDebt
