@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import {
   BORROW_MODE_STABLE,
   BORROW_MODE_VARIABLE,
@@ -25,6 +25,7 @@ import {
   getOrInitUser,
   getOrInitUserReserve,
   getPoolByContract,
+  getPriceOracleAsset,
 } from '../../helpers/initializers';
 import {
   Borrow as BorrowAction,
@@ -32,6 +33,7 @@ import {
   FlashLoan as FlashLoanAction,
   LiquidationCall as LiquidationCallAction,
   Pool,
+  PriceOracle,
   RebalanceStableBorrowRate as RebalanceStableBorrowRateAction,
   RedeemUnderlying as RedeemUnderlyingAction,
   Repay as RepayAction,
@@ -40,6 +42,7 @@ import {
 } from '../../../generated/schema';
 import { getHistoryEntityId } from '../../utils/id-generation';
 import { calculateGrowth } from '../../helpers/math';
+import { ETH_PRECISION, USD_PRECISION } from '../../utils/constants';
 
 export function handleDeposit(event: Deposit): void {
   let caller = event.params.user;
@@ -49,6 +52,8 @@ export function handleDeposit(event: Deposit): void {
   let depositedAmount = event.params.amount;
 
   let deposit = new DepositAction(getHistoryEntityId(event));
+  deposit.txHash = event.transaction.hash;
+  deposit.action = 'Deposit';
   deposit.pool = poolReserve.pool;
   deposit.user = userReserve.user;
   deposit.caller = getOrInitUser(caller).id;
@@ -56,6 +61,18 @@ export function handleDeposit(event: Deposit): void {
   deposit.reserve = poolReserve.id;
   deposit.amount = depositedAmount;
   deposit.timestamp = event.block.timestamp.toI32();
+  let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
+  let usdPriceEth = PriceOracle.load('1');
+  if (usdPriceEth && usdPriceEth.usdPriceEth.toString() != '0') {
+    const ethPriceUSD = BigDecimal.fromString('1').div(
+      usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
+    );
+    deposit.assetPriceUSD = priceOracleAsset.priceInEth
+      .divDecimal(ETH_PRECISION)
+      .times(ethPriceUSD);
+  } else {
+    deposit.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
+  }
   if (event.params.referral) {
     let referrer = getOrInitReferrer(event.params.referral);
     deposit.referrer = referrer.id;
@@ -70,6 +87,8 @@ export function handleWithdraw(event: Withdraw): void {
   let redeemedAmount = event.params.amount;
 
   let redeemUnderlying = new RedeemUnderlyingAction(getHistoryEntityId(event));
+  redeemUnderlying.txHash = event.transaction.hash;
+  redeemUnderlying.action = 'RedeemUnderlying';
   redeemUnderlying.pool = poolReserve.pool;
   redeemUnderlying.user = userReserve.user;
   redeemUnderlying.to = toUser.id;
@@ -77,6 +96,18 @@ export function handleWithdraw(event: Withdraw): void {
   redeemUnderlying.reserve = poolReserve.id;
   redeemUnderlying.amount = redeemedAmount;
   redeemUnderlying.timestamp = event.block.timestamp.toI32();
+  let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
+  let usdPriceEth = PriceOracle.load('1');
+  if (usdPriceEth && usdPriceEth.usdPriceEth.toString() != '0') {
+    const ethPriceUSD = BigDecimal.fromString('1').div(
+      usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
+    );
+    redeemUnderlying.assetPriceUSD = priceOracleAsset.priceInEth
+      .divDecimal(ETH_PRECISION)
+      .times(ethPriceUSD);
+  } else {
+    redeemUnderlying.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
+  }
   redeemUnderlying.save();
 }
 
@@ -87,6 +118,8 @@ export function handleBorrow(event: Borrow): void {
   let poolReserve = getOrInitReserve(event.params.reserve, event);
 
   let borrow = new BorrowAction(getHistoryEntityId(event));
+  borrow.txHash = event.transaction.hash;
+  borrow.action = 'Borrow';
   borrow.pool = poolReserve.pool;
   borrow.user = userReserve.user;
   borrow.caller = getOrInitUser(caller).id;
@@ -101,6 +134,16 @@ export function handleBorrow(event: Borrow): void {
   if (event.params.referral) {
     let referrer = getOrInitReferrer(event.params.referral);
     borrow.referrer = referrer.id;
+  }
+  let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
+  let usdPriceEth = PriceOracle.load('1');
+  if (usdPriceEth && usdPriceEth.usdPriceEth.toString() != '0') {
+    const ethPriceUSD = BigDecimal.fromString('1').div(
+      usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
+    );
+    borrow.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(ETH_PRECISION).times(ethPriceUSD);
+  } else {
+    borrow.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
   }
   borrow.save();
 }
@@ -129,6 +172,8 @@ export function handleSwap(event: Swap): void {
   let poolReserve = getOrInitReserve(event.params.reserve, event);
 
   let swapHistoryItem = new SwapAction(getHistoryEntityId(event));
+  swapHistoryItem.txHash = event.transaction.hash;
+  swapHistoryItem.action = 'Swap';
   swapHistoryItem.pool = poolReserve.pool;
   swapHistoryItem.borrowRateModeFrom = getBorrowRateMode(event.params.rateMode);
   if (swapHistoryItem.borrowRateModeFrom === BORROW_MODE_STABLE) {
@@ -151,7 +196,8 @@ export function handleRebalanceStableBorrowRate(event: RebalanceStableBorrowRate
   let poolReserve = getOrInitReserve(event.params.reserve, event);
 
   let rebalance = new RebalanceStableBorrowRateAction(getHistoryEntityId(event));
-
+  rebalance.txHash = event.transaction.hash;
+  rebalance.action = 'RebalanceStableBorrowRate';
   rebalance.userReserve = userReserve.id;
   rebalance.borrowRateFrom = userReserve.oldStableBorrowRate;
   rebalance.borrowRateTo = userReserve.stableBorrowRate;
@@ -170,6 +216,8 @@ export function handleRepay(event: Repay): void {
   poolReserve.save();
 
   let repay = new RepayAction(getHistoryEntityId(event));
+  repay.txHash = event.transaction.hash;
+  repay.action = 'Repay';
   repay.pool = poolReserve.pool;
   repay.user = userReserve.user;
   repay.repayer = repayer.id;
@@ -177,6 +225,16 @@ export function handleRepay(event: Repay): void {
   repay.reserve = poolReserve.id;
   repay.amount = event.params.amount;
   repay.timestamp = event.block.timestamp.toI32();
+  let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
+  let usdPriceEth = PriceOracle.load('1');
+  if (usdPriceEth && usdPriceEth.usdPriceEth.toString() != '0') {
+    const ethPriceUSD = BigDecimal.fromString('1').div(
+      usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
+    );
+    repay.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(ETH_PRECISION).times(ethPriceUSD);
+  } else {
+    repay.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
+  }
   repay.save();
 }
 
@@ -203,6 +261,8 @@ export function handleLiquidationCall(event: LiquidationCall): void {
   principalPoolReserve.save();
 
   let liquidationCall = new LiquidationCallAction(getHistoryEntityId(event));
+  liquidationCall.txHash = event.transaction.hash;
+  liquidationCall.action = 'LiquidationCall';
   liquidationCall.pool = collateralPoolReserve.pool;
   liquidationCall.user = user.id;
   liquidationCall.collateralReserve = collateralPoolReserve.id;
@@ -213,6 +273,27 @@ export function handleLiquidationCall(event: LiquidationCall): void {
   liquidationCall.principalAmount = event.params.debtToCover;
   liquidationCall.liquidator = event.params.liquidator;
   liquidationCall.timestamp = event.block.timestamp.toI32();
+  let usdPriceEth = PriceOracle.load('1');
+  let collateralPriceOracleAsset = getPriceOracleAsset(collateralPoolReserve.price);
+  let borrowPriceOracleAsset = getPriceOracleAsset(principalPoolReserve.price);
+  if (usdPriceEth && usdPriceEth.usdPriceEth.toString() != '0') {
+    const ethPriceUSD = BigDecimal.fromString('1').div(
+      usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
+    );
+    liquidationCall.collateralAssetPriceUSD = collateralPriceOracleAsset.priceInEth
+      .divDecimal(ETH_PRECISION)
+      .times(ethPriceUSD);
+    liquidationCall.borrowAssetPriceUSD = borrowPriceOracleAsset.priceInEth
+      .divDecimal(ETH_PRECISION)
+      .times(ethPriceUSD);
+  } else {
+    liquidationCall.collateralAssetPriceUSD = collateralPriceOracleAsset.priceInEth.divDecimal(
+      USD_PRECISION
+    );
+    liquidationCall.borrowAssetPriceUSD = borrowPriceOracleAsset.priceInEth.divDecimal(
+      USD_PRECISION
+    );
+  }
   liquidationCall.save();
 }
 
@@ -247,6 +328,8 @@ export function handleReserveUsedAsCollateralEnabled(event: ReserveUsedAsCollate
   let timestamp = event.block.timestamp.toI32();
 
   let usageAsCollateral = new UsageAsCollateralAction(getHistoryEntityId(event));
+  usageAsCollateral.txHash = event.transaction.hash;
+  usageAsCollateral.action = 'UsageAsCollateral';
   usageAsCollateral.pool = poolReserve.pool;
   usageAsCollateral.fromState = userReserve.usageAsCollateralEnabledOnUser;
   usageAsCollateral.toState = true;
@@ -269,6 +352,8 @@ export function handleReserveUsedAsCollateralDisabled(
   let timestamp = event.block.timestamp.toI32();
 
   let usageAsCollateral = new UsageAsCollateralAction(getHistoryEntityId(event));
+  usageAsCollateral.txHash = event.transaction.hash;
+  usageAsCollateral.action = 'UsageAsCollateral';
   usageAsCollateral.pool = poolReserve.pool;
   usageAsCollateral.fromState = userReserve.usageAsCollateralEnabledOnUser;
   usageAsCollateral.toState = false;
