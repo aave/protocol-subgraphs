@@ -1,0 +1,9 @@
+{
+  "network": "arbitrum-goerli",
+  "AaveOracleAddress": "0x86b4D2636EC473AC4A5dD83Fc2BEDa98845249A7",
+  "AaveOracleStartBlock": 5084,
+  "PoolAddressesProviderRegistryAddress": "0x596b5804E1f541baC5f265aF7C4bcc5077522876",
+  "PoolAddressesProviderRegistryStartBlock": 5032,
+  "RewardsControllerAddress": "0xCf9C57744E10495490cB873612Db709417cFe4f4",
+  "RewardsControllerStartBlock": 5107
+}

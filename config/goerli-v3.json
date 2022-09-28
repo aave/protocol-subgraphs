@@ -1,0 +1,9 @@
+{
+  "network": "goerli",
+  "AaveOracleAddress": "0x5bed0810073cc9f0DacF73C648202249E87eF6cB",
+  "AaveOracleStartBlock": 7138733,
+  "PoolAddressesProviderRegistryAddress": "0xC87385b5E62099f92d490750Fcd6C901a524BBcA",
+  "PoolAddressesProviderRegistryStartBlock": 7138674,
+  "RewardsControllerAddress": "0x0C501fB73808e1BD73cBDdd0c99237bbc481Bb58",
+  "RewardsControllerStartBlock": 7138752
+}
