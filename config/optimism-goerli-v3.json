@@ -1,5 +1,5 @@
 {
-  "network": "optimism-kovan",
+  "network": "optimism-goerli",
   "AaveOracleAddress": "0x171Af9229972716f28DBB04DBFC712F05B45B021",
   "AaveOracleStartBlock": 29954,
   "PoolAddressesProviderRegistryAddress": "0xA33cB62d453891A1DC80F4A092F4990539e5FA07",
