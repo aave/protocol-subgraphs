@@ -3,5 +3,7 @@
   "AaveOracleAddress": "0xA840C768f7143495790eC8dc2D5f32B71B6Dc113",
   "AaveOracleStartBlock": 8361040,
   "PoolAddressesProviderRegistryAddress": "0xd79e25047CFD3e75b3Ae7D7AB4758CA315D9d0d1",
-  "PoolAddressesProviderRegistryStartBlock": 8360940
+  "PoolAddressesProviderRegistryStartBlock": 8360940,
+  "RewardsControllerAddress": "0x54Bc1D59873A5ABde98cf76B6EcF4075ff65d685",
+  "RewardsControllerStartBlock": 8361077
 }

@@ -42,8 +42,6 @@ type Pool @entity {
   repayHistory: [Repay!]! @derivedFrom(field: "pool")
   flashLoanHistory: [FlashLoan!]! @derivedFrom(field: "pool")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "pool")
-  originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "pool")
-
   active: Boolean!
   paused: Boolean!
 }
@@ -131,8 +129,21 @@ type Referrer @entity {
   borrows: [Borrow!]! @derivedFrom(field: "referrer")
 }
 
+enum Action {
+  Supply
+  RedeemUnderlying
+  Repay
+  Borrow
+  SwapBorrowRate
+  UsageAsCollateral
+  RebalanceStableBorrowRate
+  LiquidationCall
+}
+
 interface UserTransaction {
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   timestamp: Int!
@@ -143,6 +154,8 @@ type Supply implements UserTransaction @entity {
   tx hash
   """
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   caller: User!
@@ -151,6 +164,7 @@ type Supply implements UserTransaction @entity {
   userReserve: UserReserve!
   amount: BigInt!
   timestamp: Int!
+  assetPriceUSD: BigDecimal!
 }
 
 type RedeemUnderlying implements UserTransaction @entity {
@@ -158,6 +172,8 @@ type RedeemUnderlying implements UserTransaction @entity {
   tx hash
   """
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   to: User!
@@ -165,6 +181,7 @@ type RedeemUnderlying implements UserTransaction @entity {
   userReserve: UserReserve!
   amount: BigInt!
   timestamp: Int!
+  assetPriceUSD: BigDecimal!
 }
 
 type Borrow implements UserTransaction @entity {
@@ -172,6 +189,8 @@ type Borrow implements UserTransaction @entity {
   tx hash
   """
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   caller: User!
@@ -184,6 +203,7 @@ type Borrow implements UserTransaction @entity {
   timestamp: Int!
   stableTokenDebt: BigInt!
   variableTokenDebt: BigInt!
+  assetPriceUSD: BigDecimal!
 }
 
 type SwapBorrowRate implements UserTransaction @entity {
@@ -191,6 +211,8 @@ type SwapBorrowRate implements UserTransaction @entity {
   tx hash
   """
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   reserve: Reserve!
@@ -207,6 +229,8 @@ type UsageAsCollateral implements UserTransaction @entity {
   tx hash
   """ #
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   reserve: Reserve!
@@ -221,6 +245,8 @@ type RebalanceStableBorrowRate implements UserTransaction @entity {
   tx hash
   """ #
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   reserve: Reserve!
@@ -236,6 +262,8 @@ type Repay implements UserTransaction @entity {
   tx hash
   """
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   repayer: User!
@@ -244,6 +272,7 @@ type Repay implements UserTransaction @entity {
   amount: BigInt!
   timestamp: Int!
   useATokens: Boolean!
+  assetPriceUSD: BigDecimal!
 }
 
 type IsolationModeTotalDebtUpdated @entity {
@@ -279,6 +308,8 @@ type LiquidationCall implements UserTransaction @entity {
   tx hash
   """ #
   id: ID!
+  txHash: Bytes!
+  action: Action!
   pool: Pool!
   user: User!
   collateralReserve: Reserve!
@@ -289,22 +320,8 @@ type LiquidationCall implements UserTransaction @entity {
   principalAmount: BigInt!
   liquidator: Bytes!
   timestamp: Int!
-}
-
-type OriginationFeeLiquidation implements UserTransaction @entity {
-  """
-  tx hash
-  """ #
-  id: ID!
-  pool: Pool!
-  user: User!
-  collateralReserve: Reserve!
-  collateralUserReserve: UserReserve!
-  principalReserve: Reserve!
-  principalUserReserve: UserReserve!
-  feeLiquidated: BigInt!
-  liquidatedCollateralForFee: BigInt!
-  timestamp: Int!
+  collateralAssetPriceUSD: BigDecimal!
+  borrowAssetPriceUSD: BigDecimal!
 }
 
 type MintUnbacked @entity {
@@ -606,8 +623,6 @@ type Reserve @entity {
   repayHistory: [Repay!]! @derivedFrom(field: "reserve")
   flashLoanHistory: [FlashLoan!]! @derivedFrom(field: "reserve")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "collateralReserve")
-  originationFeeLiquidationHistory: [OriginationFeeLiquidation!]!
-    @derivedFrom(field: "collateralReserve")
   paramsHistory: [ReserveParamsHistoryItem!]! @derivedFrom(field: "reserve")
   configurationHistory: [ReserveConfigurationHistoryItem!]! @derivedFrom(field: "reserve")
   supplies: [Supply!]! @derivedFrom(field: "reserve")
@@ -729,8 +744,6 @@ type UserReserve @entity {
   rebalanceStableBorrowRateHistory: [RebalanceStableBorrowRate!]! @derivedFrom(field: "userReserve")
   repayHistory: [Repay!]! @derivedFrom(field: "userReserve")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "collateralUserReserve")
-  originationFeeLiquidationHistory: [OriginationFeeLiquidation!]!
-    @derivedFrom(field: "collateralUserReserve")
 }
 
 type User @entity {
@@ -761,7 +774,6 @@ type User @entity {
   rebalanceStableBorrowRateHistory: [RebalanceStableBorrowRate!]! @derivedFrom(field: "user")
   repayHistory: [Repay!]! @derivedFrom(field: "user")
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "user")
-  originationFeeLiquidationHistory: [OriginationFeeLiquidation!]! @derivedFrom(field: "user")
   rewardedActions: [RewardedAction!]! @derivedFrom(field: "user")
   claimRewards: [ClaimRewardsCall!]! @derivedFrom(field: "user")
 }

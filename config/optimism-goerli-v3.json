@@ -1,0 +1,9 @@
+{
+  "network": "optimism-goerli",
+  "AaveOracleAddress": "0x171Af9229972716f28DBB04DBFC712F05B45B021",
+  "AaveOracleStartBlock": 29954,
+  "PoolAddressesProviderRegistryAddress": "0xA33cB62d453891A1DC80F4A092F4990539e5FA07",
+  "PoolAddressesProviderRegistryStartBlock": 29895,
+  "RewardsControllerAddress": "0x0C501fB73808e1BD73cBDdd0c99237bbc481Bb58",
+  "RewardsControllerStartBlock": 30017
+}
