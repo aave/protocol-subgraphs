@@ -36,42 +36,11 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 
 Subgraphs can be queried directly from the graph explorer, or from [another application](https://thegraph.com/docs/en/developer/querying-from-your-app/). The following section gives common queries for Aave protocol data.
 
-### Queries
+### Helpful Queries
 
 See [TheGraph API](https://thegraph.com/docs/en/developer/graphql-api/) docs for a complete guide on querying capabilities.
 
-<details>
-  <summary>Reserve Data</summary>
-
-#### Reserve Summary
-
-The `reserve` entity gives data on the assets of the protocol including rates, configuration, and total supply/borrow amounts.
-
-The aave-utilities library includes a [`formatReserves`](https://github.com/aave/aave-utilities/#formatReserves) function which can be used to format all data into a human readable format. The queries to fetch data for passing into this function can be found [here](https://github.com/aave/aave-utilities#subgraph).
-
-Why does the raw subgraph data not match app.aave.com?
-
-- aToken and debtToken balances are continuously increasing. The subgraph provides a snapshot of the balance at the time of indexing (not querying), which means fields affected by interest such as `totalLiquidity`, `availableLiquidity`, and `totalCurrentVariableDebt` will need to be formatted to get real-time values
-- All rates (liquidityRate, variableBorrowRate, stableBorrowRate) are expressed as _APR_ with RAY units (10**27). To convert to the APY percentage as shown on the Aave frontend: `supplyAPY = (((1 + ((liquidityRate / 10**27) / 31536000)) ^ 31536000) - 1) \* 100`. [`formatReserves`](https://github.com/aave/aave-utilities/#formatReserves) will perform this calculation for you.
-
-</details>
-
-<details>
-  <summary>User Data</summary>
-  
-#### User Summary
-
-The `userReserve` entity gives the supply and borrow balances for a particular user along with the underlying reserve data.
-
-The aave-utilities library includes a [`formatUserSummary`](https://github.com/aave/aave-utilities#formatUserSummary) function which can be used to format all data into a human readable format. The queries to fetch data for passing into this function can be found [here](https://github.com/aave/aave-utilities#subgraph).
-
-Why does the raw subgraph data not match my account balances on app.aave.com?
-
-- aToken and debtToken balances are continuously increasing. The subgraph provides a snapshot of the balance at the time of indexing (not querying), which means fields affected by interest such as `currentATokenBalance`, `currentVariableDebt`, and `currentStableDebt` will need to be formatted to get the real-time values
-
-#### Transaction History
-
-The `pool` parameter is the LendingPoolAddressesProvider (V2) or PoolAddressesProvider (V3) address which you can get from the [deployed contracts](https://docs.aave.com/developers/deployed-contracts/deployed-contracts) page.
+#### User Transaction History
 
 ```
 {
@@ -154,6 +123,35 @@ The `pool` parameter is the LendingPoolAddressesProvider (V2) or PoolAddressesPr
   }
 }
 ```
+
+<details>
+  <summary>Reserve Data</summary>
+
+#### Reserve Summary
+
+The `reserve` entity gives data on the assets of the protocol including rates, configuration, and total supply/borrow amounts.
+
+The aave-utilities library includes a [`formatReserves`](https://github.com/aave/aave-utilities/#formatReserves) function which can be used to format all data into a human readable format. The queries to fetch data for passing into this function can be found [here](https://github.com/aave/aave-utilities#subgraph).
+
+Why does the raw subgraph data not match app.aave.com?
+
+- aToken and debtToken balances are continuously increasing. The subgraph provides a snapshot of the balance at the time of indexing (not querying), which means fields affected by interest such as `totalLiquidity`, `availableLiquidity`, and `totalCurrentVariableDebt` will need to be formatted to get real-time values
+- All rates (liquidityRate, variableBorrowRate, stableBorrowRate) are expressed as _APR_ with RAY units (10**27). To convert to the APY percentage as shown on the Aave frontend: `supplyAPY = (((1 + ((liquidityRate / 10**27) / 31536000)) ^ 31536000) - 1) \* 100`. [`formatReserves`](https://github.com/aave/aave-utilities/#formatReserves) will perform this calculation for you.
+
+</details>
+
+<details>
+  <summary>User Data</summary>
+  
+#### User Summary
+
+The `userReserve` entity gives the supply and borrow balances for a particular user along with the underlying reserve data.
+
+The aave-utilities library includes a [`formatUserSummary`](https://github.com/aave/aave-utilities#formatUserSummary) function which can be used to format all data into a human readable format. The queries to fetch data for passing into this function can be found [here](https://github.com/aave/aave-utilities#subgraph).
+
+Why does the raw subgraph data not match my account balances on app.aave.com?
+
+- aToken and debtToken balances are continuously increasing. The subgraph provides a snapshot of the balance at the time of indexing (not querying), which means fields affected by interest such as `currentATokenBalance`, `currentVariableDebt`, and `currentStableDebt` will need to be formatted to get the real-time values
 
 </details>
 
