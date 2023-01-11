@@ -1,0 +1,10 @@
+{
+  "network": "mainnet",
+  "AaveOracleAddress": "",
+  "AaveOracleStartBlock": 0,
+  "PoolAddressesProviderRegistryAddress": "",
+  "PoolAddressesProviderRegistryStartBlock": 0,
+  "RewardsControllerAddress": "",
+  "RewardsControllerStartBlock": 0,
+  "v301UpdateBlock": 0
+}
