@@ -33,7 +33,7 @@ import {
   getOrInitReserveParamsHistoryItem,
   getPoolByContract,
 } from '../../helpers/v3/initializers';
-import { zeroBI } from '../../utils/converters';
+import { getUpdateBlock, zeroBI } from '../../utils/converters';
 import { calculateUtilizationRate } from '../../helpers/reserve-logic';
 import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts';
 import { rayDiv, rayMul } from '../../helpers/math';
@@ -170,8 +170,9 @@ function tokenBurn(
   poolReserve.lifetimeWithdrawals = poolReserve.lifetimeWithdrawals.plus(userBalanceChange);
 
   if (userReserve.usageAsCollateralEnabledOnUser) {
-    poolReserve.totalLiquidityAsCollateral =
-      poolReserve.totalLiquidityAsCollateral.minus(userBalanceChange);
+    poolReserve.totalLiquidityAsCollateral = poolReserve.totalLiquidityAsCollateral.minus(
+      userBalanceChange
+    );
   }
   saveReserve(poolReserve, event);
 
@@ -241,14 +242,16 @@ function tokenMint(
     poolReserve.lifetimeLiquidity = poolReserve.lifetimeLiquidity.plus(userBalanceChange);
 
     if (userReserve.usageAsCollateralEnabledOnUser) {
-      poolReserve.totalLiquidityAsCollateral =
-        poolReserve.totalLiquidityAsCollateral.plus(userBalanceChange);
+      poolReserve.totalLiquidityAsCollateral = poolReserve.totalLiquidityAsCollateral.plus(
+        userBalanceChange
+      );
     }
     saveReserve(poolReserve, event);
     saveUserReserveAHistory(userReserve, event, index);
   } else {
-    poolReserve.lifetimeReserveFactorAccrued =
-      poolReserve.lifetimeReserveFactorAccrued.plus(userBalanceChange);
+    poolReserve.lifetimeReserveFactorAccrued = poolReserve.lifetimeReserveFactorAccrued.plus(
+      userBalanceChange
+    );
     saveReserve(poolReserve, event);
     // log.error('Minting to treasuey {} an amount of: {}', [from.toHexString(), value.toString()]);
   }
@@ -275,8 +278,16 @@ export function handleATokenMint(event: ATokenMint): void {
 }
 
 export function handleBalanceTransfer(event: BalanceTransfer): void {
-  tokenBurn(event, event.params.from, event.params.value, BigInt.fromI32(0), event.params.index);
-  tokenMint(event, event.params.to, event.params.value, BigInt.fromI32(0), event.params.index);
+  let balanceTransferValue = event.params.value;
+
+  // TO-DO: Need to find field for differentiating network info and create mapping inside of getUpdateBlock helper function
+  const v301UpdateBlock = getUpdateBlock('mainnet-v3');
+  if (v301UpdateBlock && event.block.number.toI32() > v301UpdateBlock) {
+    balanceTransferValue = balanceTransferValue.times(event.params.index);
+  }
+
+  tokenBurn(event, event.params.from, balanceTransferValue, BigInt.fromI32(0), event.params.index);
+  tokenMint(event, event.params.to, balanceTransferValue, BigInt.fromI32(0), event.params.index);
 
   // TODO: is this really necessary(from v1)? if we transfer aToken we are not moving the collateral (underlying token)
   let aToken = getOrInitSubToken(event.address);
@@ -389,8 +400,9 @@ export function handleVariableTokenMint(event: VTokenMint): void {
   poolReserve.totalScaledVariableDebt = poolReserve.totalScaledVariableDebt.plus(calculatedAmount);
   poolReserve.totalCurrentVariableDebt = rayMul(poolReserve.totalScaledVariableDebt, index);
 
-  poolReserve.lifetimeScaledVariableDebt =
-    poolReserve.lifetimeScaledVariableDebt.plus(calculatedAmount);
+  poolReserve.lifetimeScaledVariableDebt = poolReserve.lifetimeScaledVariableDebt.plus(
+    calculatedAmount
+  );
   poolReserve.lifetimeCurrentVariableDebt = rayMul(poolReserve.lifetimeScaledVariableDebt, index);
 
   poolReserve.availableLiquidity = poolReserve.availableLiquidity.minus(userBalanceChange);
