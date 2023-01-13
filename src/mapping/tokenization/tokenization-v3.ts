@@ -38,6 +38,7 @@ import { calculateUtilizationRate } from '../../helpers/reserve-logic';
 import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts';
 import { rayDiv, rayMul } from '../../helpers/math';
 import { getHistoryEntityId } from '../../utils/id-generation';
+import { dataSource } from '@graphprotocol/graph-ts';
 
 // TODO: check if we need to add stuff to history
 function saveUserReserveAHistory(
@@ -279,9 +280,8 @@ export function handleATokenMint(event: ATokenMint): void {
 
 export function handleBalanceTransfer(event: BalanceTransfer): void {
   let balanceTransferValue = event.params.value;
-
-  // TO-DO: Need to find field for differentiating network info and create mapping inside of getUpdateBlock helper function
-  const v301UpdateBlock = getUpdateBlock('mainnet-v3');
+  const network = dataSource.network();
+  const v301UpdateBlock = getUpdateBlock(network);
   if (v301UpdateBlock && event.block.number.toI32() > v301UpdateBlock) {
     balanceTransferValue = balanceTransferValue.times(event.params.index);
   }
