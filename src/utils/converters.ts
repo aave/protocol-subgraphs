@@ -192,12 +192,12 @@ export function generateSymbol(description: string): string {
   return convertToLowerCase(symbolArr[0] + '-' + symbolArr[1]);
 }
 
-export function getUpdateBlock(network: string): number | undefined {
-  // TO-DO: map network name to config files
-  const marketUpdate: Record<string, number | undefined> = {
-    ['mainnet-v3']: 0,
-  };
+// returns block of market update to v3.0.1, or null if no upgrade
+export function getUpdateBlock(network: string): u32 {
+  let updateBlock = -1;
+  if (network === 'mainnet') {
+    updateBlock = 0;
+  }
 
-  // returns block of market update to v3.0.1, or undefined if no upgrade
-  return marketUpdate[network];
+  return updateBlock;
 }
