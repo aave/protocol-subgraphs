@@ -13,6 +13,7 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [ETH Mainnet V2](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2)
 - [Polygon V2](https://thegraph.com/hosted-service/subgraph/aave/aave-v2-matic)
 - [Avalanche V2](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2-avalanche)
+- [ETH Mainnet V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3)
 - [Polygon V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-polygon)
 - [Avalanche V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-avalanche)
 - [Arbitrum V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-arbitrum)
