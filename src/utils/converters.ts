@@ -123,7 +123,7 @@ export function byteArrayFromHex(s: string): ByteArray {
     throw new TypeError('Hex string must have an even number of characters');
   }
   let out = new Uint8Array(s.length / 2);
-  for (var i = 0; i < s.length; i += 2) {
+  for (let i = 0; i < s.length; i += 2) {
     out[i / 2] = parseInt(s.substring(i, i + 2), 16) as u32;
   }
 
@@ -190,4 +190,14 @@ export function convertToLowerCase(str: string): string {
 export function generateSymbol(description: string): string {
   let symbolArr = description.split(' / ');
   return convertToLowerCase(symbolArr[0] + '-' + symbolArr[1]);
+}
+
+// returns block of market update to v3.0.1, or null if no upgrade
+export function getUpdateBlock(network: string): u32 {
+  let updateBlock = -1;
+  if (network === 'mainnet') {
+    updateBlock = 0;
+  }
+
+  return updateBlock;
 }

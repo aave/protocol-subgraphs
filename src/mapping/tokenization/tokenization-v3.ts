@@ -33,11 +33,12 @@ import {
   getOrInitReserveParamsHistoryItem,
   getPoolByContract,
 } from '../../helpers/v3/initializers';
-import { zeroBI } from '../../utils/converters';
+import { getUpdateBlock, zeroBI } from '../../utils/converters';
 import { calculateUtilizationRate } from '../../helpers/reserve-logic';
 import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts';
 import { rayDiv, rayMul } from '../../helpers/math';
 import { getHistoryEntityId } from '../../utils/id-generation';
+import { dataSource } from '@graphprotocol/graph-ts';
 
 // TODO: check if we need to add stuff to history
 function saveUserReserveAHistory(
@@ -170,8 +171,9 @@ function tokenBurn(
   poolReserve.lifetimeWithdrawals = poolReserve.lifetimeWithdrawals.plus(userBalanceChange);
 
   if (userReserve.usageAsCollateralEnabledOnUser) {
-    poolReserve.totalLiquidityAsCollateral =
-      poolReserve.totalLiquidityAsCollateral.minus(userBalanceChange);
+    poolReserve.totalLiquidityAsCollateral = poolReserve.totalLiquidityAsCollateral.minus(
+      userBalanceChange
+    );
   }
   saveReserve(poolReserve, event);
 
@@ -216,7 +218,8 @@ function tokenMint(
     onBehalf.toHexString() != '0xBe85413851D195fC6341619cD68BfDc26a25b928'.toLowerCase() &&
     onBehalf.toHexString() != '0x5ba7fd868c40c16f7aDfAe6CF87121E13FC2F7a0'.toLowerCase() &&
     onBehalf.toHexString() != '0x8A020d92D6B119978582BE4d3EdFdC9F7b28BF31'.toLowerCase() &&
-    onBehalf.toHexString() != '0x053D55f9B5AF8694c503EB288a1B7E552f590710'.toLowerCase()
+    onBehalf.toHexString() != '0x053D55f9B5AF8694c503EB288a1B7E552f590710'.toLowerCase() &&
+    onBehalf.toHexString() != '0x464C71f6c2F760DdA6093dCB91C24c39e5d6e18c'.toLowerCase() 
   ) {
     let userReserve = getOrInitUserReserve(onBehalf, aToken.underlyingAssetAddress, event);
     let calculatedAmount = rayDiv(userBalanceChange, index);
@@ -241,14 +244,16 @@ function tokenMint(
     poolReserve.lifetimeLiquidity = poolReserve.lifetimeLiquidity.plus(userBalanceChange);
 
     if (userReserve.usageAsCollateralEnabledOnUser) {
-      poolReserve.totalLiquidityAsCollateral =
-        poolReserve.totalLiquidityAsCollateral.plus(userBalanceChange);
+      poolReserve.totalLiquidityAsCollateral = poolReserve.totalLiquidityAsCollateral.plus(
+        userBalanceChange
+      );
     }
     saveReserve(poolReserve, event);
     saveUserReserveAHistory(userReserve, event, index);
   } else {
-    poolReserve.lifetimeReserveFactorAccrued =
-      poolReserve.lifetimeReserveFactorAccrued.plus(userBalanceChange);
+    poolReserve.lifetimeReserveFactorAccrued = poolReserve.lifetimeReserveFactorAccrued.plus(
+      userBalanceChange
+    );
     saveReserve(poolReserve, event);
     // log.error('Minting to treasuey {} an amount of: {}', [from.toHexString(), value.toString()]);
   }
@@ -275,8 +280,15 @@ export function handleATokenMint(event: ATokenMint): void {
 }
 
 export function handleBalanceTransfer(event: BalanceTransfer): void {
-  tokenBurn(event, event.params.from, event.params.value, BigInt.fromI32(0), event.params.index);
-  tokenMint(event, event.params.to, event.params.value, BigInt.fromI32(0), event.params.index);
+  let balanceTransferValue = event.params.value;
+  const network = dataSource.network();
+  const v301UpdateBlock = getUpdateBlock(network);
+  if (v301UpdateBlock !== -1 && event.block.number.toU32() > v301UpdateBlock) {
+    balanceTransferValue = balanceTransferValue.times(event.params.index);
+  }
+
+  tokenBurn(event, event.params.from, balanceTransferValue, BigInt.fromI32(0), event.params.index);
+  tokenMint(event, event.params.to, balanceTransferValue, BigInt.fromI32(0), event.params.index);
 
   // TODO: is this really necessary(from v1)? if we transfer aToken we are not moving the collateral (underlying token)
   let aToken = getOrInitSubToken(event.address);
@@ -389,8 +401,9 @@ export function handleVariableTokenMint(event: VTokenMint): void {
   poolReserve.totalScaledVariableDebt = poolReserve.totalScaledVariableDebt.plus(calculatedAmount);
   poolReserve.totalCurrentVariableDebt = rayMul(poolReserve.totalScaledVariableDebt, index);
 
-  poolReserve.lifetimeScaledVariableDebt =
-    poolReserve.lifetimeScaledVariableDebt.plus(calculatedAmount);
+  poolReserve.lifetimeScaledVariableDebt = poolReserve.lifetimeScaledVariableDebt.plus(
+    calculatedAmount
+  );
   poolReserve.lifetimeCurrentVariableDebt = rayMul(poolReserve.lifetimeScaledVariableDebt, index);
 
   poolReserve.availableLiquidity = poolReserve.availableLiquidity.minus(userBalanceChange);
