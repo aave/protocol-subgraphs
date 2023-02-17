@@ -12,6 +12,7 @@
     "deploy:hosted:mainnet-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3 env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:goerli-v2": "VERSION=v2 BLOCKCHAIN=ethereum NETWORK=goerli env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2-goerli env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:goerli-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=goerli env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-goerli env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:goerli-gho-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=goerli-gho env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-goerli-gho env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:mainnet-arc": "VERSION=v2-arc BLOCKCHAIN=ethereum-arc NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/aave-arc env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:mainnet-centrifuge": "VERSION=v2-centrifuge BLOCKCHAIN=ethereum-arc NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/aave-centrifuge env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:polygon-v2": "VERSION=v2 BLOCKCHAIN=matic NETWORK=matic env-cmd npm run prepare:subgraph && SLUG=aave/aave-v2-matic env-cmd npm run subgraph:deploy:hosted",
