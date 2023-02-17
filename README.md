@@ -22,7 +22,7 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Harmony V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-harmony)
 
 ### Test networks
-
+- [Goerli GHO V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-goerli-gho)
 - [Goerli V2](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2-goerli)
 - [Goerli V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-goerli)
 - [Mumbai V2](https://thegraph.com/hosted-service/subgraph/aave/aave-v2-polygon-mumbai)
