@@ -143,7 +143,7 @@ Why does the raw subgraph data not match app.aave.com?
 
 <details>
   <summary>User Data</summary>
-  
+
 #### User Summary
 
 The `userReserve` entity gives the supply and borrow balances for a particular user along with the underlying reserve data.
@@ -236,3 +236,37 @@ Synced:
 ```
 curl --location --request POST 'https://api.thegraph.com/index-node/graphql' --data-raw '{"query":"{ indexingStatusForCurrentVersion(subgraphName: \"aave/protocol-v2\") { subgraph fatalError { message } nonFatalErrors {message } } }"}'
 ```
+## Mainnet Migration
+
+### Deploying to The Graph decentralized network with Subgraph Studio
+You must have a deploy key and an auth key already generated. If you don't have one, go to https://thegraph.com/studio/ and generate a new subgraph.
+Once you have a deploy key, just run
+```
+npm run deploy:studio:mainnet-v3
+```
+and enter in the keys when prompted.
+
+### Deploying to a local graph node with Docker
+For deploying to a local graph node, first open the `docker-compose.yml` file and change the `ethereum` node url.
+```
+ethereum: 'mainnet:http://host.docker.internal:8545'
+```
+The default assumes you have a local node running on port 8545, but you can plug in a alchemy or infura node url.
+
+Navigate to `graph-node/docker` and run
+```
+./setup.sh
+```
+Note that there is a requirement for `jq` to be installed on your machine. If you don't have it, you can install it with `brew install jq` (for mac).
+
+Then run
+```
+docker-compose up
+```
+Your node should start syncing. If you're using a free alchemy or infura node, it may take a while to sync due to rate limiting.
+
+Next run
+```
+npm run deploy:docker:mainnet-v3
+```
+Once complete, you should see the URL for your subgraph in the logs that you can use to query.

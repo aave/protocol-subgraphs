@@ -5,3 +5,7 @@ generated
 .idea
 .env
 schema.graphql
+
+/docker/data/
+/docker/parity/chains/
+/docker/parity/network/
