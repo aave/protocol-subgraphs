@@ -246,6 +246,8 @@ npm run deploy:studio:mainnet-v3
 ```
 and enter in the keys when prompted.
 
+The deployed subgraph is only for staging/testing purposes. The URL for testing will be available through the Subgraph Studio dashboard.
+
 ### Deploying to a local graph node with Docker
 For deploying to a local graph node, first open the `docker-compose.yml` file and change the `ethereum` node url.
 ```
