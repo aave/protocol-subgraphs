@@ -140,23 +140,26 @@ export function priceFeedUpdated(
       priceOracleAsset.priceSource = assetOracleAddress;
 
       // call contract and check on which assets we're dependent
-      let dependencies = priceAggregatorInstance.getSubTokens();
-      // add asset to all dependencies
-      for (let i = 0; i < dependencies.length; i += 1) {
-        let dependencyAddress = dependencies[i].toHexString();
-        if (dependencyAddress == MOCK_USD_ADDRESS) {
-          let usdDependentAssets = priceOracle.usdDependentAssets;
-          if (!usdDependentAssets.includes(sAssetAddress)) {
-            usdDependentAssets.push(sAssetAddress);
-            priceOracle.usdDependentAssets = usdDependentAssets;
-          }
-        } else {
-          let dependencyOracleAsset = getPriceOracleAsset(dependencyAddress);
-          let dependentAssets = dependencyOracleAsset.dependentAssets;
-          if (!dependentAssets.includes(sAssetAddress)) {
-            dependentAssets.push(sAssetAddress);
-            dependencyOracleAsset.dependentAssets = dependentAssets;
-            dependencyOracleAsset.save();
+      let dependenciesCall = priceAggregatorInstance.try_getSubTokens();
+      if (!dependenciesCall.reverted) {
+        const dependencies = dependenciesCall.value;
+        // add asset to all dependencies
+        for (let i = 0; i < dependencies.length; i += 1) {
+          let dependencyAddress = dependencies[i].toHexString();
+          if (dependencyAddress == MOCK_USD_ADDRESS) {
+            let usdDependentAssets = priceOracle.usdDependentAssets;
+            if (!usdDependentAssets.includes(sAssetAddress)) {
+              usdDependentAssets.push(sAssetAddress);
+              priceOracle.usdDependentAssets = usdDependentAssets;
+            }
+          } else {
+            let dependencyOracleAsset = getPriceOracleAsset(dependencyAddress);
+            let dependentAssets = dependencyOracleAsset.dependentAssets;
+            if (!dependentAssets.includes(sAssetAddress)) {
+              dependentAssets.push(sAssetAddress);
+              dependencyOracleAsset.dependentAssets = dependentAssets;
+              dependencyOracleAsset.save();
+            }
           }
         }
       }
