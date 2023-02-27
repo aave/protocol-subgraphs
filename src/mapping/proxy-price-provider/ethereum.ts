@@ -68,7 +68,7 @@ export function priceFeedUpdated(
     let priceAggregatorInstance = IExtendedPriceAggregator.bind(assetOracleAddress);
 
     // check is it composite or simple asset.
-    // In case its chainlink source, this call will revert, and will not update priceOracleAsset type
+    // In case its chainlink source, this call will revert, and oracle type is updated to simple
     // so it will stay as simple, as it is the default type
     let tokenTypeCall = priceAggregatorInstance.try_getTokenType();
     if (!tokenTypeCall.reverted) {
