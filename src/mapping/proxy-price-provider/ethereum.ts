@@ -73,6 +73,8 @@ export function priceFeedUpdated(
     let tokenTypeCall = priceAggregatorInstance.try_getTokenType();
     if (!tokenTypeCall.reverted) {
       priceOracleAsset.type = getPriceOracleAssetType(tokenTypeCall.value);
+    } else {
+      priceOracleAsset.type == PRICE_ORACLE_ASSET_TYPE_SIMPLE;
     }
 
     // Type simple means that the source is chainlink source
