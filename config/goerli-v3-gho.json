@@ -5,6 +5,8 @@
     "PoolAddressesProviderRegistryAddress": "0x9B0FCD353468Eb9002bbF7cEA04e7EdA3AC188Ed",
     "PoolAddressesProviderRegistryStartBlock": 8376382,
     "RewardsControllerAddress": "0x8688FEF353f4940061b4893d563de1C487Aa92Fd",
-    "RewardsControllerStartBlock": 8376446
+    "RewardsControllerStartBlock": 8376446,
+    "GhoTokenAddress": "0xcbE9771eD31e761b744D3cB9eF78A1f32DD99211",
+    "GhoTokenStartBlock": 8376491
   }
   
