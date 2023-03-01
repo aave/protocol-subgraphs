@@ -77,15 +77,36 @@ export function updateInterestRateStrategy(
   );
 
   reserve.reserveInterestRateStrategy = strategy;
-  reserve.baseVariableBorrowRate = interestRateStrategyContract.getBaseVariableBorrowRate();
+  let baseVariableBorrowRateCall = interestRateStrategyContract.try_getBaseVariableBorrowRate();
+  if (!baseVariableBorrowRateCall.reverted) {
+    reserve.baseVariableBorrowRate = baseVariableBorrowRateCall.value
+  }
   if (init) {
     reserve.variableBorrowRate = reserve.baseVariableBorrowRate;
   }
-  reserve.optimalUtilisationRate = interestRateStrategyContract.OPTIMAL_USAGE_RATIO();
-  reserve.variableRateSlope1 = interestRateStrategyContract.getVariableRateSlope1();
-  reserve.variableRateSlope2 = interestRateStrategyContract.getVariableRateSlope2();
-  reserve.stableRateSlope1 = interestRateStrategyContract.getVariableRateSlope1();
-  reserve.stableRateSlope2 = interestRateStrategyContract.getStableRateSlope2();
+  let optimalUsageRatioCall = interestRateStrategyContract.try_OPTIMAL_USAGE_RATIO();
+  if (!optimalUsageRatioCall.reverted) {
+    reserve.optimalUtilisationRate = optimalUsageRatioCall.value;
+  }
+  let variableRateSlope1Call = interestRateStrategyContract.try_getVariableRateSlope1();
+  if (!variableRateSlope1Call.reverted) {
+    reserve.variableRateSlope1 = variableRateSlope1Call.value
+  }
+
+  let variableRateSlope2Call = interestRateStrategyContract.try_getVariableRateSlope2();
+  if (!variableRateSlope2Call.reverted) {
+    reserve.variableRateSlope2 = variableRateSlope2Call.value
+  }
+
+  let stableRateSlope1Call = interestRateStrategyContract.try_getStableRateSlope1();
+  if (!stableRateSlope1Call.reverted) {
+    reserve.stableRateSlope1 = stableRateSlope1Call.value
+  }
+
+  let stableRateSlope2Call = interestRateStrategyContract.try_getStableRateSlope2();
+  if (!stableRateSlope2Call.reverted) {
+    reserve.stableRateSlope2 = stableRateSlope2Call.value
+  }
 }
 
 export function handleReserveInterestRateStrategyChanged(
