@@ -1,7 +1,7 @@
 import { Facilitator, FacilitatorLevelUpdated, FacilitatorCapacityUpdated } from '../../../generated/schema';
 import { FacilitatorAdded, FacilitatorBucketCapacityUpdated, FacilitatorBucketLevelUpdated, FacilitatorRemoved } from '../../../generated/GhoToken/GhoToken';
 import { zeroBI } from '../../utils/converters';
-import { store } from '@graphprotocol/graph-ts'
+import { store, ethereum } from '@graphprotocol/graph-ts'
 import { getHistoryEntityId } from '../../utils/id-generation';
 
 
@@ -10,7 +10,10 @@ export function handleFacilitatorAdded(event: FacilitatorAdded): void {
     let facilitator = new Facilitator(facilitatorAddress.toHexString());
     facilitator.bucketCapacity = event.params.bucketCapacity;
     facilitator.bucketLevel = zeroBI();
-    facilitator.label = event.params.label.toString();
+    let label = ethereum.decode("(string)", event.params.label);
+    if (label !== null) {
+        facilitator.label = label.toString(); // not working :/
+    }
     facilitator.save();
 }
 
