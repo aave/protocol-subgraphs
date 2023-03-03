@@ -1,8 +1,9 @@
-import { Facilitator, FacilitatorLevelUpdated, FacilitatorCapacityUpdated } from '../../../generated/schema';
+import { Facilitator, FacilitatorLevelUpdated, FacilitatorCapacityUpdated, FacilitatorTreasuryUpdated, FacilitatorTreasuryDistribution } from '../../../generated/schema';
 import { FacilitatorAdded, FacilitatorBucketCapacityUpdated, FacilitatorBucketLevelUpdated, FacilitatorRemoved } from '../../../generated/GhoToken/GhoToken';
 import { zeroBI } from '../../utils/converters';
 import { store } from '@graphprotocol/graph-ts'
 import { getHistoryEntityId } from '../../utils/id-generation';
+import { FeesDistributedToTreasury, GhoTreasuryUpdated } from '../../../generated/templates/GhoAToken/GhoAToken';
 
 
 export function handleFacilitatorAdded(event: FacilitatorAdded): void {
@@ -11,6 +12,7 @@ export function handleFacilitatorAdded(event: FacilitatorAdded): void {
     facilitator.bucketCapacity = event.params.bucketCapacity;
     facilitator.bucketLevel = zeroBI();
     facilitator.label = event.params.label.toHexString();
+    facilitator.lifetimeFeesDistributedToTreasury = zeroBI();
     facilitator.save();
 }
 
@@ -53,4 +55,38 @@ export function handleFacilitatorBucketCapacityUpdated(event: FacilitatorBucketC
         facilitator.save();
         bucketCapacityUpdate.save();
     }
+}
+
+export function handleFeeDistributedToTreasury(event: FeesDistributedToTreasury): void {
+    let facilitatorAddress = event.address.toHexString();
+    let facilitator = Facilitator.load(facilitatorAddress);
+    if (!facilitator) {
+        throw new Error("Treasury updated before GHO AToken Facilitator initialized")
+    }
+    let historyId = facilitatorAddress + getHistoryEntityId(event);
+    let treasuryDistribution = new FacilitatorTreasuryDistribution(historyId);
+    treasuryDistribution.txHash = event.transaction.hash;
+    treasuryDistribution.facilitator = facilitatorAddress;
+    treasuryDistribution.treasury = event.params.ghoTreasury;
+    treasuryDistribution.amount = event.params.amount;
+    let newLifetimeDistribution = facilitator.lifetimeFeesDistributedToTreasury.plus(event.params.amount);
+    facilitator.lifetimeFeesDistributedToTreasury = newLifetimeDistribution;
+    facilitator.save();
+    treasuryDistribution.newLifetimeFeesDistributedToTreasury = newLifetimeDistribution;
+    treasuryDistribution.save();
+}
+
+export function handleGhoTreasuryUpdated(event: GhoTreasuryUpdated): void {
+    let facilitatorAddress = event.address.toHexString()
+    let facilitator = Facilitator.load(event.address.toHexString());
+    if (!facilitator) {
+        throw new Error("Treasury updated before GHO AToken Facilitator initialized")
+    }
+    let historyId = facilitatorAddress + getHistoryEntityId(event);
+    let treasuryUpdate = new FacilitatorTreasuryUpdated(historyId);
+    treasuryUpdate.txHash = event.transaction.hash;
+    treasuryUpdate.facilitator = facilitatorAddress;
+    treasuryUpdate.newTreasury = event.params.newGhoTreasury;
+    treasuryUpdate.previousTreasury = event.params.oldGhoTreasury;
+    treasuryUpdate.save();
 }
