@@ -304,6 +304,36 @@ templates:
         - event: Initialized(indexed address,indexed address,address,uint8,string,string,bytes)
           handler: handleVTokenInitialized
       file: src/mapping/tokenization/initialization-v3.ts
+  - kind: ethereum/contract
+    name: GhoAToken
+    network: {{network}}
+    source:
+      abi: GhoAToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - AToken
+        - GhoAToken
+        - UserReserve
+      abis:
+        - name: AToken
+          file: ./abis/v3/AToken.json
+        - name: GhoAToken
+          file: ./abis/gho/GhoAToken.json
+        - name: IERC20Detailed
+          file: ./abis/helpers/IERC20Detailed.json
+        - name: RewardsController
+          file: ./abis/v3/RewardsController.json
+        - name: Pool
+          file: ./abis/v3/Pool.json
+      eventHandlers:
+        - event: FeesDistributedToTreasury(indexed address,indexed address,uint256)
+          handler: handleFeeDistributedToTreasury
+        - event: GhoTreasuryUpdated(indexed address,indexed address)
+          handler: handleGhoTreasuryUpdated
+      file: src/mapping/gho/gho-token.ts
 
   # --------------------------------------
   #       CONFIGURATIONS
@@ -372,7 +402,7 @@ templates:
           file: ./abis/v3/DefaultReserveInterestRateStrategy.json
       eventHandlers:
         - event: ReserveInitialized(indexed address,indexed address,address,address,address)
-          handler: handleReserveInitialized
+          handler: handleReserveInitializedGho
         - event: ReserveBorrowing(indexed address,bool)
           handler: handleReserveBorrowing
         - event: CollateralConfigurationChanged(indexed address,uint256,uint256,uint256)
