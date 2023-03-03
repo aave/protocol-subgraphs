@@ -797,6 +797,10 @@ type Facilitator @entity {
   label: String!
   facilitatorLevelHistory: [FacilitatorLevelUpdated!]! @derivedFrom(field: "facilitator")
   facilitatorCapacityHistory: [FacilitatorCapacityUpdated!]! @derivedFrom(field: "facilitator")
+  lifetimeFeesDistributedToTreasury: BigInt!
+  treasuryDistributionHistory: [FacilitatorTreasuryDistribution!]!
+    @derivedFrom(field: "facilitator")
+  treasuryUpdateHistory: [FacilitatorTreasuryUpdated!]! @derivedFrom(field: "facilitator")
 }
 
 type FacilitatorLevelUpdated @entity {
@@ -813,4 +817,21 @@ type FacilitatorCapacityUpdated @entity {
   facilitator: Facilitator!
   oldBucketCapacity: BigInt!
   newBucketCapacity: BigInt!
+}
+
+type FacilitatorTreasuryDistribution @entity {
+  id: ID!
+  facilitator: Facilitator!
+  amount: BigInt!
+  treasury: Bytes!
+  newLifetimeFeesDistributedToTreasury: BigInt!
+  txHash: Bytes!
+}
+
+type FacilitatorTreasuryUpdated @entity {
+  id: ID!
+  facilitator: Facilitator!
+  previousTreasury: Bytes!
+  newTreasury: Bytes!
+  txHash: Bytes!
 }
