@@ -3,7 +3,6 @@ import { IERC20Detailed } from '../../../generated/templates/PoolConfigurator/IE
 import { IERC20DetailedBytes } from '../../../generated/templates/PoolConfigurator/IERC20DetailedBytes';
 import {
   AToken as ATokenContract,
-  GhoAToken,
   StableDebtToken as STokenContract,
   VariableDebtToken as VTokenContract,
 } from '../../../generated/templates';
@@ -46,7 +45,6 @@ import { DefaultReserveInterestRateStrategy } from '../../../generated/templates
 
 import { EModeCategory, Pool, Reserve } from '../../../generated/schema';
 import { zeroAddress, zeroBI } from '../../utils/converters';
-import { GHO_ADDRESS } from '../../utils/constants';
 
 export function saveReserve(reserve: Reserve, event: ethereum.Event): void {
   let timestamp = event.block.timestamp.toI32();
@@ -308,65 +306,6 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
   updateInterestRateStrategy(reserve, event.params.interestRateStrategyAddress, true);
 
   ATokenContract.create(Address.fromString(event.params.aToken.toHexString()));
-  createMapContractToPool(event.params.aToken, reserve.pool);
-  let aToken = getOrInitSubToken(event.params.aToken);
-  aToken.underlyingAssetAddress = reserve.underlyingAsset;
-  aToken.underlyingAssetDecimals = reserve.decimals;
-  aToken.pool = reserve.pool;
-  aToken.save();
-
-  STokenContract.create(event.params.stableDebtToken);
-  createMapContractToPool(event.params.stableDebtToken, reserve.pool);
-  let sToken = getOrInitSubToken(event.params.stableDebtToken);
-  sToken.underlyingAssetAddress = reserve.underlyingAsset;
-  sToken.underlyingAssetDecimals = reserve.decimals;
-  sToken.pool = reserve.pool;
-  sToken.save();
-
-  VTokenContract.create(event.params.variableDebtToken);
-  createMapContractToPool(event.params.variableDebtToken, reserve.pool);
-  let vToken = getOrInitSubToken(event.params.variableDebtToken);
-  vToken.underlyingAssetAddress = reserve.underlyingAsset;
-  vToken.underlyingAssetDecimals = reserve.decimals;
-  vToken.pool = reserve.pool;
-  vToken.save();
-
-  reserve.aToken = aToken.id;
-  reserve.sToken = sToken.id;
-  reserve.vToken = vToken.id;
-  reserve.isActive = true;
-  saveReserve(reserve, event);
-}
-
-export function handleReserveInitializedGho(event: ReserveInitialized): void {
-  let underlyingAssetAddress = event.params.asset; //_reserve;
-  let reserve = getOrInitReserve(underlyingAssetAddress, event);
-
-  let ERC20ReserveContract = IERC20Detailed.bind(underlyingAssetAddress);
-  let ERC20DetailedBytesContract = IERC20DetailedBytes.bind(underlyingAssetAddress);
-
-  let nameStringCall = ERC20ReserveContract.try_name();
-  if (nameStringCall.reverted) {
-    let bytesNameCall = ERC20DetailedBytesContract.try_name();
-    if (bytesNameCall.reverted) {
-      reserve.name = '';
-    } else {
-      reserve.name = bytesNameCall.value.toString();
-    }
-  } else {
-    reserve.name = nameStringCall.value;
-  }
-
-  reserve.symbol = ERC20ReserveContract.symbol(); //.slice(1);
-
-  reserve.decimals = ERC20ReserveContract.decimals();
-
-  updateInterestRateStrategy(reserve, event.params.interestRateStrategyAddress, true);
-
-  ATokenContract.create(Address.fromString(event.params.aToken.toHexString()));
-  if (underlyingAssetAddress.toHexString() === GHO_ADDRESS) {
-    GhoAToken.create(Address.fromString(event.params.aToken.toHexString()));
-  }
   createMapContractToPool(event.params.aToken, reserve.pool);
   let aToken = getOrInitSubToken(event.params.aToken);
   aToken.underlyingAssetAddress = reserve.underlyingAsset;

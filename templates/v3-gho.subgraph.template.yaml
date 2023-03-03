@@ -305,7 +305,7 @@ templates:
           handler: handleVTokenInitialized
       file: src/mapping/tokenization/initialization-v3.ts
   - kind: ethereum/contract
-    name: GhoAToken
+    name: GhoFacilitator
     network: {{network}}
     source:
       abi: GhoAToken
@@ -318,16 +318,8 @@ templates:
         - GhoAToken
         - UserReserve
       abis:
-        - name: AToken
-          file: ./abis/v3/AToken.json
         - name: GhoAToken
           file: ./abis/gho/GhoAToken.json
-        - name: IERC20Detailed
-          file: ./abis/helpers/IERC20Detailed.json
-        - name: RewardsController
-          file: ./abis/v3/RewardsController.json
-        - name: Pool
-          file: ./abis/v3/Pool.json
       eventHandlers:
         - event: FeesDistributedToTreasury(indexed address,indexed address,uint256)
           handler: handleFeeDistributedToTreasury
@@ -402,7 +394,7 @@ templates:
           file: ./abis/v3/DefaultReserveInterestRateStrategy.json
       eventHandlers:
         - event: ReserveInitialized(indexed address,indexed address,address,address,address)
-          handler: handleReserveInitializedGho
+          handler: handleReserveInitialized
         - event: ReserveBorrowing(indexed address,bool)
           handler: handleReserveBorrowing
         - event: CollateralConfigurationChanged(indexed address,uint256,uint256,uint256)

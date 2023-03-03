@@ -1,14 +1,15 @@
 import { Facilitator, FacilitatorLevelUpdated, FacilitatorCapacityUpdated, FacilitatorTreasuryUpdated, FacilitatorTreasuryDistribution } from '../../../generated/schema';
 import { FacilitatorAdded, FacilitatorBucketCapacityUpdated, FacilitatorBucketLevelUpdated, FacilitatorRemoved } from '../../../generated/GhoToken/GhoToken';
 import { zeroBI } from '../../utils/converters';
-import { store } from '@graphprotocol/graph-ts'
+import { Address, store } from '@graphprotocol/graph-ts'
 import { getHistoryEntityId } from '../../utils/id-generation';
-import { FeesDistributedToTreasury, GhoTreasuryUpdated } from '../../../generated/templates/GhoAToken/GhoAToken';
-
+import { FeesDistributedToTreasury, GhoTreasuryUpdated } from '../../../generated/templates/GhoFacilitator/GhoAToken';
+import { GhoFacilitator } from '../../../generated/templates';
 
 export function handleFacilitatorAdded(event: FacilitatorAdded): void {
     let facilitatorAddress = event.params.facilitatorAddress;
     let facilitator = new Facilitator(facilitatorAddress.toHexString());
+    GhoFacilitator.create(Address.fromString(facilitatorAddress.toHexString()));
     facilitator.bucketCapacity = event.params.bucketCapacity;
     facilitator.bucketLevel = zeroBI();
     facilitator.label = event.params.label.toHexString();
