@@ -1,5 +1,5 @@
 import { Facilitator, FacilitatorLevelUpdated, FacilitatorCapacityUpdated, FacilitatorTreasuryUpdated, FacilitatorTreasuryDistribution } from '../../../generated/schema';
-import { FacilitatorAdded, FacilitatorBucketCapacityUpdated, FacilitatorBucketLevelUpdated, FacilitatorRemoved } from '../../../generated/GhoToken/GhoToken';
+import { FacilitatorAdded, FacilitatorBucketCapacityUpdated, FacilitatorBucketLevelUpdated, FacilitatorRemoved, GhoToken } from '../../../generated/GhoToken/GhoToken';
 import { zeroBI } from '../../utils/converters';
 import { Address, store } from '@graphprotocol/graph-ts'
 import { getHistoryEntityId } from '../../utils/id-generation';
@@ -12,7 +12,9 @@ export function handleFacilitatorAdded(event: FacilitatorAdded): void {
     GhoFacilitator.create(Address.fromString(facilitatorAddress.toHexString()));
     facilitator.bucketCapacity = event.params.bucketCapacity;
     facilitator.bucketLevel = zeroBI();
-    facilitator.label = event.params.label.toHexString();
+    let ghoTokenInstance = GhoToken.bind(Address.fromString("0xcbE9771eD31e761b744D3cB9eF78A1f32DD99211")); // Query facilitator info on GHO token contract
+    let facilitatorInfo = ghoTokenInstance.getFacilitator(facilitatorAddress);
+    facilitator.label = facilitatorInfo.label;
     facilitator.lifetimeFeesDistributedToTreasury = zeroBI();
     facilitator.save();
 }
