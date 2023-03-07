@@ -327,6 +327,27 @@ templates:
           handler: handleGhoTreasuryUpdated
       file: src/mapping/gho/gho-token.ts
 
+  - kind: ethereum/contract
+    name: GhoFlashMinter
+    network: {{network}}
+    source:
+      abi: GhoFlashMinter
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - GhoFlashMinter
+      abis:
+        - name: GhoFlashMinter
+          file: ./abis/gho/GhoFlashMinter.json
+      eventHandlers:
+        - event: FeeUpdated(uint256,uint256)
+          handler: handleFeeUpdated
+        - event: FlashMint(indexed address,indexed address,address,indexed uint256,uint256)
+          handler: handleFlashMint
+      file: src/mapping/gho/gho-token.ts
+
   # --------------------------------------
   #       CONFIGURATIONS
   # --------------------------------------

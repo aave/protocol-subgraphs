@@ -5,6 +5,7 @@ import { Address, store } from '@graphprotocol/graph-ts'
 import { getHistoryEntityId } from '../../utils/id-generation';
 import { FeesDistributedToTreasury, GhoTreasuryUpdated } from '../../../generated/templates/GhoFacilitator/GhoAToken';
 import { GhoFacilitator } from '../../../generated/templates';
+import { FeeUpdated, FlashMint } from '../../../generated/templates/GhoFlashMinter/GhoFlashMinter';
 
 export function handleFacilitatorAdded(event: FacilitatorAdded): void {
     let facilitatorAddress = event.params.facilitatorAddress;
@@ -92,4 +93,12 @@ export function handleGhoTreasuryUpdated(event: GhoTreasuryUpdated): void {
     treasuryUpdate.newTreasury = event.params.newGhoTreasury;
     treasuryUpdate.previousTreasury = event.params.oldGhoTreasury;
     treasuryUpdate.save();
+}
+
+export function handleFeeUpdated(event: FeeUpdated): void {
+
+}
+
+export function handleFlashMint(event: FlashMint): void {
+
 }
