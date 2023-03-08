@@ -6,6 +6,7 @@ import { getHistoryEntityId } from '../../utils/id-generation';
 import { FeesDistributedToTreasury, GhoTreasuryUpdated } from '../../../generated/templates/GhoFacilitator/GhoAToken';
 import { GhoFacilitator } from '../../../generated/templates';
 import { FeeUpdated, FlashMint } from '../../../generated/templates/GhoFlashMinter/GhoFlashMinter';
+import { DiscountRateStrategyUpdated, DiscountTokenUpdated } from '../../../generated/templates/GhoVariableDebtToken/GhoVariableDebtToken';
 
 export function handleFacilitatorAdded(event: FacilitatorAdded): void {
     let facilitatorAddress = event.params.facilitatorAddress;
@@ -100,5 +101,13 @@ export function handleFeeUpdated(event: FeeUpdated): void {
 }
 
 export function handleFlashMint(event: FlashMint): void {
+
+}
+
+export function handleDiscountRateStrategyUpdated(event: DiscountRateStrategyUpdated): void {
+
+}
+
+export function handleDiscountTokenUpdated(event: DiscountTokenUpdated): void {
 
 }
