@@ -43,10 +43,13 @@ See [TheGraph API](https://thegraph.com/docs/en/developer/graphql-api/) docs for
 
 #### User Transaction History
 
+<details>
+  <summary>V2</summary>
+
 ```
 {
   userTransactions(
-    where: { user: "lowercase_user_address" }
+    where: { user: "insert_lowercase_address_here" }
     orderBy: timestamp
     orderDirection: desc
   ) {
@@ -124,6 +127,95 @@ See [TheGraph API](https://thegraph.com/docs/en/developer/graphql-api/) docs for
   }
 }
 ```
+
+</details>
+
+<details>
+  <summary>V3</summary>
+
+```
+{
+  userTransactions(
+    where: { user: "insert_lowercase_address_here" }
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    id
+    timestamp
+    txHash
+    action
+    ... on Supply {
+      amount
+      reserve {
+        symbol
+        decimals
+      }
+      assetPriceUSD
+    }
+    ... on RedeemUnderlying {
+      amount
+      reserve {
+        symbol
+        decimals
+      }
+      assetPriceUSD
+    }
+    ... on Borrow {
+      amount
+      borrowRateMode
+      borrowRate
+      stableTokenDebt
+      variableTokenDebt
+      reserve {
+        symbol
+        decimals
+      }
+      assetPriceUSD
+    }
+    ... on UsageAsCollateral {
+      fromState
+      toState
+      reserve {
+        symbol
+      }
+    }
+    ... on Repay {
+      amount
+      reserve {
+        symbol
+        decimals
+      }
+      assetPriceUSD
+    }
+    ... on SwapBorrowRate {
+      borrowRateModeFrom
+      borrowRateModeTo
+      variableBorrowRate
+      stableBorrowRate
+      reserve {
+        symbol
+        decimals
+      }
+    }
+    ... on LiquidationCall {
+      collateralAmount
+      collateralReserve {
+        symbol
+        decimals
+      }
+      principalAmount
+      principalReserve {
+        symbol
+        decimals
+      }
+      collateralAssetPriceUSD
+      borrowAssetPriceUSD
+    } 
+  }
+}
+```
+
+</details>
 
 <details>
   <summary>Reserve Data</summary>
