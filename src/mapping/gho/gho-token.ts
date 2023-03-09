@@ -5,6 +5,10 @@ import {
   FacilitatorTreasuryUpdated,
   FacilitatorTreasuryDistribution,
   GhoFlashMint,
+  GhoFlashMinterFeeUpdate,
+  GhoDiscount,
+  GhoDiscountTokenUpdate,
+  GhoDiscountHistoryItem,
 } from '../../../generated/schema';
 import {
   FacilitatorAdded,
@@ -25,8 +29,8 @@ import { FeeUpdated, FlashMint } from '../../../generated/GhoFlashMinter/GhoFlas
 import {
   DiscountRateStrategyUpdated,
   DiscountTokenUpdated,
-} from '../../../generated/templates/GhoVariableDebtToken/GhoVariableDebtToken';
-import { getOrInitGhoFlashMinter } from '../../helpers/v3/initializers';
+} from '../../../generated/GhoVariableDebtToken/GhoVariableDebtToken';
+import { getOrInitGhoFlashMinter, updateOrInitGhoDiscount } from '../../helpers/v3/initializers';
 
 export function handleFacilitatorAdded(event: FacilitatorAdded): void {
   let facilitatorAddress = event.params.facilitatorAddress;
@@ -124,15 +128,20 @@ export function handleGhoTreasuryUpdated(event: GhoTreasuryUpdated): void {
 
 export function handleFeeUpdated(event: FeeUpdated): void {
   const flashMinter = getOrInitGhoFlashMinter(event.address);
-
+  const flashMinterFeeUpdate = new GhoFlashMinterFeeUpdate(getHistoryEntityId(event));
+  flashMinterFeeUpdate.ghoFlashMinter = event.address.toHexString();
+  flashMinterFeeUpdate.newFee = event.params.newFee;
+  flashMinterFeeUpdate.oldFee = event.params.oldFee;
+  flashMinterFeeUpdate.txHash = event.transaction.hash;
   flashMinter.fee = event.params.newFee;
+  flashMinterFeeUpdate.save();
   flashMinter.save();
 }
 
 export function handleFlashMint(event: FlashMint): void {
   const flashMinter = getOrInitGhoFlashMinter(event.address);
 
-  const flashMint = new GhoFlashMint(event.transaction.hash.toHexString());
+  const flashMint = new GhoFlashMint(getHistoryEntityId(event));
   flashMint.ghoFlashMinter = flashMinter.id;
   flashMint.receiver = event.params.receiver;
   flashMint.initiator = event.params.initiator;
@@ -142,6 +151,31 @@ export function handleFlashMint(event: FlashMint): void {
   flashMint.save();
 }
 
-export function handleDiscountRateStrategyUpdated(event: DiscountRateStrategyUpdated): void {}
+export function handleDiscountRateStrategyUpdated(event: DiscountRateStrategyUpdated): void {
+  const ghoDiscount = updateOrInitGhoDiscount(event.params.newDiscountRateStrategy);
+  const discountTokenHistory = new GhoDiscountHistoryItem(getHistoryEntityId(event));
+  discountTokenHistory.txHash = event.transaction.hash;
+  discountTokenHistory.ghoDiscount = "1";
+  discountTokenHistory.oldGhoDiscountStrategy = event.params.oldDiscountRateStrategy;
+  discountTokenHistory.newGhoDiscountStrategy = event.params.newDiscountRateStrategy;
+  discountTokenHistory.newDiscountRate = ghoDiscount.discountRate;
+  discountTokenHistory.newGhoDiscountedPerDiscountToken = ghoDiscount.ghoDiscountedPerDiscountToken;
+  discountTokenHistory.newMinDebtTokenBalance = ghoDiscount.minDebtTokenBalance;
+  discountTokenHistory.newMinDiscountTokenBalance = ghoDiscount.minDiscountTokenBalance;
+  discountTokenHistory.save();
+}
 
-export function handleDiscountTokenUpdated(event: DiscountTokenUpdated): void {}
+export function handleDiscountTokenUpdated(event: DiscountTokenUpdated): void {
+  let ghoDiscount = GhoDiscount.load("1");
+  if(!ghoDiscount){
+    ghoDiscount = updateOrInitGhoDiscount(event.address)
+  }
+  ghoDiscount.discountToken = event.params.newDiscountToken;
+  ghoDiscount.save();
+  const ghoDiscountUpdate = new GhoDiscountTokenUpdate(getHistoryEntityId(event));
+  ghoDiscountUpdate.txHash = event.transaction.hash;
+  ghoDiscountUpdate.oldDiscountToken = event.params.oldDiscountToken;
+  ghoDiscountUpdate.newDiscountToken = event.params.newDiscountToken;
+  ghoDiscountUpdate.ghoDiscount = "1";
+  ghoDiscountUpdate.save();
+}
