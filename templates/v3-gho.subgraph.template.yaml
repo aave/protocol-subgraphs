@@ -160,6 +160,29 @@ dataSources:
         - event: FacilitatorBucketLevelUpdated(indexed address,uint256,uint256)
           handler: handleFacilitatorBucketLevelUpdated
       file: src/mapping/gho/gho-token.ts
+
+  - kind: ethereum/contract
+    name: GhoFlashMinter
+    network: {{network}}
+    source:
+      address: '{{FlashMinterAddress}}'
+      abi: GhoFlashMinter
+      startBlock: {{FlashMinterStartBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - GhoFlashMinter
+      abis:
+        - name: GhoFlashMinter
+          file: ./abis/gho/GhoFlashMinter.json
+      eventHandlers:
+        - event: FeeUpdated(uint256,uint256)
+          handler: handleFeeUpdated
+        - event: FlashMint(indexed address,indexed address,address,indexed uint256,uint256)
+          handler: handleFlashMint
+      file: src/mapping/gho/gho-token.ts
   # --------------------------------------
   #
   # --------------------------------------
@@ -348,27 +371,6 @@ templates:
           handler: handleDiscountTokenUpdated
         - event: DiscountRateStrategyUpdated(indexed address,indexed address)
           handler: handleDiscountRateStrategyUpdated
-      file: src/mapping/gho/gho-token.ts
-
-  - kind: ethereum/contract
-    name: GhoFlashMinter
-    network: {{network}}
-    source:
-      abi: GhoFlashMinter
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - GhoFlashMinter
-      abis:
-        - name: GhoFlashMinter
-          file: ./abis/gho/GhoFlashMinter.json
-      eventHandlers:
-        - event: FeeUpdated(uint256,uint256)
-          handler: handleFeeUpdated
-        - event: FlashMint(indexed address,indexed address,address,indexed uint256,uint256)
-          handler: handleFlashMint
       file: src/mapping/gho/gho-token.ts
 
   # --------------------------------------

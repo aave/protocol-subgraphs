@@ -835,3 +835,24 @@ type FacilitatorTreasuryUpdated @entity {
   newTreasury: Bytes!
   txHash: Bytes!
 }
+
+type GhoFlashMinter @entity {
+  id: ID!
+  facilitator: Facilitator!
+  fee: BigInt!
+  maxFee: BigInt!
+  ghoFlashMintHistory: [GhoFlashMint!]! @derivedFrom(field: "ghoFlashMinter")
+}
+
+type GhoFlashMint @entity {
+  """
+  tx hash
+  """
+  id: ID!
+  ghoFlashMinter: GhoFlashMinter!
+  receiver: Bytes!
+  initiator: Bytes!
+  amount: BigInt!
+  fee: BigInt!
+  timestamp: Int!
+}

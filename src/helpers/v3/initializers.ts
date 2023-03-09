@@ -1,4 +1,5 @@
-import { Bytes, ethereum, log } from '@graphprotocol/graph-ts';
+import { Bytes, Address, ethereum, log } from '@graphprotocol/graph-ts';
+import { Facilitator } from '../../../generated/schema';
 import {
   SubToken,
   PriceOracle,
@@ -12,8 +13,9 @@ import {
   ChainlinkAggregator,
   ContractToPoolMapping,
   Protocol,
-  Pool,
+  GhoFlashMinter,
 } from '../../../generated/schema';
+import { GhoFlashMinter as GhoFlashMinterContract } from '../../../generated/GhoFlashMinter/GhoFlashMinter';
 import {
   PRICE_ORACLE_ASSET_PLATFORM_SIMPLE,
   PRICE_ORACLE_ASSET_TYPE_SIMPLE,
@@ -338,4 +340,25 @@ export function createMapContractToPool(_contractAddress: Bytes, pool: string): 
   contractToPoolMapping = new ContractToPoolMapping(contractAddress);
   contractToPoolMapping.pool = pool;
   contractToPoolMapping.save();
+}
+
+export function getOrInitGhoFlashMinter(contractAddress: Address): GhoFlashMinter {
+  const contractAddressHex = contractAddress.toHexString();
+  let ghoFlashMinter = GhoFlashMinter.load(contractAddressHex);
+  if (!ghoFlashMinter) {
+    let flashMinterFacilitator = Facilitator.load(contractAddressHex);
+    if (!flashMinterFacilitator) {
+      throw new Error(`Flash minter facilitator ${contractAddressHex} not initialized`);
+    }
+    const ghoFlashMinterContract = GhoFlashMinterContract.bind(contractAddress);
+    const maxFee = ghoFlashMinterContract.MAX_FEE();
+    const fee = ghoFlashMinterContract.getFee();
+
+    ghoFlashMinter = new GhoFlashMinter(contractAddressHex);
+    ghoFlashMinter.fee = fee;
+    ghoFlashMinter.maxFee = maxFee;
+    ghoFlashMinter.facilitator = flashMinterFacilitator.id;
+    ghoFlashMinter.save();
+  }
+  return ghoFlashMinter as GhoFlashMinter;
 }

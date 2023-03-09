@@ -7,6 +7,8 @@
     "RewardsControllerAddress": "0x8688FEF353f4940061b4893d563de1C487Aa92Fd",
     "RewardsControllerStartBlock": 8376446,
     "GhoTokenAddress": "0xcbE9771eD31e761b744D3cB9eF78A1f32DD99211",
-    "GhoTokenStartBlock": 8376491
+    "GhoTokenStartBlock": 8376491,
+    "FlashMinterAddress": "0x0cBf106fD14D1dFb320e7bfaA466FDCEC6471d46",
+    "FlashMinterStartBlock": 8376508
   }
   
