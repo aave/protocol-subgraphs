@@ -162,6 +162,31 @@ dataSources:
       file: src/mapping/gho/gho-token.ts
 
   - kind: ethereum/contract
+    name: GhoVariableDebtToken
+    network: {{network}}
+    source:
+      address: '{{GhoVariableDebtTokenAddress}}'
+      abi: GhoVariableDebtToken
+      startBlock: {{GhoVariableDebtTokenStartBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - GhoVariableDebtToken
+      abis:
+        - name: GhoVariableDebtToken
+          file: ./abis/gho/GhoVariableDebtToken.json
+        - name: GhoDiscountRateStrategy
+          file: ./abis/gho/GhoDiscountRateStrategy.json
+      eventHandlers:
+        - event: DiscountTokenUpdated(indexed address,indexed address)
+          handler: handleDiscountTokenUpdated
+        - event: DiscountRateStrategyUpdated(indexed address,indexed address)
+          handler: handleDiscountRateStrategyUpdated
+      file: src/mapping/gho/gho-token.ts
+
+  - kind: ethereum/contract
     name: GhoFlashMinter
     network: {{network}}
     source:
@@ -348,29 +373,6 @@ templates:
           handler: handleFeeDistributedToTreasury
         - event: GhoTreasuryUpdated(indexed address,indexed address)
           handler: handleGhoTreasuryUpdated
-      file: src/mapping/gho/gho-token.ts
-
-  - kind: ethereum/contract
-    name: GhoVariableDebtToken
-    network: {{network}}
-    source:
-      abi: GhoVariableDebtToken
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - GhoVariableDebtToken
-      abis:
-        - name: GhoVariableDebtToken
-          file: ./abis/gho/GhoVariableDebtToken.json
-        - name: GhoDiscountRateStrategy
-          file: ./abis/gho/GhoDiscountRateStrategy.json
-      eventHandlers:
-        - event: DiscountTokenUpdated(indexed address,indexed address)
-          handler: handleDiscountTokenUpdated
-        - event: DiscountRateStrategyUpdated(indexed address,indexed address)
-          handler: handleDiscountRateStrategyUpdated
       file: src/mapping/gho/gho-token.ts
 
   # --------------------------------------

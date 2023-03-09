@@ -9,6 +9,8 @@
     "GhoTokenAddress": "0xcbE9771eD31e761b744D3cB9eF78A1f32DD99211",
     "GhoTokenStartBlock": 8376491,
     "FlashMinterAddress": "0x0cBf106fD14D1dFb320e7bfaA466FDCEC6471d46",
-    "FlashMinterStartBlock": 8376508
+    "FlashMinterStartBlock": 8376508,
+    "GhoVariableDebtTokenAddress": "0x80aa933EfF12213022Fd3d17c2c59C066cBb91c7",
+    "GhoVariableDebtTokenStartBlock": "8376509"
   }
   
