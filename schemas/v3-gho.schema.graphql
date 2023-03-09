@@ -842,12 +842,10 @@ type GhoFlashMinter @entity {
   fee: BigInt!
   maxFee: BigInt!
   ghoFlashMintHistory: [GhoFlashMint!]! @derivedFrom(field: "ghoFlashMinter")
+  feeUpdates: [GhoFlashMinterFeeUpdate!]! @derivedFrom(field: "ghoFlashMinter")
 }
 
 type GhoFlashMint @entity {
-  """
-  tx hash
-  """
   id: ID!
   ghoFlashMinter: GhoFlashMinter!
   receiver: Bytes!
@@ -855,4 +853,43 @@ type GhoFlashMint @entity {
   amount: BigInt!
   fee: BigInt!
   timestamp: Int!
+}
+
+type GhoFlashMinterFeeUpdate @entity {
+  id: ID!
+  ghoFlashMinter: GhoFlashMinter!
+  oldFee: BigInt!
+  newFee: BigInt!
+  txHash: Bytes!
+}
+
+type GhoDiscount @entity {
+  id: ID!
+  discountToken: Bytes!
+  discountRate: BigInt!
+  ghoDiscountedPerDiscountToken: BigInt!
+  minDebtTokenBalance: BigInt!
+  minDiscountTokenBalance: BigInt!
+  ghoDiscountHistoryItems: [GhoDiscountHistoryItem!]! @derivedFrom(field: "ghoDiscount")
+  discountTokenUpdates: [GhoDiscountTokenUpdate!]! @derivedFrom(field: "ghoDiscount")
+}
+
+type GhoDiscountHistoryItem @entity {
+  id: ID!
+  txHash: Bytes!
+  ghoDiscount: GhoDiscount!
+  oldGhoDiscountStrategy: Bytes!
+  newGhoDiscountStrategy: Bytes!
+  newDiscountRate: BigInt!
+  newGhoDiscountedPerDiscountToken: BigInt!
+  newMinDebtTokenBalance: BigInt!
+  newMinDiscountTokenBalance: BigInt!
+}
+
+type GhoDiscountTokenUpdate @entity {
+  id: ID!
+  txHash: Bytes!
+  ghoDiscount: GhoDiscount!
+  oldDiscountToken: Bytes!
+  newDiscountToken: Bytes!
 }
