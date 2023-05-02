@@ -325,27 +325,6 @@ type LiquidationCall implements UserTransaction @entity {
   borrowAssetPriceUSD: BigDecimal!
 }
 
-type UserEModeSet implements UserTransaction @entity {
-  id: ID!
-  txHash: Bytes!
-  action: Action!
-  user: User!
-  timestamp: Int!
-  categoryId: Int!
-}
-
-type ClaimRewardsCall implements UserTransaction @entity {
-  id: ID!
-  txHash: Bytes!
-  user: User!
-  to: User!
-  amount: BigInt!
-  caller: User!
-  rewardsController: RewardsController!
-  action: Action!
-  timestamp: Int!
-}
-
 type MintUnbacked @entity {
   id: ID!
   pool: Pool!
@@ -377,6 +356,15 @@ type MintedToTreasury @entity {
   reserve: Reserve!
   amount: BigInt!
   timestamp: Int!
+}
+
+type UserEModeSet implements UserTransaction @entity {
+  id: ID!
+  txHash: Bytes!
+  action: Action!
+  user: User!
+  timestamp: Int!
+  categoryId: Int!
 }
 
 type ReserveConfigurationHistoryItem @entity {
@@ -500,6 +488,18 @@ type RewardedAction @entity {
   rewardsController: RewardsController!
   user: User!
   amount: BigInt!
+}
+
+type ClaimRewardsCall implements UserTransaction @entity {
+  id: ID!
+  txHash: Bytes!
+  user: User!
+  to: User!
+  amount: BigInt!
+  caller: User!
+  rewardsController: RewardsController!
+  action: Action!
+  timestamp: Int!
 }
 
 type EModeCategory @entity {
