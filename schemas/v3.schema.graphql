@@ -329,7 +329,6 @@ type UserEModeSet implements UserTransaction @entity {
   id: ID!
   txHash: Bytes!
   action: Action!
-  pool: Pool!
   user: User!
   timestamp: Int!
   categoryId: Int!
@@ -344,7 +343,6 @@ type ClaimRewardsCall implements UserTransaction @entity {
   caller: User!
   rewardsController: RewardsController!
   action: Action!
-  pool: Pool!
   timestamp: Int!
 }
 
