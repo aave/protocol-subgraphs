@@ -20,6 +20,7 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Optimism V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-optimism)
 - [Fantom V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-fantom)
 - [Harmony V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-harmony)
+- [Metis V3](#metis-v3)
 
 ### Test networks
 
@@ -210,7 +211,7 @@ See [TheGraph API](https://thegraph.com/docs/en/developer/graphql-api/) docs for
       }
       collateralAssetPriceUSD
       borrowAssetPriceUSD
-    } 
+    }
   }
 }
 ```
@@ -312,6 +313,11 @@ npm run subgraph:build
 npm run deploy:hosted:mainnet
 
 ```
+
+### Metis V3
+
+API: https://andromeda.thegraph.metis.io/subgraphs/name/aave/protocol-v3-metis  
+Index node + Playground: https://andromeda-index-node.thegraph.metis.io/graphql/playground
 
 ### Troubleshooting
 
