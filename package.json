@@ -15,7 +15,8 @@
     "deploy:hosted:mainnet-arc": "VERSION=v2-arc BLOCKCHAIN=ethereum-arc NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/aave-arc env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:mainnet-centrifuge": "VERSION=v2-centrifuge BLOCKCHAIN=ethereum-arc NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/aave-centrifuge env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:polygon-v2": "VERSION=v2 BLOCKCHAIN=matic NETWORK=matic env-cmd npm run prepare:subgraph && SLUG=aave/aave-v2-matic env-cmd npm run subgraph:deploy:hosted",
-    "deploy:hosted:polygon-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=polygon env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-polygon env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:polygon-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=polygon env-cmd npm run prepare:subgraph && SLUG=grothem/polygon-v3-current env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:polygon-v3-test": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=polygon env-cmd npm run prepare:subgraph && SLUG=grothem/polygon-v3-test env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:mumbai-v2": "VERSION=v2 BLOCKCHAIN=matic NETWORK=mumbai env-cmd npm run prepare:subgraph && SLUG=aave/aave-v2-polygon-mumbai env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:mumbai-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=mumbai env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-mumbai env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:avalanche-v2": "VERSION=v2 BLOCKCHAIN=avalanche NETWORK=avalanche env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2-avalanche env-cmd npm run subgraph:deploy:hosted",
@@ -59,16 +60,19 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.25.1",
-    "@graphprotocol/graph-ts": "0.24.1",
-    "env-cmd": "^10.1.0",
-    "mustache": "^3.1.0",
-    "typescript": "3.5.3",
+    "@graphprotocol/graph-cli": "^0.49.0",
+    "@graphprotocol/graph-ts": "^0.30.0",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
+    "env-cmd": "^10.1.0",
     "eslint": "^6.2.2",
     "eslint-config-prettier": "^6.1.0",
     "lint-staged": "^9.2.5",
-    "prettier": "^1.18.2"
+    "mustache": "^3.1.0",
+    "prettier": "^1.18.2",
+    "typescript": "3.5.3"
+  },
+  "engines": {
+    "node": "16"
   }
 }
