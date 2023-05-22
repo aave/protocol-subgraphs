@@ -197,6 +197,14 @@ export function getUpdateBlock(network: string): u32 {
   let updateBlock = -1;
   if (network === 'mainnet' || network === 'andromeda') {
     updateBlock = 0;
+  } else if (network === 'optimism') {
+    updateBlock = 775471;
+  } else if (network === 'polygon') {
+    updateBlock = 42535602;
+  } else if (network === 'arbitrum') {
+    updateBlock = 89267099;
+  } else if (network === 'avalanche') {
+    updateBlock = 29829396;
   }
 
   return updateBlock;
