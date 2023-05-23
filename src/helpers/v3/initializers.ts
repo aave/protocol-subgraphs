@@ -294,6 +294,8 @@ export function getOrInitReserveParamsHistoryItem(
     reserveParamsHistoryItem.lifetimeFlashLoanProtocolPremium = zeroBI();
     reserveParamsHistoryItem.lifetimeReserveFactorAccrued = zeroBI();
     reserveParamsHistoryItem.lifetimeSuppliersInterestEarned = zeroBI();
+    reserveParamsHistoryItem.lifetimePortalLPFee = zeroBI();
+    reserveParamsHistoryItem.lifetimePortalProtocolFee = zeroBI();
     // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = zeroBI();
     // reserveParamsHistoryItem.lifetimeVariableDebtFeeCollected = zeroBI();
   }
