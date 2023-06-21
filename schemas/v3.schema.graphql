@@ -19,6 +19,7 @@ type Pool @entity {
   poolCollateralManager: Bytes
   poolConfiguratorImpl: Bytes
   poolImpl: Bytes
+  poolDataProviderImpl: Bytes
   poolConfigurator: Bytes
   proxyPriceProvider: Bytes
   lastUpdateTimestamp: Int!
