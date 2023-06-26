@@ -303,6 +303,7 @@ type FlashLoan @entity {
   #protocolFee: BigInt!
   initiator: User!
   timestamp: Int!
+  assetPriceUSD: BigDecimal!
 }
 
 type LiquidationCall implements UserTransaction @entity {

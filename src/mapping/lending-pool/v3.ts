@@ -279,6 +279,8 @@ export function handleFlashLoan(event: FlashLoan): void {
   flashLoan.protocolFee = premiumToProtocol;
   flashLoan.amount = event.params.amount;
   flashLoan.timestamp = event.block.timestamp.toI32();
+  let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
+  flashLoan.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
   flashLoan.save();
 }
 
