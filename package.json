@@ -59,8 +59,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@graphprotocol/graph-cli": "^0.49.0",
-    "@graphprotocol/graph-ts": "^0.30.0",
+    "@graphprotocol/graph-cli": "^0.51.2",
+    "@graphprotocol/graph-ts": "^0.31.0",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
     "env-cmd": "^10.1.0",
