@@ -1,9 +1,9 @@
 {
   "network": "fantom-testnet",
-  "AaveOracleAddress": "0xA840C768f7143495790eC8dc2D5f32B71B6Dc113",
-  "AaveOracleStartBlock": 8361040,
-  "PoolAddressesProviderRegistryAddress": "0xd79e25047CFD3e75b3Ae7D7AB4758CA315D9d0d1",
-  "PoolAddressesProviderRegistryStartBlock": 8360940,
-  "RewardsControllerAddress": "0x54Bc1D59873A5ABde98cf76B6EcF4075ff65d685",
-  "RewardsControllerStartBlock": 8361077
+  "AaveOracleAddress": "0xDd6BCF7EF3dbA79b03D61De36Cc292661c664efD",
+  "AaveOracleStartBlock": 13274671,
+  "PoolAddressesProviderRegistryAddress": "0x541303eF88AB11DB18FEffB887604c551a2a2025",
+  "PoolAddressesProviderRegistryStartBlock": 13274516,
+  "RewardsControllerAddress": "0xa45B99c552a2D576B272cc9bFbEB131427ae5148",
+  "RewardsControllerStartBlock": 13274682
 }
