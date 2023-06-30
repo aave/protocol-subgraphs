@@ -1,9 +1,9 @@
 {
   "network": "optimism-goerli",
-  "AaveOracleAddress": "0x171Af9229972716f28DBB04DBFC712F05B45B021",
-  "AaveOracleStartBlock": 29954,
-  "PoolAddressesProviderRegistryAddress": "0xA33cB62d453891A1DC80F4A092F4990539e5FA07",
-  "PoolAddressesProviderRegistryStartBlock": 29895,
-  "RewardsControllerAddress": "0x0C501fB73808e1BD73cBDdd0c99237bbc481Bb58",
-  "RewardsControllerStartBlock": 30017
+  "AaveOracleAddress": "0x2366d0cE3f44D81f7b2D40C64288b5eAA7593049",
+  "AaveOracleStartBlock": 4023724,
+  "PoolAddressesProviderRegistryAddress": "0x437F428930669cd06ADaB2dF4A8D4B203AC729C6",
+  "PoolAddressesProviderRegistryStartBlock": 4023612,
+  "RewardsControllerAddress": "0x062BB55A42875366DB1B7D227B73621C33a6cB6b",
+  "RewardsControllerStartBlock": 4023750
 }

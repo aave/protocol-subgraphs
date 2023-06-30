@@ -279,6 +279,8 @@ export function handleFlashLoan(event: FlashLoan): void {
   flashLoan.protocolFee = premiumToProtocol;
   flashLoan.amount = event.params.amount;
   flashLoan.timestamp = event.block.timestamp.toI32();
+  let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
+  flashLoan.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
   flashLoan.save();
 }
 
@@ -414,6 +416,8 @@ export function handleUserEModeSet(event: UserEModeSet): void {
   user.save();
 
   let userEModeSet = new UserEModeSetAction(getHistoryEntityId(event));
+  userEModeSet.action = 'UserEModeSet'
+  userEModeSet.txHash = event.transaction.hash;
   userEModeSet.user = user.id;
   userEModeSet.categoryId = event.params.categoryId;
   userEModeSet.timestamp = event.block.timestamp.toI32();

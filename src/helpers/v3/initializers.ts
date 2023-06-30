@@ -211,6 +211,9 @@ export function getOrInitReserve(underlyingAsset: Bytes, event: ethereum.Event):
     // reserve.lifetimeStableDebFeeCollected = zeroBI();
     // reserve.lifetimeVariableDebtFeeCollected = zeroBI();
 
+    reserve.lifetimePortalLPFee = zeroBI();
+    reserve.lifetimePortalProtocolFee = zeroBI();
+
     let priceOracleAsset = getPriceOracleAsset(underlyingAsset.toHexString());
     if (!priceOracleAsset.lastUpdateTimestamp) {
       priceOracleAsset.save();
@@ -291,6 +294,8 @@ export function getOrInitReserveParamsHistoryItem(
     reserveParamsHistoryItem.lifetimeFlashLoanProtocolPremium = zeroBI();
     reserveParamsHistoryItem.lifetimeReserveFactorAccrued = zeroBI();
     reserveParamsHistoryItem.lifetimeSuppliersInterestEarned = zeroBI();
+    reserveParamsHistoryItem.lifetimePortalLPFee = zeroBI();
+    reserveParamsHistoryItem.lifetimePortalProtocolFee = zeroBI();
     // reserveParamsHistoryItem.lifetimeStableDebFeeCollected = zeroBI();
     // reserveParamsHistoryItem.lifetimeVariableDebtFeeCollected = zeroBI();
   }

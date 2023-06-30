@@ -146,6 +146,9 @@ export function handleRewardsClaimed(event: RewardsClaimed): void {
   claimRewards.amount = amount;
   claimRewards.to = to.toHexString();
   claimRewards.caller = caller.toHexString();
+  claimRewards.txHash = event.transaction.hash;
+  claimRewards.action = 'ClaimRewardsCall';
+  claimRewards.timestamp = event.block.timestamp.toI32();
   claimRewards.save();
 }
 

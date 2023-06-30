@@ -319,6 +319,18 @@ export function handleFlashLoan(event: FlashLoan): void {
   flashLoan.totalFee = premium;
   flashLoan.amount = event.params.amount;
   flashLoan.timestamp = event.block.timestamp.toI32();
+  let priceOracleAsset = getPriceOracleAsset(poolReserve.price);
+  let usdPriceEth = PriceOracle.load('1');
+  if (usdPriceEth && usdPriceEth.usdPriceEth.toString() != '0') {
+    const ethPriceUSD = BigDecimal.fromString('1').div(
+      usdPriceEth.usdPriceEth.divDecimal(ETH_PRECISION)
+    );
+    flashLoan.assetPriceUSD = priceOracleAsset.priceInEth
+      .divDecimal(ETH_PRECISION)
+      .times(ethPriceUSD);
+  } else {
+    flashLoan.assetPriceUSD = priceOracleAsset.priceInEth.divDecimal(USD_PRECISION);
+  }
   flashLoan.save();
 }
 

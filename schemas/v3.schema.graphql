@@ -139,13 +139,14 @@ enum Action {
   UsageAsCollateral
   RebalanceStableBorrowRate
   LiquidationCall
+  UserEModeSet
+  ClaimRewardsCall
 }
 
 interface UserTransaction {
   id: ID!
   txHash: Bytes!
   action: Action!
-  pool: Pool!
   user: User!
   timestamp: Int!
 }
@@ -302,6 +303,7 @@ type FlashLoan @entity {
   #protocolFee: BigInt!
   initiator: User!
   timestamp: Int!
+  assetPriceUSD: BigDecimal!
 }
 
 type LiquidationCall implements UserTransaction @entity {
@@ -358,8 +360,10 @@ type MintedToTreasury @entity {
   timestamp: Int!
 }
 
-type UserEModeSet @entity {
+type UserEModeSet implements UserTransaction @entity {
   id: ID!
+  txHash: Bytes!
+  action: Action!
   user: User!
   timestamp: Int!
   categoryId: Int!
@@ -488,16 +492,16 @@ type RewardedAction @entity {
   amount: BigInt!
 }
 
-type ClaimRewardsCall @entity {
-  """
-  txHash
-  """
+type ClaimRewardsCall implements UserTransaction @entity {
   id: ID!
-  rewardsController: RewardsController!
+  txHash: Bytes!
   user: User!
-  amount: BigInt!
   to: User!
+  amount: BigInt!
   caller: User!
+  rewardsController: RewardsController!
+  action: Action!
+  timestamp: Int!
 }
 
 type EModeCategory @entity {
