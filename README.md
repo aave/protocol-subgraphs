@@ -11,6 +11,7 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 ### Production networks
 
 - [ETH Mainnet V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3)
+- [ETH Mainnet V3 GHO](https://thegraph.com/hosted-service/subgraph/aave/gho-mainnet)
 - [ETH Mainnet V2](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2)
 - [Polygon V2](https://thegraph.com/hosted-service/subgraph/aave/aave-v2-matic)
 - [Avalanche V2](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2-avalanche)
@@ -23,6 +24,7 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Metis V3](#metis-v3)
 
 ### Test networks
+
 - [Goerli GHO V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-goerli-gho)
 - [Goerli V2](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2-goerli)
 - [Goerli V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-goerli)
