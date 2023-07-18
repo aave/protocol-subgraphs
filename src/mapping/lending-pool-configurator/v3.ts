@@ -299,7 +299,17 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
     reserve.name = nameStringCall.value;
   }
 
-  reserve.symbol = ERC20ReserveContract.symbol(); //.slice(1);
+  let symbolCall = ERC20ReserveContract.try_symbol();
+  if (symbolCall.reverted) {
+    let bytesSymbolCall = ERC20DetailedBytesContract.try_symbol();
+    if (bytesSymbolCall.reverted) {
+      reserve.symbol = '';
+    } else {
+      reserve.symbol = bytesSymbolCall.value.toString();
+    }
+  } else {
+    reserve.symbol = symbolCall.value;
+  }
 
   reserve.decimals = ERC20ReserveContract.decimals();
 

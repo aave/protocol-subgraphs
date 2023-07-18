@@ -68,11 +68,12 @@ export function priceFeedUpdated(
     let priceAggregatorInstance = IExtendedPriceAggregator.bind(assetOracleAddress);
 
     // check is it composite or simple asset.
-    // In case its chainlink source, this call will revert, and will not update priceOracleAsset type
-    // so it will stay as simple, as it is the default type
+    // In case its chainlink source, this call will revert, and oracle type is updated to simple, which is the default
     let tokenTypeCall = priceAggregatorInstance.try_getTokenType();
     if (!tokenTypeCall.reverted) {
       priceOracleAsset.type = getPriceOracleAssetType(tokenTypeCall.value);
+    } else {
+      priceOracleAsset.type = PRICE_ORACLE_ASSET_TYPE_SIMPLE;
     }
 
     // Type simple means that the source is chainlink source
@@ -301,10 +302,13 @@ function chainLinkAggregatorUpdated(
   if (!assetOracleAddress.equals(zeroAddress())) {
     let priceAggregatorInstance = IExtendedPriceAggregator.bind(assetOracleAddress);
 
-    // // check is it composite or simple asset
+    // check is it composite or simple asset.
+    // In case its chainlink source, this call will revert, and oracle type is updated to simple, which is the default
     let tokenTypeCall = priceAggregatorInstance.try_getTokenType();
     if (!tokenTypeCall.reverted) {
       priceOracleAsset.type = getPriceOracleAssetType(tokenTypeCall.value);
+    } else {
+      priceOracleAsset.type = PRICE_ORACLE_ASSET_TYPE_SIMPLE;
     }
 
     if (priceOracleAsset.type == PRICE_ORACLE_ASSET_TYPE_SIMPLE) {
