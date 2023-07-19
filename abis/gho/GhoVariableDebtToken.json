@@ -46,25 +46,6 @@
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "oldDiscountLockPeriod",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "newDiscountLockPeriod",
-        "type": "uint256"
-      }
-    ],
-    "name": "DiscountLockPeriodUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
       { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
       {
         "indexed": false,
@@ -77,15 +58,9 @@
         "internalType": "uint256",
         "name": "newDiscountPercent",
         "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "rebalanceTimestamp",
-        "type": "uint256"
       }
     ],
-    "name": "DiscountPercentLocked",
+    "name": "DiscountPercentUpdated",
     "type": "event"
   },
   {
@@ -314,13 +289,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getDiscountLockPeriod",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [{ "internalType": "address", "name": "user", "type": "address" }],
     "name": "getDiscountPercent",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
@@ -364,13 +332,6 @@
       { "internalType": "uint256", "name": "", "type": "uint256" },
       { "internalType": "uint256", "name": "", "type": "uint256" }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "user", "type": "address" }],
-    "name": "getUserRebalanceTimestamp",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -517,13 +478,6 @@
       { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "updateDiscountDistribution",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "newLockPeriod", "type": "uint256" }],
-    "name": "updateDiscountLockPeriod",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
