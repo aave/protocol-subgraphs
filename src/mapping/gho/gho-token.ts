@@ -39,7 +39,7 @@ export function handleFacilitatorAdded(event: FacilitatorAdded): void {
   facilitator.bucketCapacity = event.params.bucketCapacity;
   facilitator.bucketLevel = zeroBI();
   let ghoTokenInstance = GhoToken.bind(
-    Address.fromString('0xcbE9771eD31e761b744D3cB9eF78A1f32DD99211')
+    Address.fromString('0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f')
   ); // Query facilitator info on GHO token contract
   let facilitatorInfo = ghoTokenInstance.getFacilitator(facilitatorAddress);
   facilitator.label = facilitatorInfo.label;
