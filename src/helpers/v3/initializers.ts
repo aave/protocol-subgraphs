@@ -354,7 +354,12 @@ export function getOrInitGhoFlashMinter(contractAddress: Address): GhoFlashMinte
   if (!ghoFlashMinter) {
     let flashMinterFacilitator = Facilitator.load(contractAddressHex);
     if (!flashMinterFacilitator) {
-      throw new Error(`Flash minter facilitator ${contractAddressHex} not initialized`);
+      flashMinterFacilitator = new Facilitator(contractAddressHex);
+      flashMinterFacilitator.bucketCapacity = zeroBI();
+      flashMinterFacilitator.bucketLevel = zeroBI();
+      flashMinterFacilitator.label = '';
+      flashMinterFacilitator.lifetimeFeesDistributedToTreasury = zeroBI();
+      flashMinterFacilitator.save();
     }
     const ghoFlashMinterContract = GhoFlashMinterContract.bind(contractAddress);
     const maxFee = ghoFlashMinterContract.MAX_FEE();
