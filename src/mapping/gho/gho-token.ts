@@ -30,7 +30,7 @@ import {
   DiscountRateStrategyUpdated,
   DiscountTokenUpdated,
 } from '../../../generated/GhoVariableDebtToken/GhoVariableDebtToken';
-import { getOrInitGhoFlashMinter, updateOrInitGhoDiscount } from '../../helpers/v3/initializers';
+import { getOrInitGhoFlashMinter, updateOrInitGhoDiscount } from '../../helpers/v3/initializers-gho';
 
 export function handleFacilitatorAdded(event: FacilitatorAdded): void {
   let facilitatorAddress = event.params.facilitatorAddress;
@@ -167,7 +167,7 @@ export function handleDiscountRateStrategyUpdated(event: DiscountRateStrategyUpd
 
 export function handleDiscountTokenUpdated(event: DiscountTokenUpdated): void {
   let ghoDiscount = GhoDiscount.load("1");
-  if(!ghoDiscount){
+  if (!ghoDiscount) {
     ghoDiscount = updateOrInitGhoDiscount(event.address)
   }
   ghoDiscount.discountToken = event.params.newDiscountToken;
