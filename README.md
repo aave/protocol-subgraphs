@@ -22,6 +22,7 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Fantom V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-fantom)
 - [Harmony V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-harmony)
 - [Metis V3](#metis-v3)
+- [Gnosis V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-gnosis)
 
 ### Test networks
 
