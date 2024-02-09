@@ -1,0 +1,9 @@
+{
+  "network": "bsc",
+  "AaveOracleAddress": "0x39bc1bfDa2130d6Bb6DBEfd366939b4c7aa7C697",
+  "AaveOracleStartBlock": 33571625,
+  "PoolAddressesProviderRegistryAddress": "0x117684358D990E42Eb1649E7e8C4691951dc1E71",
+  "PoolAddressesProviderRegistryStartBlock": 33571624,
+  "RewardsControllerAddress": "0xC206C2764A9dBF27d599613b8F9A63ACd1160ab4",
+  "RewardsControllerStartBlock": 33571625
+}

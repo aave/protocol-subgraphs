@@ -1,0 +1,9 @@
+{
+  "network": "scroll",
+  "AaveOracleAddress": "0x04421D8C506E2fA2371a08EfAaBf791F624054F3",
+  "AaveOracleStartBlock": 2618763,
+  "PoolAddressesProviderRegistryAddress": "0xFBedc64AeE24921cb43004312B9eF367a4162b57",
+  "PoolAddressesProviderRegistryStartBlock": 2618760,
+  "RewardsControllerAddress": "0xa3f3100C4f1D0624DB9DB97b40C13885Ce297799",
+  "RewardsControllerStartBlock": 2618764
+}
