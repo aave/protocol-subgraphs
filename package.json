@@ -31,9 +31,13 @@
     "deploy:hosted:optimism-goerli": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=optimism-goerli env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-optimism-goerli env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:harmony-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=harmony env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-harmony env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:gnosis-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=gnosis env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-gnosis env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:metis-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=andromeda env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-metis env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:base-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=base env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-base env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:bnb-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=bnb env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-bnb env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:scroll-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=scroll env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-scroll env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:v2": "npm run deploy:hosted:mainnet && npm run deploy:hosted:polygon-v2 && npm run deploy:hosted:avalanche-v2",
     "deploy:hosted:v2-testnet": "npm run deploy:hosted:goerli-v2 && npm run deploy:hosted:mumbai-v2 && npm run deploy:hosted:fuji-v2",
-    "deploy:hosted:v3": "npm run deploy:hosted:avalanche-v3 && npm run deploy:hosted:polygon-v3 && npm run deploy:hosted:optimism-v3 && npm run deploy:hosted:fantom-v3 && npm run deploy:hosted:arbitrum-v3 && npm run deploy:hosted:harmony-v3 && npm run deploy:hosted:mainnet-v3 && npm run deploy:hosted:gnosis-v3",
+    "deploy:hosted:v3": "npm run deploy:hosted:avalanche-v3 && npm run deploy:hosted:polygon-v3 && npm run deploy:hosted:optimism-v3 && npm run deploy:hosted:fantom-v3 && npm run deploy:hosted:arbitrum-v3 && npm run deploy:hosted:harmony-v3 && npm run deploy:hosted:mainnet-v3 && npm run deploy:hosted:gnosis-v3 && npm run deploy:hosted:bnb-v3 && npm run deploy:hosted:scroll-v3",
     "deploy:hosted:v3-testnet": "npm run deploy:hosted:goerli-v3 && npm run deploy:hosted:mumbai-v3 && npm run deploy:hosted:fuji-v3 && npm run deploy:hosted:arbitrum-goerli && npm run deploy:hosted:optimism-goerli && npm run deploy:hosted:fantom-testnet"
   },
   "repository": {
