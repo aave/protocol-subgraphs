@@ -1,0 +1,9 @@
+{
+  "network": "gnosis",
+  "AaveOracleAddress": "0xeb0a051be10228213BAEb449db63719d6742F7c4",
+  "AaveOracleStartBlock": 30293057,
+  "PoolAddressesProviderRegistryAddress": "0x1236010CECea55998384e795B59815D871f5f94d",
+  "PoolAddressesProviderRegistryStartBlock": 30293054,
+  "RewardsControllerAddress": "0xaD4F91D26254B6B0C6346b390dDA2991FDE2F20d",
+  "RewardsControllerStartBlock": 30293057
+}
