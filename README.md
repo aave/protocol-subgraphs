@@ -24,8 +24,8 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Metis V3](#metis-v3)
 - [Gnosis V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-gnosis)
 - [BNB Chain V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-bnb)
-- Scroll V3 - Not currently supported on TheGraph Hosted Service
-- Base V3 - Not currently supported on TheGraph Hosted Service
+- [Base V3](https://api.goldsky.com/api/public/project_clk74pd7lueg738tw9sjh79d6/subgraphs/aave-v3-base/1.0.0/gn)
+- [Scroll V3](https://api.goldsky.com/api/public/project_clk74pd7lueg738tw9sjh79d6/subgraphs/aave-v3-scroll/1.0.0/gn)
 
 ### Test networks
 
