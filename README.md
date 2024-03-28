@@ -321,8 +321,8 @@ npm run deploy:hosted:mainnet
 
 ### Metis V3
 
-API: https://andromeda.thegraph.metis.io/subgraphs/name/aave/protocol-v3-metis  
-Index node + Playground: https://andromeda-index-node.thegraph.metis.io/graphql/playground
+API: https://metisapi.0xgraph.xyz/subgraphs/name/aave/protocol-v3-metis/graphql
+Index node + Playground: https://metisapi.0xgraph.xyz/subgraphs/name/aave/protocol-v3-metis/
 
 ### Troubleshooting
 
