@@ -21,7 +21,7 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Optimism V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-optimism)
 - [Fantom V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-fantom)
 - [Harmony V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-harmony)
-- [Metis V3](#metis-v3)
+- [Metis V3](https://metisapi.0xgraph.xyz/subgraphs/name/aave/protocol-v3-metis)
 - [Gnosis V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-gnosis)
 - [BNB Chain V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-bnb)
 - [Base V3](https://api.goldsky.com/api/public/project_clk74pd7lueg738tw9sjh79d6/subgraphs/aave-v3-base/1.0.0/gn)
@@ -318,11 +318,6 @@ npm run subgraph:build
 npm run deploy:hosted:mainnet
 
 ```
-
-### Metis V3
-
-API: https://metisapi.0xgraph.xyz/subgraphs/name/aave/protocol-v3-metis/graphql
-Index node + Playground: https://metisapi.0xgraph.xyz/subgraphs/name/aave/protocol-v3-metis/
 
 ### Troubleshooting
 
