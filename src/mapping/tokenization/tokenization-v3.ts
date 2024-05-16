@@ -283,7 +283,7 @@ export function handleBalanceTransfer(event: BalanceTransfer): void {
   let balanceTransferValue = event.params.value;
   const network = dataSource.network();
   const v301UpdateBlock = getUpdateBlock(network);
-  if (v301UpdateBlock !== -1 && event.block.number.toU32() > v301UpdateBlock) {
+  if (event.block.number.toU32() > v301UpdateBlock) {
     balanceTransferValue = balanceTransferValue.times(event.params.index);
   }
 
