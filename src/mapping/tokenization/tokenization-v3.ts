@@ -150,7 +150,8 @@ function tokenBurn(
   let userReserve = getOrInitUserReserve(from, aToken.underlyingAssetAddress, event);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress, event);
 
-  const userBalanceChange = value.plus(balanceIncrease);
+  // https://github.com/aave/aave-v3-core/blob/724a9ef43adf139437ba87dcbab63462394d4601/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol#L116
+  const userBalanceChange = value.minus(balanceIncrease);
   let calculatedAmount = rayDiv(userBalanceChange, index);
 
   userReserve.scaledATokenBalance = userReserve.scaledATokenBalance.minus(calculatedAmount);
@@ -191,7 +192,9 @@ function tokenMint(
 ): void {
   let aToken = getOrInitSubToken(event.address);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress, event);
-  const userBalanceChange = value.minus(balanceIncrease);
+
+  // https://github.com/aave/aave-v3-core/blob/724a9ef43adf139437ba87dcbab63462394d4601/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol#L83
+  const userBalanceChange = value.plus(balanceIncrease);
 
   poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(userBalanceChange);
   let poolId = getPoolByContract(event);
@@ -219,7 +222,7 @@ function tokenMint(
     onBehalf.toHexString() != '0x5ba7fd868c40c16f7aDfAe6CF87121E13FC2F7a0'.toLowerCase() &&
     onBehalf.toHexString() != '0x8A020d92D6B119978582BE4d3EdFdC9F7b28BF31'.toLowerCase() &&
     onBehalf.toHexString() != '0x053D55f9B5AF8694c503EB288a1B7E552f590710'.toLowerCase() &&
-    onBehalf.toHexString() != '0x464C71f6c2F760DdA6093dCB91C24c39e5d6e18c'.toLowerCase() 
+    onBehalf.toHexString() != '0x464C71f6c2F760DdA6093dCB91C24c39e5d6e18c'.toLowerCase()
   ) {
     let userReserve = getOrInitUserReserve(onBehalf, aToken.underlyingAssetAddress, event);
     let calculatedAmount = rayDiv(userBalanceChange, index);
@@ -284,7 +287,7 @@ export function handleBalanceTransfer(event: BalanceTransfer): void {
   const network = dataSource.network();
   const v301UpdateBlock = getUpdateBlock(network);
   if (event.block.number.toU32() > v301UpdateBlock) {
-    balanceTransferValue = balanceTransferValue.times(event.params.index);
+    balanceTransferValue = rayMul(balanceTransferValue, event.params.index);
   }
 
   tokenBurn(event, event.params.from, balanceTransferValue, BigInt.fromI32(0), event.params.index);
