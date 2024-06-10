@@ -6,26 +6,28 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Usage](#usage)
 - [Development](#deployment)
 
-## Active deployments
+# Active deployments
+
+## Protocol Subgraphs
 
 ### Production networks
 
-- [ETH Mainnet V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3)
-- [ETH Mainnet V3 GHO](https://thegraph.com/hosted-service/subgraph/aave/gho-mainnet)
-- [ETH Mainnet V2](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2)
-- [Polygon V2](https://thegraph.com/hosted-service/subgraph/aave/aave-v2-matic)
-- [Avalanche V2](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2-avalanche)
-- [Polygon V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-polygon)
-- [Avalanche V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-avalanche)
-- [Arbitrum V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-arbitrum)
-- [Optimism V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-optimism)
-- [Fantom V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-fantom)
-- [Harmony V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-harmony)
+- [ETH Mainnet V3](https://thegraph.com/explorer/subgraphs/Cd2gEDVeqnjBn1hSeqFMitw8Q1iiyV9FYUZkLNRcL87g)
+- [ETH Mainnet V3 GHO](https://thegraph.com/explorer/subgraphs/BQN5t5Mgti3BNLsZYEiL1MtiBJLa1DQJnaquXR1zTBjn)
+- [ETH Mainnet V2](https://thegraph.com/explorer/subgraphs/8wR23o1zkS4gpLqLNU4kG3JHYVucqGyopL5utGxP2q1N)
+- [Polygon V2](https://thegraph.com/explorer/subgraphs/H1Et77RZh3XEf27vkAmJyzgCME2RSFLtDS2f4PPW6CGp)
+- [Avalanche V2](https://thegraph.com/explorer/subgraphs/EZvK18pMhwiCjxwesRLTg81fP33WnR6BnZe5Cvma3H1C)
+- [Polygon V3](https://thegraph.com/explorer/subgraphs/Co2URyXjnxaw8WqxKyVHdirq9Ahhm5vcTs4dMedAq211)
+- [Avalanche V3](https://thegraph.com/explorer/subgraphs/2h9woxy8RTjHu1HJsCEnmzpPHFArU33avmUh4f71JpVn)
+- [Arbitrum V3](https://thegraph.com/explorer/subgraphs/DLuE98kEb5pQNXAcKFQGQgfSQ57Xdou4jnVbAEqMfy3B)
+- [Optimism V3](https://thegraph.com/explorer/subgraphs/DSfLz8oQBUeU5atALgUFQKMTSYV9mZAVYp4noLSXAfvb)
+- [Fantom V3](https://thegraph.com/explorer/subgraphs/6L1vPqyE3xvkzkWjh6wUKc1ABWYYps5HJahoxhrv2PJn)
+- [Harmony V3](https://thegraph.com/explorer/subgraphs/FifJapBdCqT9vgNqJ5axmr6eNyUpUSaRAbbZTfsViNsT)
 - [Metis V3](https://metisapi.0xgraph.xyz/subgraphs/name/aave/protocol-v3-metis)
-- [Gnosis V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-gnosis)
-- [BNB Chain V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-bnb)
-- [Base V3](https://api.goldsky.com/api/public/project_clk74pd7lueg738tw9sjh79d6/subgraphs/aave-v3-base/1.0.0/gn)
-- [Scroll V3](https://api.goldsky.com/api/public/project_clk74pd7lueg738tw9sjh79d6/subgraphs/aave-v3-scroll/1.0.0/gn)
+- [Gnosis V3](https://thegraph.com/explorer/subgraphs/HtcDaL8L8iZ2KQNNS44EBVmLruzxuNAz1RkBYdui1QUT)
+- [BNB Chain V3](https://thegraph.com/explorer/subgraphs/7Jk85XgkV1MQ7u56hD8rr65rfASbayJXopugWkUoBMnZ)
+- [Base V3](https://thegraph.com/explorer/subgraphs/GQFbb95cE6d8mV989mL5figjaGaKCQB3xqYrr1bRyXqF)
+- [Scroll V3](https://thegraph.com/explorer/subgraphs/74JwenoHZb2aAYVGCCSdPWzi9mm745dyHyQQVoZ7Sbub)
 
 ### Test networks
 
@@ -33,11 +35,19 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Goerli V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-goerli)
 - [Mumbai V2](https://thegraph.com/hosted-service/subgraph/aave/aave-v2-polygon-mumbai)
 - [Mumbai V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-mumbai)
-- [Fuji V2](https://thegraph.com/hosted-service/subgraph/aave/protocol-v2-fuji)
+- [Fuji V2](https://thegraph.com/explorer/subgraphs/CkLPS5QuGQR5Ys6w9TSLCbUQ6zvKoa6R5SJmmRqFQjpd)
 - [Fuji V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-fuji)
 - [Arbitrum Goerli V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-arbitrum-goerli)
 - [Optimism Goerli V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-optimism-goerli)
 - [Fantom Testnet V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-fantom-testnet)
+
+## Governance Subgraphs
+
+- [Aave Governance V3](https://thegraph.com/explorer/subgraphs/A7QMszgomC9cnnfpAcqZVLr2DffvkGNfimD8iUSMiurK)
+- [Aave Governance V3 Voting Polygon](https://thegraph.com/explorer/subgraphs/32WLrLTQctAgfoshbkteHfxLu3DpAeZwh2vUPWXV6Qxu)
+- [Aave Governance V3 Voting Ethereum](https://thegraph.com/explorer/subgraphs/2QPwuCfFtQ8WSCZoN3i9SmdoabMzbq2pmg4kRbrhymBV?view=Query&chain=arbitrum-one)
+- [Aave Governance V3 Voting Avalache](https://thegraph.com/explorer/subgraphs/FngMWWGJV45McvV7GUBkrta9eoEi3sHZoH7MYnFQfZkr?view=Query&chain=arbitrum-one)
+- [Aave Governance V2](https://thegraph.com/explorer/subgraphs/CfdJBpzFXCCCagNhMt2uQgqjDSVbaSNLV5f5c3BbGwip)
 
 ## Usage
 
