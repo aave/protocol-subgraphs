@@ -6,7 +6,9 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Usage](#usage)
 - [Development](#deployment)
 
-## Active deployments
+# Active deployments
+
+## Protocol Subgraphs
 
 ### Production networks
 
@@ -38,6 +40,14 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Arbitrum Goerli V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-arbitrum-goerli)
 - [Optimism Goerli V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-optimism-goerli)
 - [Fantom Testnet V3](https://thegraph.com/hosted-service/subgraph/aave/protocol-v3-fantom-testnet)
+
+## Governance Subgraphs
+
+- [Aave Governance V3](https://thegraph.com/explorer/subgraphs/A7QMszgomC9cnnfpAcqZVLr2DffvkGNfimD8iUSMiurK)
+- [Aave Governance V3 Voting Polygon](https://thegraph.com/explorer/subgraphs/32WLrLTQctAgfoshbkteHfxLu3DpAeZwh2vUPWXV6Qxu)
+- [Aave Governance V3 Voting Ethereum](https://thegraph.com/explorer/subgraphs/2QPwuCfFtQ8WSCZoN3i9SmdoabMzbq2pmg4kRbrhymBV?view=Query&chain=arbitrum-one)
+- [Aave Governance V3 Voting Avalache](https://thegraph.com/explorer/subgraphs/FngMWWGJV45McvV7GUBkrta9eoEi3sHZoH7MYnFQfZkr?view=Query&chain=arbitrum-one)
+- [Aave Governance V2](https://thegraph.com/explorer/subgraphs/CfdJBpzFXCCCagNhMt2uQgqjDSVbaSNLV5f5c3BbGwip)
 
 ## Usage
 
