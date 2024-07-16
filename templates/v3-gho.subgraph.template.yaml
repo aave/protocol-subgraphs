@@ -25,8 +25,6 @@ dataSources:
       abis:
         - name: AaveOracle
           file: ./abis/v3/AaveOracle.json
-        - name: PriceOracle
-          file: ./abis/v3/PriceOracle.json
         - name: IExtendedPriceAggregator
           file: ./abis/helpers/IExtendedPriceAggregator.json
         - name: IERC20Detailed
@@ -133,7 +131,7 @@ dataSources:
         - event: EmissionManagerUpdated(indexed address,indexed address)
           handler: handleEmissionManagerUpdated
       file: src/mapping/incentives-controller/v3.ts
-    
+
   - kind: ethereum/contract
     name: GhoToken
     network: {{network}}
@@ -215,30 +213,6 @@ templates:
   # --------------------------------------
   #      ORACLES / PRICE PROVIDERS
   # --------------------------------------
-  - kind: ethereum/contract
-    name: FallbackPriceOracle
-    network: {{network}}
-    source:
-      abi: PriceOracle
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - PriceOracle
-        - PriceOracleReserve
-      abis:
-        - name: PriceOracle
-          file: ./abis/v3/PriceOracle.json
-        - name: AaveOracle
-          file: ./abis/v3/AaveOracle.json
-      eventHandlers:
-        - event: AssetPriceUpdated(address,uint256,uint256)
-          handler: handleAssetPriceUpdated
-        - event: EthPriceUpdated(uint256,uint256)
-          handler: handleEthPriceUpdated
-      file: src/mapping/price-oracle/v3.ts
-
   - kind: ethereum/contract
     name: ChainlinkAggregator
     network: {{network}}

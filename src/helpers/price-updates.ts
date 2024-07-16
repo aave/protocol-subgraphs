@@ -18,29 +18,6 @@ export function savePriceToHistory(oracleAsset: PriceOracleAsset, event: ethereu
   priceHistoryItem.save();
 }
 
-// Method called for external pool updates Uniswap / balancer etc
-export function updateAssetPriceFromAaveOracle(event: ethereum.Event): void {
-  let assetAddress = event.address;
-  let priceOracle = getOrInitPriceOracle();
-  let priceOracleAsset = getPriceOracleAsset(assetAddress.toHexString());
-  let proxyPriceProvider = AaveOracle.bind(
-    Address.fromString(priceOracle.proxyPriceProvider.toHexString())
-  );
-
-  let assetPriceCall = proxyPriceProvider.try_getAssetPrice(assetAddress);
-  if (!assetPriceCall.reverted) {
-    priceOracleAsset.priceInEth = assetPriceCall.value;
-    priceOracleAsset.save();
-
-    // save price to history
-    savePriceToHistory(priceOracleAsset, event);
-  } else {
-    log.error('Error in getting price from Liquidity Pool price feed for asset: {}', [
-      assetAddress.toHexString(),
-    ]);
-  }
-}
-
 export function updateDependentAssets(dependentAssets: string[], event: ethereum.Event): void {
   let proxyPriceProviderAddress = getOrInitPriceOracle().proxyPriceProvider;
   let proxyPriceProvider = AaveOracle.bind(

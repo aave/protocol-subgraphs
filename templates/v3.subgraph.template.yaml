@@ -33,6 +33,16 @@ dataSources:
           file: ./abis/helpers/IERC20Detailed.json
         - name: EACAggregatorProxy
           file: ./abis/helpers/EACAggregatorProxy.json
+        - name: PriceCapAdapter
+          file: ./abis/helpers/PriceCapAdapter.json
+        - name: PriceCapAdapterStable
+          file: ./abis/helpers/PriceCapAdapterStable.json
+        - name: CLSynchronicityPriceAdapterPegToBase
+          file: ./abis/helpers/CLSynchronicityPriceAdapterPegToBase.json
+        - name: CLSynchronicityPriceAdapter
+          file: ./abis/helpers/CLSynchronicityPriceAdapter.json
+        - name: AccessControlledOffchainAggregator
+          file: ./abis/helpers/AccessControlledOffchainAggregator.json
       eventHandlers:
         - event: AssetSourceUpdated(indexed address,indexed address)
           handler: handleAssetSourceUpdated
@@ -41,6 +51,27 @@ dataSources:
         - event: BaseCurrencySet(indexed address,uint256)
           handler: handleBaseCurrencySet
       file: src/mapping/proxy-price-provider/v3.ts
+
+  - kind: ethereum/contract
+    name: MarketReferenceCurrencyOracle
+    network: {{network}}
+    source:
+      address: '{{MarketReferenceCurrencyOracle}}'
+      startBlock: {{PoolAddressesProviderRegistryStartBlock}}
+      abi: EACAggregatorProxy
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - PriceOracle
+      abis:
+        - name: EACAggregatorProxy
+          file: ./abis/helpers/EACAggregatorProxy.json
+      eventHandlers:
+        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+          handler: handleMarketReferenceCurrencyAnswerUpdated
+      file: src/mapping/price-oracle/v3.ts
 
   # - kind: ethereum/contract
   #   name: ChainlinkSourcesRegistry

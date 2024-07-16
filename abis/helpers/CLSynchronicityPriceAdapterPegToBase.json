@@ -1,0 +1,55 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pegToBaseAggregatorAddress", "type": "address" },
+      { "internalType": "address", "name": "assetToPegAggregatorAddress", "type": "address" },
+      { "internalType": "uint8", "name": "decimals", "type": "uint8" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  { "inputs": [], "name": "DecimalsAboveLimit", "type": "error" },
+  { "inputs": [], "name": "DecimalsNotEqual", "type": "error" },
+  {
+    "inputs": [],
+    "name": "ASSET_TO_PEG",
+    "outputs": [{ "internalType": "contract IChainlinkAggregator", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DECIMALS",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DENOMINATOR",
+    "outputs": [{ "internalType": "int256", "name": "", "type": "int256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_DECIMALS",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "PEG_TO_BASE",
+    "outputs": [{ "internalType": "contract IChainlinkAggregator", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "latestAnswer",
+    "outputs": [{ "internalType": "int256", "name": "", "type": "int256" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

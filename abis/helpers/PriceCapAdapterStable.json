@@ -1,0 +1,79 @@
+[
+  {
+    "inputs": [
+      { "internalType": "contract IACLManager", "name": "aclManager", "type": "address" },
+      {
+        "internalType": "contract IChainlinkAggregator",
+        "name": "assetToUsdAggregator",
+        "type": "address"
+      },
+      { "internalType": "string", "name": "adapterDescription", "type": "string" },
+      { "internalType": "int256", "name": "priceCap", "type": "int256" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  { "inputs": [], "name": "ACLManagerIsZeroAddress", "type": "error" },
+  { "inputs": [], "name": "CallerIsNotRiskOrPoolAdmin", "type": "error" },
+  { "inputs": [], "name": "CapLowerThanActualPrice", "type": "error" },
+  { "inputs": [], "name": "DecimalsAboveLimit", "type": "error" },
+  { "inputs": [], "name": "DecimalsNotEqual", "type": "error" },
+  { "inputs": [], "name": "RatioOutOfBounds", "type": "error" },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "int256", "name": "priceCap", "type": "int256" }
+    ],
+    "name": "PriceCapUpdated",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "ACL_MANAGER",
+    "outputs": [{ "internalType": "contract IACLManager", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ASSET_TO_USD_AGGREGATOR",
+    "outputs": [{ "internalType": "contract IChainlinkAggregator", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "decimals",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "description",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "isCapped",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "latestAnswer",
+    "outputs": [{ "internalType": "int256", "name": "", "type": "int256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "int256", "name": "priceCap", "type": "int256" }],
+    "name": "setPriceCap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

@@ -5,7 +5,7 @@ import {
   EthPriceUpdated,
 } from '../../../generated/templates/FallbackPriceOracle/PriceOracle';
 import { AnswerUpdated } from '../../../generated/templates/ChainlinkAggregator/IExtendedPriceAggregator';
-import { formatUsdEthChainlinkPrice, zeroBI } from '../../utils/converters';
+import { formatUsdEthChainlinkPrice, zeroAddress, zeroBI } from '../../utils/converters';
 import {
   getChainlinkAggregator,
   getOrInitPriceOracle,
@@ -46,6 +46,15 @@ function genericHandleChainlinkUSDETHPrice(
       event
     );
   }
+}
+
+export function handleMarketReferenceCurrencyAnswerUpdated(event: AnswerUpdated): void {
+  let priceOracle = getOrInitPriceOracle();
+  if (priceOracle.usdPriceEthMainSource == zeroAddress()) {
+    priceOracle.usdPriceEthMainSource = event.address;
+  }
+  priceOracle.usdPriceEth = event.params.current;
+  priceOracle.save();
 }
 
 // Ropsten and Mainnet

@@ -5,5 +5,6 @@
   "PoolAddressesProviderRegistryAddress": "0xbaA999AC55EAce41CcAE355c77809e68Bb345170",
   "PoolAddressesProviderRegistryStartBlock": 16291006,
   "RewardsControllerAddress": "0x8164Cc65827dcFe994AB23944CBC90e0aa80bFcb",
-  "RewardsControllerStartBlock": 16291136
+  "RewardsControllerStartBlock": 16291136,
+  "MarketReferenceCurrencyOracle": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419"
 }

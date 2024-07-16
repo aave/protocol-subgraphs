@@ -1,0 +1,41 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "ethToUSDAggregatorAddress", "type": "address" },
+      { "internalType": "address", "name": "rETHAddress", "type": "address" },
+      { "internalType": "string", "name": "pairName", "type": "string" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  { "inputs": [], "name": "DecimalsAboveLimit", "type": "error" },
+  { "inputs": [], "name": "DecimalsNotEqual", "type": "error" },
+  {
+    "inputs": [],
+    "name": "ETH_TO_USD",
+    "outputs": [{ "internalType": "contract IChainlinkAggregator", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "RATIO_DECIMALS",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "latestAnswer",
+    "outputs": [{ "internalType": "int256", "name": "", "type": "int256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "name",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

@@ -5,14 +5,8 @@ import {
   BaseCurrencySet,
   FallbackOracleUpdated,
 } from '../../../generated/AaveOracle/AaveOracle';
-import { Address, ethereum, log, Bytes } from '@graphprotocol/graph-ts';
-import {
-  formatUsdEthChainlinkPrice,
-  getPriceOracleAssetType,
-  PRICE_ORACLE_ASSET_TYPE_SIMPLE,
-  zeroAddress,
-  zeroBI,
-} from '../../utils/converters';
+import { Address, ethereum, log } from '@graphprotocol/graph-ts';
+import { formatUsdEthChainlinkPrice, zeroAddress, zeroBI } from '../../utils/converters';
 import { IExtendedPriceAggregator } from '../../../generated/AaveOracle/IExtendedPriceAggregator';
 import { EACAggregatorProxy } from '../../../generated/AaveOracle/EACAggregatorProxy';
 import { ChainlinkAggregator as ChainlinkAggregatorContract } from '../../../generated/templates';
@@ -27,6 +21,39 @@ import { PriceOracle as FallbackPriceOracle } from '../../../generated/AaveOracl
 
 import { FallbackPriceOracle as FallbackPriceOracleContract } from '../../../generated/templates';
 import { MOCK_USD_ADDRESS, ZERO_ADDRESS } from '../../utils/constants';
+import { PriceCapAdapter } from '../../../generated/AaveOracle/PriceCapAdapter';
+import { PriceCapAdapterStable } from '../../../generated/AaveOracle/PriceCapAdapterStable';
+import { CLSynchronicityPriceAdapterPegToBase } from '../../../generated/AaveOracle/CLSynchronicityPriceAdapterPegToBase';
+import { CLSynchronicityPriceAdapter } from '../../../generated/AaveOracle/CLSynchronicityPriceAdapter';
+
+function getAggregatorProxyAddress(assetOracleAddress: Address): Address {
+  let priceCapAdapter = PriceCapAdapter.bind(assetOracleAddress);
+  let aggregatorCall = priceCapAdapter.try_BASE_TO_USD_AGGREGATOR();
+  if (!aggregatorCall.reverted) {
+    return aggregatorCall.value;
+  }
+
+  let priceCapAdapterStable = PriceCapAdapterStable.bind(assetOracleAddress);
+  aggregatorCall = priceCapAdapterStable.try_ASSET_TO_USD_AGGREGATOR();
+  if (!aggregatorCall.reverted) {
+    return aggregatorCall.value;
+  }
+
+  let pegToBasePriceAdapter = CLSynchronicityPriceAdapterPegToBase.bind(assetOracleAddress);
+  aggregatorCall = pegToBasePriceAdapter.try_PEG_TO_BASE();
+  if (!aggregatorCall.reverted) {
+    return aggregatorCall.value;
+  }
+
+  let synchronicityPriceAdapter = CLSynchronicityPriceAdapter.bind(assetOracleAddress);
+  aggregatorCall = synchronicityPriceAdapter.try_ETH_TO_USD();
+  if (!aggregatorCall.reverted) {
+    return aggregatorCall.value;
+  }
+
+  // must already be the proxy if all other calls failed
+  return assetOracleAddress;
+}
 
 export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void {
   let priceOracle = getOrInitPriceOracle();
@@ -105,32 +132,26 @@ export function priceFeedUpdated(
 
   priceOracleAsset.isFallbackRequired = true;
 
-  // if it's valid oracle address
   if (!assetOracleAddress.equals(zeroAddress())) {
     let priceAggregatorInstance = IExtendedPriceAggregator.bind(assetOracleAddress);
+    let aggregatorProxyAddress = getAggregatorProxyAddress(assetOracleAddress);
+    log.debug('AggregatorProxyAddress: {}', [aggregatorProxyAddress.toHexString()]);
 
-    // check is it composite or simple asset.
-    // In case its chainlink source, this call will revert, and will not update priceOracleAsset type
-    // so it will stay as simple, as it is the default type
-    let tokenTypeCall = priceAggregatorInstance.try_getTokenType();
-    if (!tokenTypeCall.reverted) {
-      priceOracleAsset.type = getPriceOracleAssetType(tokenTypeCall.value);
-    }
-
-    // Type simple means that the source is chainlink source
-    if (priceOracleAsset.type == PRICE_ORACLE_ASSET_TYPE_SIMPLE) {
-      // get underlying aggregator from proxy (assetOracleAddress) address
-      let chainlinkProxyInstance = EACAggregatorProxy.bind(assetOracleAddress);
-      let aggregatorAddressCall = chainlinkProxyInstance.try_aggregator();
-      // If we can't get the aggregator, it means that the source address is not a chainlink proxy
-      // so it has been registered badly.
-      if (aggregatorAddressCall.reverted) {
+    let chainlinkProxyInstance = EACAggregatorProxy.bind(Address.fromBytes(aggregatorProxyAddress));
+    let aggregatorAddressCall = chainlinkProxyInstance.try_aggregator();
+    if (aggregatorAddressCall.reverted) {
+      // for GHO there is no aggregator, so if the call to latestAnswer reverts, there's some error
+      if (priceAggregatorInstance.try_latestAnswer().reverted) {
         log.error(
           `PROXY: Simple Type must be a chainlink proxy. || asset: {} | assetOracleAddress: {}`,
           [sAssetAddress, assetOracleAddress.toHexString()]
         );
         return;
       }
+
+      priceOracleAsset.priceSource = assetOracleAddress;
+      priceOracleAsset.isFallbackRequired = false;
+    } else {
       let aggregatorAddress = aggregatorAddressCall.value;
       priceOracleAsset.priceSource = aggregatorAddress;
       // create ChainLink aggregator template entity
@@ -147,33 +168,73 @@ export function priceFeedUpdated(
       let chainlinkAggregator = getChainlinkAggregator(aggregatorAddress.toHexString());
       chainlinkAggregator.oracleAsset = assetAddress.toHexString();
       chainlinkAggregator.save();
-    } else {
-      // composite assets don't need fallback, it will work out of the box
-      priceOracleAsset.isFallbackRequired = false;
-      priceOracleAsset.priceSource = assetOracleAddress;
-
-      // call contract and check on which assets we're dependent
-      let dependencies = priceAggregatorInstance.getSubTokens();
-      // add asset to all dependencies
-      for (let i = 0; i < dependencies.length; i += 1) {
-        let dependencyAddress = dependencies[i].toHexString();
-        if (dependencyAddress == MOCK_USD_ADDRESS) {
-          let usdDependentAssets = priceOracle.usdDependentAssets;
-          if (!usdDependentAssets.includes(sAssetAddress)) {
-            usdDependentAssets.push(sAssetAddress);
-            priceOracle.usdDependentAssets = usdDependentAssets;
-          }
-        } else {
-          let dependencyOracleAsset = getPriceOracleAsset(dependencyAddress);
-          let dependentAssets = dependencyOracleAsset.dependentAssets;
-          if (!dependentAssets.includes(sAssetAddress)) {
-            dependentAssets.push(sAssetAddress);
-            dependencyOracleAsset.dependentAssets = dependentAssets;
-            dependencyOracleAsset.save();
-          }
-        }
-      }
     }
+
+    // check is it composite or simple asset.
+    // In case its chainlink source, this call will revert, and will not update priceOracleAsset type
+    // so it will stay as simple, as it is the default type
+    // let tokenTypeCall = priceAggregatorInstance.try_getTokenType();
+    // if (!tokenTypeCall.reverted) {
+    //   priceOracleAsset.type = getPriceOracleAssetType(tokenTypeCall.value);
+    // }
+
+    // Type simple means that the source is chainlink source
+    // if (priceOracleAsset.type == PRICE_ORACLE_ASSET_TYPE_SIMPLE) {
+    //   // get underlying aggregator from proxy (assetOracleAddress) address
+    //   let chainlinkProxyInstance = EACAggregatorProxy.bind(assetOracleAddress);
+    //   let aggregatorAddressCall = chainlinkProxyInstance.try_aggregator();
+    //   // If we can't get the aggregator, it means that the source address is not a chainlink proxy
+    //   // so it has been registered badly.
+    //   if (aggregatorAddressCall.reverted) {
+    //     log.error(
+    //       `PROXY: Simple Type must be a chainlink proxy. || asset: {} | assetOracleAddress: {}`,
+    //       [sAssetAddress, assetOracleAddress.toHexString()]
+    //     );
+    //     return;
+    //   }
+    //   let aggregatorAddress = aggregatorAddressCall.value;
+    //   priceOracleAsset.priceSource = aggregatorAddress;
+    //   // create ChainLink aggregator template entity
+    //   ChainlinkAggregatorContract.create(aggregatorAddress);
+
+    //   // Need to check latestAnswer and not use priceFromOracle because priceFromOracle comes from the oracle
+    //   // and the value could be from the fallback already. So we need to check if we can get latestAnswer from the
+    //   // chainlink aggregator
+    //   let priceAggregatorlatestAnswerCall = priceAggregatorInstance.try_latestAnswer();
+    //   priceOracleAsset.isFallbackRequired =
+    //     priceAggregatorlatestAnswerCall.reverted || priceAggregatorlatestAnswerCall.value.isZero();
+
+    //   // create chainlinkAggregator entity with new aggregator to be able to match asset and oracle after
+    //   let chainlinkAggregator = getChainlinkAggregator(aggregatorAddress.toHexString());
+    //   chainlinkAggregator.oracleAsset = assetAddress.toHexString();
+    //   chainlinkAggregator.save();
+    // } else {
+    //   // composite assets don't need fallback, it will work out of the box
+    //   priceOracleAsset.isFallbackRequired = false;
+    //   priceOracleAsset.priceSource = assetOracleAddress;
+
+    //   // call contract and check on which assets we're dependent
+    //   let dependencies = priceAggregatorInstance.getSubTokens();
+    //   // add asset to all dependencies
+    //   for (let i = 0; i < dependencies.length; i += 1) {
+    //     let dependencyAddress = dependencies[i].toHexString();
+    //     if (dependencyAddress == MOCK_USD_ADDRESS) {
+    //       let usdDependentAssets = priceOracle.usdDependentAssets;
+    //       if (!usdDependentAssets.includes(sAssetAddress)) {
+    //         usdDependentAssets.push(sAssetAddress);
+    //         priceOracle.usdDependentAssets = usdDependentAssets;
+    //       }
+    //     } else {
+    //       let dependencyOracleAsset = getPriceOracleAsset(dependencyAddress);
+    //       let dependentAssets = dependencyOracleAsset.dependentAssets;
+    //       if (!dependentAssets.includes(sAssetAddress)) {
+    //         dependentAssets.push(sAssetAddress);
+    //         dependencyOracleAsset.dependentAssets = dependentAssets;
+    //         dependencyOracleAsset.save();
+    //       }
+    //     }
+    //   }
+    // }
   } else {
     log.error('registry of asset: {} | oracle: {} | price: {}', [
       assetAddress.toHexString(),

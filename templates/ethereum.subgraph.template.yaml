@@ -9,10 +9,10 @@ dataSources:
   # --------------------------------------
   - kind: ethereum/contract
     name: AaveOracle
-    network: {{network}}
+    network: { { network } }
     source:
       address: '{{AaveOracleAddress}}'
-      startBlock: {{AaveOracleStartBlock}}
+      startBlock: { { AaveOracleStartBlock } }
       abi: AaveOracle
     mapping:
       kind: ethereum/events
@@ -44,10 +44,10 @@ dataSources:
 
   - kind: ethereum/contract
     name: OracleAnchor
-    network: {{network}}
+    network: { { network } }
     source:
       address: '{{OracleAnchorAddress}}'
-      startBlock: {{OracleAnchorStartBlock}}
+      startBlock: { { OracleAnchorStartBlock } }
       abi: OracleAnchor
     mapping:
       kind: ethereum/events
@@ -75,10 +75,10 @@ dataSources:
 
   - kind: ethereum/contract
     name: ChainlinkSourcesRegistry
-    network: {{network}}
+    network: { { network } }
     source:
       address: '{{ChainlinkSourcesRegistryAddress}}'
-      startBlock: {{ChainlinkSourcesRegistryStartBlock}}
+      startBlock: { { ChainlinkSourcesRegistryStartBlock } }
       abi: ChainlinkSourcesRegistry
     mapping:
       kind: ethereum/events
@@ -102,10 +102,10 @@ dataSources:
 
   - kind: ethereum/contract
     name: ChainlinkENSResolver
-    network: {{network}}
+    network: { { network } }
     source:
       address: '{{ChainlinkENSResolver}}'
-      startBlock: {{ChainlinkENSResolverBlock}}
+      startBlock: { { ChainlinkENSResolverBlock } }
       abi: ChainlinkENSResolver
     mapping:
       kind: ethereum/events
@@ -129,11 +129,11 @@ dataSources:
   # --------------------------------------
   - kind: ethereum/contract
     name: LendingPoolAddressesProviderRegistry
-    network: {{network}}
+    network: { { network } }
     source:
       address: '{{LendingPoolAddressesProviderRegistryAddress}}'
       abi: LendingPoolAddressesProviderRegistry
-      startBlock: {{LendingPoolAddressesProviderRegistryStartBlock}}
+      startBlock: { { LendingPoolAddressesProviderRegistryStartBlock } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -154,11 +154,11 @@ dataSources:
   # --------------------------------------
   - kind: ethereum/contract
     name: UniswapLiquiditySwapAdapter
-    network: {{network}}
+    network: { { network } }
     source:
       address: '{{UniswapLiquiditySwapAdapterAddress}}'
       abi: UniswapLiquiditySwapAdapter
-      startBlock: {{UniswapLiquiditySwapAdapterStartBlock}}
+      startBlock: { { UniswapLiquiditySwapAdapterStartBlock } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -174,11 +174,11 @@ dataSources:
       file: src/mapping/lending-pool/ethereum.ts
   - kind: ethereum/contract
     name: UniswapRepayAdapter
-    network: {{network}}
+    network: { { network } }
     source:
       address: '{{UniswapRepayAdapterAddress}}'
       abi: UniswapRepayAdapter
-      startBlock: {{UniswapRepayAdapterStartBlock}}
+      startBlock: { { UniswapRepayAdapterStartBlock } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -201,7 +201,7 @@ templates:
   # --------------------------------------
   - kind: ethereum/contract
     name: AaveIncentivesController
-    network: {{network}}
+    network: { { network } }
     source:
       abi: AaveIncentivesController
     mapping:
@@ -236,7 +236,7 @@ templates:
   # --------------------------------------
   - kind: ethereum/contract
     name: FallbackPriceOracle
-    network: {{network}}
+    network: { { network } }
     source:
       abi: GenericOracleI
     mapping:
@@ -262,7 +262,7 @@ templates:
 
   - kind: ethereum/contract
     name: ChainlinkAggregator
-    network: {{network}}
+    network: { { network } }
     source:
       abi: IExtendedPriceAggregator
     mapping:
@@ -286,7 +286,7 @@ templates:
   # --------------------------------------
   - kind: ethereum/contract
     name: AToken
-    network: {{network}}
+    network: { { network } }
     source:
       abi: AToken
     mapping:
@@ -315,7 +315,7 @@ templates:
       file: src/mapping/tokenization/initialization.ts
   - kind: ethereum/contract
     name: StableDebtToken
-    network: {{network}}
+    network: { { network } }
     source:
       abi: StableDebtToken
     mapping:
@@ -344,7 +344,7 @@ templates:
       file: src/mapping/tokenization/initialization.ts
   - kind: ethereum/contract
     name: VariableDebtToken
-    network: {{network}}
+    network: { { network } }
     source:
       abi: VariableDebtToken
     mapping:
@@ -377,7 +377,7 @@ templates:
   # --------------------------------------
   - kind: ethereum/contract
     name: LendingPoolAddressesProvider
-    network: {{network}}
+    network: { { network } }
     source:
       abi: LendingPoolAddressesProvider
     mapping:
@@ -416,7 +416,7 @@ templates:
 
   - kind: ethereum/contract
     name: LendingPoolConfigurator
-    network: {{network}}
+    network: { { network } }
     source:
       abi: LendingPoolConfigurator
     mapping:
@@ -470,7 +470,7 @@ templates:
       file: src/mapping/lending-pool-configurator/ethereum.ts
   - kind: ethereum/contract
     name: LendingPool
-    network: {{network}}
+    network: { { network } }
     source:
       abi: LendingPool
     mapping:
@@ -514,52 +514,3 @@ templates:
         - event: ReserveDataUpdated(indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleReserveDataUpdated
       file: src/mapping/lending-pool/ethereum.ts
-
-  # --------------------------------------
-  #       CONFIGURATIONS
-  # --------------------------------------
-  # - kind: ethereum/contract
-  #   name: UniswapExchange
-  #   network: {{network}}
-  #   source:
-  #     abi: IUniswapExchange
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.6
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - PriceOracleAsset
-  #       - PriceOracle
-  #     abis:
-  #       - name: IUniswapExchange
-  #         file: ./constant-abis/IUniswapExchange.json
-  #       - name: AaveOracle
-  #         file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
-  #     eventHandlers:
-  #       - event: Sync(uint112,uint112)
-  #         handler: updateAssetPriceFromAaveOracle
-  #     file: ./src/helpers/price-updates.ts
-
-  # - kind: ethereum/contract
-  #   name: BalancerPool
-  #   network: {{network}}
-  #   source:
-  #     abi: IBalancerPool
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.6
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - PriceOracleAsset
-  #       - PriceOracle
-  #     abis:
-  #       - name: IBalancerPool
-  #         file: ./constant-abis/IBalancerPool.json
-  #       - name: AaveOracle
-  #         file: ./externals/protocol-v2/artifacts/contracts/misc/AaveOracle.sol/AaveOracle.json
-  #     eventHandlers:
-  #       - event: LOG_SWAP(indexed address,indexed address,indexed address,uint256,uint256)
-  #         handler: updateAssetPriceFromAaveOracle
-  #       - event: Transfer(indexed address,indexed address,uint256)
-  #         handler: updateAssetPriceFromAaveOracle
-  #     file: ./src/helpers/price-updates.ts
