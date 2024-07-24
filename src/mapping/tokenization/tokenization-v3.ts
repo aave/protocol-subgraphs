@@ -150,8 +150,7 @@ function tokenBurn(
   let userReserve = getOrInitUserReserve(from, aToken.underlyingAssetAddress, event);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress, event);
 
-  // https://github.com/aave/aave-v3-core/blob/724a9ef43adf139437ba87dcbab63462394d4601/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol#L116
-  const userBalanceChange = value.minus(balanceIncrease);
+  const userBalanceChange = value.plus(balanceIncrease);
   let calculatedAmount = rayDiv(userBalanceChange, index);
 
   userReserve.scaledATokenBalance = userReserve.scaledATokenBalance.minus(calculatedAmount);
@@ -193,8 +192,7 @@ function tokenMint(
   let aToken = getOrInitSubToken(event.address);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress, event);
 
-  // https://github.com/aave/aave-v3-core/blob/724a9ef43adf139437ba87dcbab63462394d4601/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol#L83
-  const userBalanceChange = value.plus(balanceIncrease);
+  const userBalanceChange = value.minus(balanceIncrease);
 
   poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(userBalanceChange);
   let poolId = getPoolByContract(event);
