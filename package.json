@@ -10,6 +10,7 @@
     "subgraph:deploy:hosted": "graph deploy $SLUG --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token $ACCESS_TOKEN",
     "deploy:hosted:mainnet": "VERSION=v2 BLOCKCHAIN=ethereum NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2 env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:mainnet-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3 env-cmd npm run subgraph:deploy:hosted",
+    "deploy:hosted:mainnetlido-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=mainnetlido env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-mainnet-lido env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:goerli-v2": "VERSION=v2 BLOCKCHAIN=ethereum NETWORK=goerli env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v2-goerli env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:goerli-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=goerli env-cmd npm run prepare:subgraph && SLUG=aave/protocol-v3-goerli env-cmd npm run subgraph:deploy:hosted",
     "deploy:hosted:gho-mainnet": "VERSION=v3-gho BLOCKCHAIN=v3-gho NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave/gho-mainnet env-cmd npm run subgraph:deploy:hosted",
