@@ -1,0 +1,201 @@
+[
+  {
+    "inputs": [{ "internalType": "address", "name": "provider", "type": "address" }],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "reserve", "type": "address" },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "optimalUsageRatio",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "baseVariableBorrowRate",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "variableRateSlope1",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "variableRateSlope2",
+        "type": "uint256"
+      }
+    ],
+    "name": "RateDataUpdate",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "ADDRESSES_PROVIDER",
+    "outputs": [
+      { "internalType": "contract IPoolAddressesProvider", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_BORROW_RATE",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_OPTIMAL_POINT",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MIN_OPTIMAL_POINT",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "unbacked", "type": "uint256" },
+          { "internalType": "uint256", "name": "liquidityAdded", "type": "uint256" },
+          { "internalType": "uint256", "name": "liquidityTaken", "type": "uint256" },
+          { "internalType": "uint256", "name": "totalStableDebt", "type": "uint256" },
+          { "internalType": "uint256", "name": "totalVariableDebt", "type": "uint256" },
+          { "internalType": "uint256", "name": "averageStableBorrowRate", "type": "uint256" },
+          { "internalType": "uint256", "name": "reserveFactor", "type": "uint256" },
+          { "internalType": "address", "name": "reserve", "type": "address" },
+          { "internalType": "bool", "name": "usingVirtualBalance", "type": "bool" },
+          { "internalType": "uint256", "name": "virtualUnderlyingBalance", "type": "uint256" }
+        ],
+        "internalType": "struct DataTypes.CalculateInterestRatesParams",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "calculateInterestRates",
+    "outputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "reserve", "type": "address" }],
+    "name": "getBaseVariableBorrowRate",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "reserve", "type": "address" }],
+    "name": "getInterestRateData",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "optimalUsageRatio", "type": "uint256" },
+          { "internalType": "uint256", "name": "baseVariableBorrowRate", "type": "uint256" },
+          { "internalType": "uint256", "name": "variableRateSlope1", "type": "uint256" },
+          { "internalType": "uint256", "name": "variableRateSlope2", "type": "uint256" }
+        ],
+        "internalType": "struct IDefaultInterestRateStrategyV2.InterestRateDataRay",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "reserve", "type": "address" }],
+    "name": "getInterestRateDataBps",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint16", "name": "optimalUsageRatio", "type": "uint16" },
+          { "internalType": "uint32", "name": "baseVariableBorrowRate", "type": "uint32" },
+          { "internalType": "uint32", "name": "variableRateSlope1", "type": "uint32" },
+          { "internalType": "uint32", "name": "variableRateSlope2", "type": "uint32" }
+        ],
+        "internalType": "struct IDefaultInterestRateStrategyV2.InterestRateData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "reserve", "type": "address" }],
+    "name": "getMaxVariableBorrowRate",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "reserve", "type": "address" }],
+    "name": "getOptimalUsageRatio",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "reserve", "type": "address" }],
+    "name": "getVariableRateSlope1",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "reserve", "type": "address" }],
+    "name": "getVariableRateSlope2",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "reserve", "type": "address" },
+      { "internalType": "bytes", "name": "rateData", "type": "bytes" }
+    ],
+    "name": "setInterestRateParams",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "reserve", "type": "address" },
+      {
+        "components": [
+          { "internalType": "uint16", "name": "optimalUsageRatio", "type": "uint16" },
+          { "internalType": "uint32", "name": "baseVariableBorrowRate", "type": "uint32" },
+          { "internalType": "uint32", "name": "variableRateSlope1", "type": "uint32" },
+          { "internalType": "uint32", "name": "variableRateSlope2", "type": "uint32" }
+        ],
+        "internalType": "struct IDefaultInterestRateStrategyV2.InterestRateData",
+        "name": "rateData",
+        "type": "tuple"
+      }
+    ],
+    "name": "setInterestRateParams",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
