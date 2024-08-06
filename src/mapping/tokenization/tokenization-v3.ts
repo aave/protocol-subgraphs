@@ -191,6 +191,7 @@ function tokenMint(
 ): void {
   let aToken = getOrInitSubToken(event.address);
   let poolReserve = getOrInitReserve(aToken.underlyingAssetAddress, event);
+
   const userBalanceChange = value.minus(balanceIncrease);
 
   poolReserve.totalATokenSupply = poolReserve.totalATokenSupply.plus(userBalanceChange);
@@ -219,7 +220,7 @@ function tokenMint(
     onBehalf.toHexString() != '0x5ba7fd868c40c16f7aDfAe6CF87121E13FC2F7a0'.toLowerCase() &&
     onBehalf.toHexString() != '0x8A020d92D6B119978582BE4d3EdFdC9F7b28BF31'.toLowerCase() &&
     onBehalf.toHexString() != '0x053D55f9B5AF8694c503EB288a1B7E552f590710'.toLowerCase() &&
-    onBehalf.toHexString() != '0x464C71f6c2F760DdA6093dCB91C24c39e5d6e18c'.toLowerCase() 
+    onBehalf.toHexString() != '0x464C71f6c2F760DdA6093dCB91C24c39e5d6e18c'.toLowerCase()
   ) {
     let userReserve = getOrInitUserReserve(onBehalf, aToken.underlyingAssetAddress, event);
     let calculatedAmount = rayDiv(userBalanceChange, index);
@@ -283,8 +284,8 @@ export function handleBalanceTransfer(event: BalanceTransfer): void {
   let balanceTransferValue = event.params.value;
   const network = dataSource.network();
   const v301UpdateBlock = getUpdateBlock(network);
-  if (v301UpdateBlock !== -1 && event.block.number.toU32() > v301UpdateBlock) {
-    balanceTransferValue = balanceTransferValue.times(event.params.index);
+  if (event.block.number.toU32() > v301UpdateBlock) {
+    balanceTransferValue = rayMul(balanceTransferValue, event.params.index);
   }
 
   tokenBurn(event, event.params.from, balanceTransferValue, BigInt.fromI32(0), event.params.index);
