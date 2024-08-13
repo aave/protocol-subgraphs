@@ -14,6 +14,7 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 
 - [ETH Mainnet V3](https://thegraph.com/explorer/subgraphs/Cd2gEDVeqnjBn1hSeqFMitw8Q1iiyV9FYUZkLNRcL87g)
 - [ETH Mainnet V3 GHO](https://thegraph.com/explorer/subgraphs/BQN5t5Mgti3BNLsZYEiL1MtiBJLa1DQJnaquXR1zTBjn)
+- [ETH Mainnet V3 Lido Market](https://thegraph.com/explorer/subgraphs/5vxMbXRhG1oQr55MWC5j6qg78waWujx1wjeuEWDA6j3)
 - [ETH Mainnet V2](https://thegraph.com/explorer/subgraphs/8wR23o1zkS4gpLqLNU4kG3JHYVucqGyopL5utGxP2q1N)
 - [Polygon V2](https://thegraph.com/explorer/subgraphs/H1Et77RZh3XEf27vkAmJyzgCME2RSFLtDS2f4PPW6CGp)
 - [Avalanche V2](https://thegraph.com/explorer/subgraphs/EZvK18pMhwiCjxwesRLTg81fP33WnR6BnZe5Cvma3H1C)
