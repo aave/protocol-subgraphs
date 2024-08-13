@@ -343,6 +343,8 @@ templates:
           file: ./abis/helpers/IERC20DetailedBytes.json
         - name: DefaultReserveInterestRateStrategy
           file: ./abis/v3/DefaultReserveInterestRateStrategy.json
+        - name: DefaultReserveInterestRateStrategyV2
+          file: ./abis/v3/DefaultReserveInterestRateStrategyV2.json
       eventHandlers:
         - event: ReserveInitialized(indexed address,indexed address,address,address,address)
           handler: handleReserveInitialized
