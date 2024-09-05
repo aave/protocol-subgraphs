@@ -12,6 +12,7 @@
     "deploy:hosted:mainnet": "VERSION=v2 BLOCKCHAIN=ethereum NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=protocol-v2 env-cmd npm run subgraph:deploy",
     "deploy:hosted:mainnet-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=protocol-v3 env-cmd npm run subgraph:deploy",
     "deploy:hosted:mainnetlido-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=mainnetlido env-cmd npm run prepare:subgraph && SLUG=protocol-v3-lido env-cmd npm run subgraph:deploy",
+    "deploy:hosted:mainnetetherfi-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=mainnetetherfi env-cmd npm run prepare:subgraph && SLUG=protocol-v3-etherfi env-cmd npm run subgraph:deploy",
     "deploy:hosted:gho-mainnet": "VERSION=v3-gho BLOCKCHAIN=v3-gho NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=gho-mainnet env-cmd npm run subgraph:deploy",
     "deploy:hosted:mainnet-centrifuge": "VERSION=v2-centrifuge BLOCKCHAIN=ethereum-arc NETWORK=mainnet env-cmd npm run prepare:subgraph && SLUG=aave-centrifuge env-cmd npm run subgraph:deploy",
     "deploy:hosted:polygon-v2": "VERSION=v2 BLOCKCHAIN=matic NETWORK=matic env-cmd npm run prepare:subgraph && SLUG=aave-v2-matic env-cmd npm run subgraph:deploy",
