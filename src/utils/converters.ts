@@ -193,17 +193,15 @@ export function generateSymbol(description: string): string {
 }
 
 /**
- * Gets the block number at which the given market was updated to v3.0.1.
- * Returns -1 if the market was not updated.
+ * Returns the block number at which the given market was updated to v3.0.1.
+ * This is needed due to an updated interpretation of `BalanceTransfer` events
+ * All market deployments not listed use updated version by default
  * @param network
  * @returns block number
  */
 export function getUpdateBlock(network: string): u32 {
-  let updateBlock = -1;
-  if (network === 'mainnet' || network === 'andromeda') {
-    // these markets were deployed with v3.0.1
-    updateBlock = 0;
-  } else if (network === 'optimism') {
+  let updateBlock = 0;
+  if (network === 'optimism') {
     updateBlock = 775471;
   } else if (network === 'polygon') {
     updateBlock = 42535602;
