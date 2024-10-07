@@ -40,11 +40,13 @@ import {
   FlashloanPremiumTotalUpdated,
   FlashloanPremiumToProtocolUpdated,
   BorrowableInIsolationChanged,
+  AssetCollateralInEModeChanged,
+  AssetBorrowableInEModeChanged,
 } from '../../../generated/templates/PoolConfigurator/PoolConfigurator';
 import { DefaultReserveInterestRateStrategy } from '../../../generated/templates/PoolConfigurator/DefaultReserveInterestRateStrategy';
 import { DefaultReserveInterestRateStrategyV2 } from '../../../generated/templates/PoolConfigurator/DefaultReserveInterestRateStrategyV2';
 
-import { EModeCategory, Pool, Reserve } from '../../../generated/schema';
+import { EModeCategory, EModeCategoryConfig, Pool, Reserve } from '../../../generated/schema';
 import { zeroAddress, zeroBI } from '../../utils/converters';
 
 export function saveReserve(reserve: Reserve, event: ethereum.Event): void {
@@ -285,6 +287,48 @@ export function handleEModeCategoryAdded(event: EModeCategoryAdded): void {
     log.error('Category with id: {} already existed', [id]);
     return;
   }
+}
+
+export function handleAssetCollateralInEModeChanged(event: AssetCollateralInEModeChanged): void {
+  let id = BigInt.fromI32(event.params.categoryId).toString();
+  let eModeCategory = EModeCategory.load(id);
+  if (!eModeCategory) {
+    log.error('Emode category with id: {} does not exist', [id]);
+    return;
+  }
+
+  let configId = event.params.asset.toHexString().concat(id);
+  let config = EModeCategoryConfig.load(configId);
+  if (!config) {
+    config = new EModeCategoryConfig(configId);
+  }
+
+  config.category = id;
+  config.asset = event.params.asset;
+  config.collateral = event.params.collateral;
+
+  config.save();
+}
+
+export function handleAssetBorrowableInEModeChanged(event: AssetBorrowableInEModeChanged): void {
+  let id = BigInt.fromI32(event.params.categoryId).toString();
+  let eModeCategory = EModeCategory.load(id);
+  if (!eModeCategory) {
+    log.error('Emode category with id: {} does not exist', [id]);
+    return;
+  }
+
+  let configId = event.params.asset.toHexString().concat(id);
+  let config = EModeCategoryConfig.load(configId);
+  if (!config) {
+    config = new EModeCategoryConfig(configId);
+  }
+
+  config.category = id;
+  config.asset = event.params.asset;
+  config.borrowable = event.params.borrowable;
+
+  config.save();
 }
 
 export function handleDebtCeilingChanged(event: DebtCeilingChanged): void {
