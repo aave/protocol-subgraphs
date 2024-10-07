@@ -1,0 +1,9 @@
+{
+  "network": "zksync-era",
+  "AaveOracleAddress": "0xC7F58Fca663a8d377B6D0c9703C697f56dC40088",
+  "AaveOracleStartBlock": 43709009,
+  "PoolAddressesProviderRegistryAddress": "0x0753E3637ddC6efc40759D9c347251046644F25F",
+  "PoolAddressesProviderRegistryStartBlock": 43708946,
+  "RewardsControllerAddress": "0x37c972C9dDfC2138EBe33eC19dba063AB9f8966e",
+  "RewardsControllerStartBlock": 43709029
+}

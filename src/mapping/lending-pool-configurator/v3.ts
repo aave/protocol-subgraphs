@@ -276,17 +276,14 @@ export function handleEModeCategoryAdded(event: EModeCategoryAdded): void {
   let eModeCategory = EModeCategory.load(id);
   if (!eModeCategory) {
     eModeCategory = new EModeCategory(id);
-    eModeCategory.ltv = event.params.ltv;
-    eModeCategory.oracle = event.params.oracle;
-    eModeCategory.liquidationBonus = event.params.liquidationBonus;
-    eModeCategory.liquidationThreshold = event.params.liquidationThreshold;
-    eModeCategory.label = event.params.label;
-
-    eModeCategory.save();
-  } else {
-    log.error('Category with id: {} already existed', [id]);
-    return;
   }
+
+  eModeCategory.ltv = event.params.ltv;
+  eModeCategory.oracle = event.params.oracle;
+  eModeCategory.liquidationBonus = event.params.liquidationBonus;
+  eModeCategory.liquidationThreshold = event.params.liquidationThreshold;
+  eModeCategory.label = event.params.label;
+  eModeCategory.save();
 }
 
 export function handleAssetCollateralInEModeChanged(event: AssetCollateralInEModeChanged): void {
