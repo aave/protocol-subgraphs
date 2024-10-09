@@ -298,6 +298,7 @@ export function handleAssetCollateralInEModeChanged(event: AssetCollateralInEMod
   let config = EModeCategoryConfig.load(configId);
   if (!config) {
     config = new EModeCategoryConfig(configId);
+    config.borrowable = false;
   }
 
   config.category = id;
@@ -319,6 +320,7 @@ export function handleAssetBorrowableInEModeChanged(event: AssetBorrowableInEMod
   let config = EModeCategoryConfig.load(configId);
   if (!config) {
     config = new EModeCategoryConfig(configId);
+    config.collateral = false;
   }
 
   config.category = id;
