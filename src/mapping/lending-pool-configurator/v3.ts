@@ -286,22 +286,36 @@ export function handleEModeCategoryAdded(event: EModeCategoryAdded): void {
   eModeCategory.save();
 }
 
-export function handleAssetCollateralInEModeChanged(event: AssetCollateralInEModeChanged): void {
-  let id = BigInt.fromI32(event.params.categoryId).toString();
+function getOrInitEModeCategory(id: string): EModeCategory {
   let eModeCategory = EModeCategory.load(id);
   if (!eModeCategory) {
-    log.error('Emode category with id: {} does not exist', [id]);
-    return;
+    // This case should be unlikely, but in the event where the category does not exist, create the placeholder entity.
+    // This could happen if an assets collateral/borrowable config is set for an emode category that does not exist yet.
+    // The placeholder entity will be updated when the category is added, via the handleEModeCategoryAdded handler.
+    eModeCategory = new EModeCategory(id);
+    eModeCategory.ltv = zeroBI();
+    eModeCategory.oracle = zeroAddress();
+    eModeCategory.liquidationBonus = zeroBI();
+    eModeCategory.liquidationThreshold = zeroBI();
+    eModeCategory.label = 'PLACEHOLDER';
+    eModeCategory.save();
   }
+  return eModeCategory;
+}
 
-  let configId = event.params.asset.toHexString().concat(id);
+export function handleAssetCollateralInEModeChanged(event: AssetCollateralInEModeChanged): void {
+  let id = BigInt.fromI32(event.params.categoryId).toString();
+  let eModeCategory = getOrInitEModeCategory(id);
+  let categoryId = eModeCategory.id;
+
+  let configId = event.params.asset.toHexString().concat(categoryId);
   let config = EModeCategoryConfig.load(configId);
   if (!config) {
     config = new EModeCategoryConfig(configId);
     config.borrowable = false;
   }
 
-  config.category = id;
+  config.category = categoryId;
   config.asset = event.params.asset;
   config.collateral = event.params.collateral;
 
@@ -310,20 +324,17 @@ export function handleAssetCollateralInEModeChanged(event: AssetCollateralInEMod
 
 export function handleAssetBorrowableInEModeChanged(event: AssetBorrowableInEModeChanged): void {
   let id = BigInt.fromI32(event.params.categoryId).toString();
-  let eModeCategory = EModeCategory.load(id);
-  if (!eModeCategory) {
-    log.error('Emode category with id: {} does not exist', [id]);
-    return;
-  }
+  let eModeCategory = getOrInitEModeCategory(id);
+  let categoryId = eModeCategory.id;
 
-  let configId = event.params.asset.toHexString().concat(id);
+  let configId = event.params.asset.toHexString().concat(categoryId);
   let config = EModeCategoryConfig.load(configId);
   if (!config) {
     config = new EModeCategoryConfig(configId);
     config.collateral = false;
   }
 
-  config.category = id;
+  config.category = categoryId;
   config.asset = event.params.asset;
   config.borrowable = event.params.borrowable;
 
