@@ -40,11 +40,13 @@ import {
   FlashloanPremiumTotalUpdated,
   FlashloanPremiumToProtocolUpdated,
   BorrowableInIsolationChanged,
+  AssetCollateralInEModeChanged,
+  AssetBorrowableInEModeChanged,
 } from '../../../generated/templates/PoolConfigurator/PoolConfigurator';
 import { DefaultReserveInterestRateStrategy } from '../../../generated/templates/PoolConfigurator/DefaultReserveInterestRateStrategy';
 import { DefaultReserveInterestRateStrategyV2 } from '../../../generated/templates/PoolConfigurator/DefaultReserveInterestRateStrategyV2';
 
-import { EModeCategory, Pool, Reserve } from '../../../generated/schema';
+import { EModeCategory, EModeCategoryConfig, Pool, Reserve } from '../../../generated/schema';
 import { zeroAddress, zeroBI } from '../../utils/converters';
 
 export function saveReserve(reserve: Reserve, event: ethereum.Event): void {
@@ -282,6 +284,61 @@ export function handleEModeCategoryAdded(event: EModeCategoryAdded): void {
   eModeCategory.liquidationThreshold = event.params.liquidationThreshold;
   eModeCategory.label = event.params.label;
   eModeCategory.save();
+}
+
+function getOrInitEModeCategory(id: string): EModeCategory {
+  let eModeCategory = EModeCategory.load(id);
+  if (!eModeCategory) {
+    // This case should be unlikely, but in the event where the category does not exist, create the placeholder entity.
+    // This could happen if an assets collateral/borrowable config is set for an emode category that does not exist yet.
+    // The placeholder entity will be updated when the category is added, via the handleEModeCategoryAdded handler.
+    eModeCategory = new EModeCategory(id);
+    eModeCategory.ltv = zeroBI();
+    eModeCategory.oracle = zeroAddress();
+    eModeCategory.liquidationBonus = zeroBI();
+    eModeCategory.liquidationThreshold = zeroBI();
+    eModeCategory.label = 'PLACEHOLDER';
+    eModeCategory.save();
+  }
+  return eModeCategory;
+}
+
+export function handleAssetCollateralInEModeChanged(event: AssetCollateralInEModeChanged): void {
+  let id = BigInt.fromI32(event.params.categoryId).toString();
+  let eModeCategory = getOrInitEModeCategory(id);
+  let categoryId = eModeCategory.id;
+
+  let configId = event.params.asset.toHexString().concat(categoryId);
+  let config = EModeCategoryConfig.load(configId);
+  if (!config) {
+    config = new EModeCategoryConfig(configId);
+    config.borrowable = false;
+  }
+
+  config.category = categoryId;
+  config.asset = event.params.asset;
+  config.collateral = event.params.collateral;
+
+  config.save();
+}
+
+export function handleAssetBorrowableInEModeChanged(event: AssetBorrowableInEModeChanged): void {
+  let id = BigInt.fromI32(event.params.categoryId).toString();
+  let eModeCategory = getOrInitEModeCategory(id);
+  let categoryId = eModeCategory.id;
+
+  let configId = event.params.asset.toHexString().concat(categoryId);
+  let config = EModeCategoryConfig.load(configId);
+  if (!config) {
+    config = new EModeCategoryConfig(configId);
+    config.collateral = false;
+  }
+
+  config.category = categoryId;
+  config.asset = event.params.asset;
+  config.borrowable = event.params.borrowable;
+
+  config.save();
 }
 
 export function handleDebtCeilingChanged(event: DebtCeilingChanged): void {

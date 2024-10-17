@@ -514,6 +514,7 @@ type EModeCategory @entity {
   liquidationBonus: BigInt!
   oracle: Bytes!
   label: String!
+  assets: [EModeCategoryConfig!] @derivedFrom(field: "category")
 }
 
 type MapAssetPool @entity {
@@ -793,4 +794,12 @@ type SwapHistory @entity {
   fromAmount: BigInt!
   receivedAmount: BigInt!
   swapType: String!
+}
+
+type EModeCategoryConfig @entity {
+  id: ID!
+  category: EModeCategory!
+  asset: Bytes!
+  collateral: Boolean!
+  borrowable: Boolean!
 }
