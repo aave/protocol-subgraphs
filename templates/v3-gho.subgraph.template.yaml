@@ -133,7 +133,7 @@ dataSources:
         - event: EmissionManagerUpdated(indexed address,indexed address)
           handler: handleEmissionManagerUpdated
       file: src/mapping/incentives-controller/v3.ts
-    
+
   - kind: ethereum/contract
     name: GhoToken
     network: {{network}}
@@ -473,6 +473,10 @@ templates:
           handler: handleEModeAssetCategoryChanged
         - event: EModeCategoryAdded(indexed uint8,uint256,uint256,uint256,address,string)
           handler: handleEModeCategoryAdded
+        - event: AssetCollateralInEModeChanged(indexed address,uint8,bool)
+          handler: handleAssetCollateralInEModeChanged
+        - event: AssetBorrowableInEModeChanged(indexed address,uint8,bool)
+          handler: handleAssetBorrowableInEModeChanged
         - event: FlashloanPremiumToProtocolUpdated(uint128,uint128)
           handler: handleFlashloanPremiumToProtocolUpdated
         - event: FlashloanPremiumTotalUpdated(uint128,uint128)

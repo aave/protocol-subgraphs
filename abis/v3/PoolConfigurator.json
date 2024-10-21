@@ -4,6 +4,56 @@
   "sourceName": "contracts/protocol/pool/PoolConfigurator.sol",
   "abi": [
     {
+      "type": "event",
+      "name": "AssetBorrowableInEModeChanged",
+      "inputs": [
+        {
+          "name": "asset",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "categoryId",
+          "type": "uint8",
+          "indexed": false,
+          "internalType": "uint8"
+        },
+        {
+          "name": "borrowable",
+          "type": "bool",
+          "indexed": false,
+          "internalType": "bool"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "AssetCollateralInEModeChanged",
+      "inputs": [
+        {
+          "name": "asset",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "categoryId",
+          "type": "uint8",
+          "indexed": false,
+          "internalType": "uint8"
+        },
+        {
+          "name": "collateral",
+          "type": "bool",
+          "indexed": false,
+          "internalType": "bool"
+        }
+      ],
+      "anonymous": false
+    },
+    {
       "anonymous": false,
       "inputs": [
         {
