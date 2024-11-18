@@ -419,13 +419,17 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
   aToken.pool = reserve.pool;
   aToken.save();
 
-  STokenContract.create(event.params.stableDebtToken);
-  createMapContractToPool(event.params.stableDebtToken, reserve.pool);
-  let sToken = getOrInitSubToken(event.params.stableDebtToken);
-  sToken.underlyingAssetAddress = reserve.underlyingAsset;
-  sToken.underlyingAssetDecimals = reserve.decimals;
-  sToken.pool = reserve.pool;
-  sToken.save();
+  // Stable debt token will be the zero address in v3.2 and above since it was deprecated
+  if (event.params.stableDebtToken.toHexString() != zeroAddress().toHexString()) {
+    STokenContract.create(event.params.stableDebtToken);
+    createMapContractToPool(event.params.stableDebtToken, reserve.pool);
+    let sToken = getOrInitSubToken(event.params.stableDebtToken);
+    sToken.underlyingAssetAddress = reserve.underlyingAsset;
+    sToken.underlyingAssetDecimals = reserve.decimals;
+    sToken.pool = reserve.pool;
+    sToken.save();
+    reserve.sToken = sToken.id;
+  }
 
   VTokenContract.create(event.params.variableDebtToken);
   createMapContractToPool(event.params.variableDebtToken, reserve.pool);
@@ -436,7 +440,6 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
   vToken.save();
 
   reserve.aToken = aToken.id;
-  reserve.sToken = sToken.id;
   reserve.vToken = vToken.id;
   reserve.isActive = true;
   saveReserve(reserve, event);
