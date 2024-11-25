@@ -79,19 +79,26 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
     }
   }
 
-  // ONLY  FOR ETHER FI MARKET
-  let protocol = getProtocol();
-  let poolAddressesProvider = Address.fromString('0xeBa440B438Ad808101d1c451C1C5322c90BEFCdA'); // event.params.addressesProvider.toHexString();
-  if (Pool.load(poolAddressesProvider.toHexString()) == null) {
-    let pool = new Pool(poolAddressesProvider.toHexString());
-    pool.protocol = protocol.id;
-    pool.addressProviderId = BigInt.fromI32(45);
-    pool.active = true;
-    pool.paused = false;
-    pool.lastUpdateTimestamp = event.block.timestamp.toI32();
-    pool.save();
+  // ================== ETHER FI MARKET ONLY ==================
+  // This is a workaround only for the Ether Fi market, due to the order in which the market was initialized.
+  // This event handler will fire in the constructor of the Aave Price Oracle, at which point the address provider
+  // has been initialized, so we can create the Pool.
 
-    PoolAddressesProvider.create(poolAddressesProvider);
+  // Check if this is the price oracle on Ether Fi
+  if (address == Address.fromString('0x43b64f28A678944E0655404B0B98E443851cC34F')) {
+    let protocol = getProtocol();
+    let poolAddressesProvider = Address.fromString('0xeBa440B438Ad808101d1c451C1C5322c90BEFCdA'); // Ether Fi Address Provider
+    if (Pool.load(poolAddressesProvider.toHexString()) == null) {
+      let pool = new Pool(poolAddressesProvider.toHexString());
+      pool.protocol = protocol.id;
+      pool.addressProviderId = BigInt.fromI32(45); // Id of the Ether Fi market in the address provider registry
+      pool.active = true;
+      pool.paused = false;
+      pool.lastUpdateTimestamp = event.block.timestamp.toI32();
+      pool.save();
+
+      PoolAddressesProvider.create(poolAddressesProvider);
+    }
   }
 }
 
