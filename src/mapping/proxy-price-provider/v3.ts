@@ -1,11 +1,11 @@
-import { PriceOracle, PriceOracleAsset } from '../../../generated/schema';
+import { Pool, PriceOracle, PriceOracleAsset } from '../../../generated/schema';
 import {
   AaveOracle,
   AssetSourceUpdated,
   BaseCurrencySet,
   FallbackOracleUpdated,
 } from '../../../generated/AaveOracle/AaveOracle';
-import { Address, ethereum, log, Bytes } from '@graphprotocol/graph-ts';
+import { Address, ethereum, log, BigInt } from '@graphprotocol/graph-ts';
 import {
   formatUsdEthChainlinkPrice,
   getPriceOracleAssetType,
@@ -20,6 +20,7 @@ import {
   getChainlinkAggregator,
   getOrInitPriceOracle,
   getPriceOracleAsset,
+  getProtocol,
 } from '../../helpers/v3/initializers';
 import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/v3/price-updates';
 
@@ -27,6 +28,7 @@ import { PriceOracle as FallbackPriceOracle } from '../../../generated/AaveOracl
 
 import { FallbackPriceOracle as FallbackPriceOracleContract } from '../../../generated/templates';
 import { MOCK_USD_ADDRESS, ZERO_ADDRESS } from '../../utils/constants';
+import { PoolAddressesProvider } from '../../../generated/templates';
 
 export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void {
   let priceOracle = getOrInitPriceOracle();
@@ -75,6 +77,21 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
     ) {
       usdEthPriceUpdate(priceOracle, ethUsdPrice, event);
     }
+  }
+
+  // ONLY  FOR ETHER FI MARKET
+  let protocol = getProtocol();
+  let poolAddressesProvider = Address.fromString('0xeBa440B438Ad808101d1c451C1C5322c90BEFCdA'); // event.params.addressesProvider.toHexString();
+  if (Pool.load(poolAddressesProvider.toHexString()) == null) {
+    let pool = new Pool(poolAddressesProvider.toHexString());
+    pool.protocol = protocol.id;
+    pool.addressProviderId = BigInt.fromI32(45);
+    pool.active = true;
+    pool.paused = false;
+    pool.lastUpdateTimestamp = event.block.timestamp.toI32();
+    pool.save();
+
+    PoolAddressesProvider.create(poolAddressesProvider);
   }
 }
 
