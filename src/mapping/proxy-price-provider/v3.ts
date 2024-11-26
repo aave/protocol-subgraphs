@@ -1,11 +1,11 @@
-import { PriceOracle, PriceOracleAsset } from '../../../generated/schema';
+import { Pool, PriceOracle, PriceOracleAsset } from '../../../generated/schema';
 import {
   AaveOracle,
   AssetSourceUpdated,
   BaseCurrencySet,
   FallbackOracleUpdated,
 } from '../../../generated/AaveOracle/AaveOracle';
-import { Address, ethereum, log, Bytes } from '@graphprotocol/graph-ts';
+import { Address, ethereum, log, BigInt } from '@graphprotocol/graph-ts';
 import {
   formatUsdEthChainlinkPrice,
   getPriceOracleAssetType,
@@ -20,6 +20,7 @@ import {
   getChainlinkAggregator,
   getOrInitPriceOracle,
   getPriceOracleAsset,
+  getProtocol,
 } from '../../helpers/v3/initializers';
 import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/v3/price-updates';
 
@@ -27,6 +28,7 @@ import { PriceOracle as FallbackPriceOracle } from '../../../generated/AaveOracl
 
 import { FallbackPriceOracle as FallbackPriceOracleContract } from '../../../generated/templates';
 import { MOCK_USD_ADDRESS, ZERO_ADDRESS } from '../../utils/constants';
+import { PoolAddressesProvider } from '../../../generated/templates';
 
 export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void {
   let priceOracle = getOrInitPriceOracle();
@@ -74,6 +76,28 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
       priceOracle.usdPriceEthMainSource.equals(zeroAddress())
     ) {
       usdEthPriceUpdate(priceOracle, ethUsdPrice, event);
+    }
+  }
+
+  // ================== ETHER FI MARKET ONLY ==================
+  // This is a workaround only for the Ether Fi market, due to the order in which the market was initialized.
+  // This event handler will fire in the constructor of the Aave Price Oracle, at which point the address provider
+  // has been initialized, so we can create the Pool.
+
+  // Check if this is the price oracle on Ether Fi
+  if (address == Address.fromString('0x43b64f28A678944E0655404B0B98E443851cC34F')) {
+    let protocol = getProtocol();
+    let poolAddressesProvider = Address.fromString('0xeBa440B438Ad808101d1c451C1C5322c90BEFCdA'); // Ether Fi Address Provider
+    if (Pool.load(poolAddressesProvider.toHexString()) == null) {
+      let pool = new Pool(poolAddressesProvider.toHexString());
+      pool.protocol = protocol.id;
+      pool.addressProviderId = BigInt.fromI32(45); // Id of the Ether Fi market in the address provider registry
+      pool.active = true;
+      pool.paused = false;
+      pool.lastUpdateTimestamp = event.block.timestamp.toI32();
+      pool.save();
+
+      PoolAddressesProvider.create(poolAddressesProvider);
     }
   }
 }
