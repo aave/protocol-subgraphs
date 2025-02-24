@@ -1,0 +1,9 @@
+{
+    "network": "sonic",
+    "AaveOracleAddress": "0xD63f7658C66B2934Bd234D79D06aEF5290734B30",
+    "AaveOracleStartBlock": 7986591,
+    "PoolAddressesProviderRegistryAddress": "0x5E5D87858592d211fdb4503F09FB2B5cf805cB51",
+    "PoolAddressesProviderRegistryStartBlock": 7986569,
+    "RewardsControllerAddress": "0x24bD6e9ca54F1737467DEf82dCA9702925B3Aa59",
+    "RewardsControllerStartBlock": 7986598
+  }
