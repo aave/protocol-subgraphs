@@ -32,6 +32,7 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Scroll V3](https://thegraph.com/explorer/subgraphs/74JwenoHZb2aAYVGCCSdPWzi9mm745dyHyQQVoZ7Sbub)
 - [ZKsync V3](https://thegraph.com/explorer/subgraphs/ENYSc8G3WvrbhWH8UZHrqPWYRcuyCaNmaTmoVp7uzabM)
 - [Linea V3](https://thegraph.com/explorer/subgraphs/Gz2kjnmRV1fQj3R8cssoZa5y9VTanhrDo4Mh7nWW1wHa)
+- [Sonic V3](https://thegraph.com/explorer/subgraphs/FQcacc4ZJaQVS9euWb76nvpSq2GxavBnUM6DU6tmspbi)
 
 ### Test networks
 
