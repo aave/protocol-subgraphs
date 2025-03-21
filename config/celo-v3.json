@@ -1,0 +1,9 @@
+{
+    "network": "celo",
+    "AaveOracleAddress": "0x1e693D088ceFD1E95ba4c4a5F7EeA41a1Ec37e8b",
+    "AaveOracleStartBlock": 30390068,
+    "PoolAddressesProviderRegistryAddress": "0xB4B6939D0804DCE8d0Ac3e59b2eD5C072829d56b",
+    "PoolAddressesProviderRegistryStartBlock": 30390065,
+    "RewardsControllerAddress": "0x4725A0FdbEB14A77964bC1C221eE3a7982263103",
+    "RewardsControllerStartBlock": 30390070
+  }
