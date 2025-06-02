@@ -1,0 +1,9 @@
+{
+  "network": "soneium",
+  "AaveOracleAddress": "0x20040a64612555042335926d72B4E5F667a67fA1",
+  "AaveOracleStartBlock": 7004639,
+  "PoolAddressesProviderRegistryAddress": "0x629A5a607aC4901252e4C48a0Fde156785598F5b",
+  "PoolAddressesProviderRegistryStartBlock": 7004628,
+  "RewardsControllerAddress": "0xE9Dfe1cbD5F10C56c1466F6AC88e1Fb304Be3780",
+  "RewardsControllerStartBlock": 7004645
+}

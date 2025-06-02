@@ -1,8 +1,10 @@
-specVersion: 0.0.4
+specVersion: 1.0.0
 description: Protocol v3 subgraph
 repository: https://github.com/aave/protocol-subgraphs
 schema:
   file: ./schema.graphql
+indexerHints:
+  prune: never
 dataSources:
   # --------------------------------------
   #      ORACLES / PRICE PROVIDERS
