@@ -1,0 +1,10 @@
+{
+    "network": "ink",
+    "AaveOracleAddress": "0x4758213271BFdC72224A7a8742dC865fC97756e1",
+    "AaveOracleStartBlock": 19954039,
+    "PoolAddressesProviderRegistryAddress": "0x501B4c19dd9C2e06E94dA7b6D5Ed4ddA013EC741",
+    "PoolAddressesProviderRegistryStartBlock": 19954027,
+    "RewardsControllerAddress": "0xD93e3Ae8f69D04d484d1652Ca569d4b0522414DF",
+    "RewardsControllerStartBlock": 19954047
+  }
+  
