@@ -35,6 +35,7 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Sonic V3](https://thegraph.com/explorer/subgraphs/FQcacc4ZJaQVS9euWb76nvpSq2GxavBnUM6DU6tmspbi)
 - [Celo V3](https://thegraph.com/explorer/subgraphs/GAVWZzGwQ6d6QbFojyFWxpZ2GB9Rf5hZgGyJHCEry8kn)
 - [Soneium V3](https://thegraph.com/explorer/subgraphs/5waxmqS3rkRtZPoV2mL5RCToupVxVbTd7hjicxMGebYm)
+- [Ink V3](https://thegraph.com/explorer/subgraphs/6AY9ccNwMwd3G27zp9vUKWCi9ugvNS6gkh5EEBY2xnPC)
 
 ### Test networks
 
