@@ -247,8 +247,12 @@ export function handleFlashLoan(event: FlashLoan): void {
   let pool = Pool.load(poolId) as Pool;
 
   let premium = event.params.premium;
+  let flashloanPremiumToProtocol = pool.flashloanPremiumToProtocol;
+  if (!flashloanPremiumToProtocol) {
+    flashloanPremiumToProtocol = BigInt.fromI32(0);
+  }
   let premiumToProtocol = premium
-    .times(pool.flashloanPremiumToProtocol as BigInt)
+    .times(flashloanPremiumToProtocol)
     .plus(BigInt.fromI32(5000))
     .div(BigInt.fromI32(10000));
   let premiumToLP = premium.minus(premiumToProtocol);
@@ -384,8 +388,12 @@ export function handleBackUnbacked(event: BackUnbacked): void {
   let pool = Pool.load(poolId) as Pool;
 
   let premium = event.params.fee;
+  let bridgeProtocolFee = pool.bridgeProtocolFee;
+  if (!bridgeProtocolFee) {
+    bridgeProtocolFee = BigInt.fromI32(0);
+  }
   let premiumToProtocol = premium
-    .times(pool.bridgeProtocolFee as BigInt)
+    .times(bridgeProtocolFee)
     .plus(BigInt.fromI32(5000))
     .div(BigInt.fromI32(10000));
   let premiumToLP = premium.minus(premiumToProtocol);

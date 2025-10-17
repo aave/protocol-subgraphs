@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(VERSION=v3 BLOCKCHAIN=v3 NETWORK=plasma-mainnet npm run prepare:subgraph:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

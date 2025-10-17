@@ -1,0 +1,9 @@
+{
+  "network": "plasma-mainnet",
+  "AaveOracleAddress": "0x33E0b3fc976DC9C516926BA48CfC0A9E10a2aAA5",
+  "AaveOracleStartBlock": 1,
+  "PoolAddressesProviderRegistryAddress": "0xeE8Ba3464abcEeA6E34554d174DCbdd66083641b",
+  "PoolAddressesProviderRegistryStartBlock": 1,
+  "RewardsControllerAddress": "0x3A57eAa3Ca3794D66977326af7991eB3F6dD5a5A",
+  "RewardsControllerStartBlock": 1
+}

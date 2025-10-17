@@ -95,6 +95,9 @@ export function handleFallbackOracleUpdated(event: FallbackOracleUpdated): void 
       pool.active = true;
       pool.paused = false;
       pool.lastUpdateTimestamp = event.block.timestamp.toI32();
+      pool.bridgeProtocolFee = BigInt.fromI32(0);
+      pool.flashloanPremiumTotal = BigInt.fromI32(0);
+      pool.flashloanPremiumToProtocol = BigInt.fromI32(0);
       pool.save();
 
       PoolAddressesProvider.create(poolAddressesProvider);
