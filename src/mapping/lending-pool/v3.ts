@@ -247,8 +247,10 @@ export function handleFlashLoan(event: FlashLoan): void {
   let pool = Pool.load(poolId) as Pool;
 
   let premium = event.params.premium;
+  // The event to update the flashloanPremiumToProtocol was deprecated in v3.4, and now always returns a default value of 10000
+  let flashloanPremiumToProtocol = pool.flashloanPremiumToProtocol || BigInt.fromI32(10000);
   let premiumToProtocol = premium
-    .times(pool.flashloanPremiumToProtocol as BigInt)
+    .times(flashloanPremiumToProtocol as BigInt)
     .plus(BigInt.fromI32(5000))
     .div(BigInt.fromI32(10000));
   let premiumToLP = premium.minus(premiumToProtocol);
