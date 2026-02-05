@@ -1,9 +1,9 @@
 {
-    "network": "megaeth",
-    "AaveOracleAddress": "0x421117D7319E96d831972b3F7e970bbfe29C4F21",
-    "AaveOracleStartBlock": 6657951,
-    "PoolAddressesProviderRegistryAddress": "0x085C658057bD4be6D09b8449e71d78601f9b2303",
-    "PoolAddressesProviderRegistryStartBlock": 6657947,
-    "RewardsControllerAddress": "0x3691FF69e22c1353df9F8b2c0B1B16aA5fEEc389",
-    "RewardsControllerStartBlock": 6657953
-  }
+  "network": "megaeth",
+  "AaveOracleAddress": "0x421117D7319E96d831972b3F7e970bbfe29C4F21",
+  "AaveOracleStartBlock": 6657951,
+  "PoolAddressesProviderRegistryAddress": "0x085C658057bD4be6D09b8449e71d78601f9b2303",
+  "PoolAddressesProviderRegistryStartBlock": 6657947,
+  "RewardsControllerAddress": "0x3691FF69e22c1353df9F8b2c0B1B16aA5fEEc389",
+  "RewardsControllerStartBlock": 6657953
+}
