@@ -34,6 +34,7 @@
     "deploy:hosted:celo-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=celo env-cmd npm run prepare:subgraph && SLUG=protocol-v3-celo env-cmd npm run subgraph:deploy",
     "deploy:hosted:soneium-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=soneium env-cmd npm run prepare:subgraph && SLUG=protocol-v-3-soneium env-cmd npm run subgraph:deploy",
     "deploy:hosted:ink-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=ink env-cmd npm run prepare:subgraph && SLUG=protocol-v-3-ink env-cmd npm run subgraph:deploy",
+    "deploy:hosted:megaeth-v3": "VERSION=v3 BLOCKCHAIN=v3 NETWORK=megaeth env-cmd npm run prepare:subgraph && SLUG=protocol-v-3-mega-eth env-cmd npm run subgraph:deploy",
     "deploy:hosted:v2": "npm run deploy:hosted:mainnet && npm run deploy:hosted:polygon-v2 && npm run deploy:hosted:avalanche-v2",
     "deploy:hosted:v2-testnet": "npm run deploy:hosted:goerli-v2 && npm run deploy:hosted:mumbai-v2 && npm run deploy:hosted:fuji-v2",
     "deploy:hosted:v3": "npm run deploy:hosted:avalanche-v3 && npm run deploy:hosted:polygon-v3 && npm run deploy:hosted:optimism-v3 && npm run deploy:hosted:fantom-v3 && npm run deploy:hosted:arbitrum-v3 && npm run deploy:hosted:harmony-v3 && npm run deploy:hosted:mainnet-v3 && npm run deploy:hosted:gnosis-v3 && npm run deploy:hosted:bnb-v3 && npm run deploy:hosted:scroll-v3",
