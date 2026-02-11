@@ -1,17 +1,17 @@
-type Protocol @entity {
+type Protocol @entity(immutable: false) {
   # just 1 for now
   id: ID!
   pools: [Pool!]! @derivedFrom(field: "protocol")
 }
 
 # service entity, when we receiving an event we should wknow which pool is it
-type ContractToPoolMapping @entity {
+type ContractToPoolMapping @entity(immutable: false) {
   # contract address
   id: ID!
   pool: Pool!
 }
 
-type Pool @entity {
+type Pool @entity(immutable: false) {
   id: ID!
   addressProviderId: BigInt!
   protocol: Protocol!
@@ -47,21 +47,21 @@ type Pool @entity {
   paused: Boolean!
 }
 
-type PriceHistoryItem @entity {
+type PriceHistoryItem @entity(immutable: false) {
   id: ID!
   asset: PriceOracleAsset!
   price: BigInt!
   timestamp: Int!
 }
 
-type UsdEthPriceHistoryItem @entity {
+type UsdEthPriceHistoryItem @entity(immutable: false) {
   id: ID!
   oracle: PriceOracle!
   price: BigInt!
   timestamp: Int!
 }
 
-type ChainlinkAggregator @entity {
+type ChainlinkAggregator @entity(immutable: false) {
   # aggregator address
   id: ID!
   oracleAsset: PriceOracleAsset!
@@ -78,7 +78,7 @@ enum PriceOracleAssetPlatform {
 }
 
 # TODO: check nomenclature
-type PriceOracleAsset @entity {
+type PriceOracleAsset @entity(immutable: false) {
   # underlying asset address
   id: ID!
   oracle: PriceOracle!
@@ -94,7 +94,7 @@ type PriceOracleAsset @entity {
 }
 
 # TODO: should we change the naming of usdPriceEth to have generic market naming?
-type PriceOracle @entity {
+type PriceOracle @entity(immutable: false) {
   id: ID!
   proxyPriceProvider: Bytes!
   usdPriceEth: BigInt!
@@ -112,7 +112,7 @@ type PriceOracle @entity {
 }
 
 # Entity representing A/VariableDebt/StableDebt tokens
-type SubToken @entity {
+type SubToken @entity(immutable: false) {
   """
   SubToken address
   """
@@ -124,7 +124,7 @@ type SubToken @entity {
   rewards: [Reward!]! @derivedFrom(field: "asset")
 }
 
-type Referrer @entity {
+type Referrer @entity(immutable: false) {
   id: ID!
   supplies: [Supply!]! @derivedFrom(field: "referrer")
   borrows: [Borrow!]! @derivedFrom(field: "referrer")
@@ -151,7 +151,7 @@ interface UserTransaction {
   timestamp: Int!
 }
 
-type Supply implements UserTransaction @entity {
+type Supply implements UserTransaction @entity(immutable: false) {
   """
   tx hash
   """
@@ -169,7 +169,7 @@ type Supply implements UserTransaction @entity {
   assetPriceUSD: BigDecimal!
 }
 
-type RedeemUnderlying implements UserTransaction @entity {
+type RedeemUnderlying implements UserTransaction @entity(immutable: false) {
   """
   tx hash
   """
@@ -186,7 +186,7 @@ type RedeemUnderlying implements UserTransaction @entity {
   assetPriceUSD: BigDecimal!
 }
 
-type Borrow implements UserTransaction @entity {
+type Borrow implements UserTransaction @entity(immutable: false) {
   """
   tx hash
   """
@@ -208,7 +208,7 @@ type Borrow implements UserTransaction @entity {
   assetPriceUSD: BigDecimal!
 }
 
-type SwapBorrowRate implements UserTransaction @entity {
+type SwapBorrowRate implements UserTransaction @entity(immutable: false) {
   """
   tx hash
   """
@@ -226,7 +226,7 @@ type SwapBorrowRate implements UserTransaction @entity {
   timestamp: Int!
 }
 
-type UsageAsCollateral implements UserTransaction @entity {
+type UsageAsCollateral implements UserTransaction @entity(immutable: false) {
   """
   tx hash
   """ #
@@ -242,7 +242,7 @@ type UsageAsCollateral implements UserTransaction @entity {
   timestamp: Int!
 }
 
-type RebalanceStableBorrowRate implements UserTransaction @entity {
+type RebalanceStableBorrowRate implements UserTransaction @entity(immutable: false) {
   """
   tx hash
   """ #
@@ -259,7 +259,7 @@ type RebalanceStableBorrowRate implements UserTransaction @entity {
   timestamp: Int!
 }
 
-type Repay implements UserTransaction @entity {
+type Repay implements UserTransaction @entity(immutable: false) {
   """
   tx hash
   """
@@ -277,7 +277,7 @@ type Repay implements UserTransaction @entity {
   assetPriceUSD: BigDecimal!
 }
 
-type IsolationModeTotalDebtUpdated @entity {
+type IsolationModeTotalDebtUpdated @entity(immutable: false) {
   """
   tx hash
   """
@@ -288,7 +288,7 @@ type IsolationModeTotalDebtUpdated @entity {
   timestamp: Int!
 }
 
-type FlashLoan @entity {
+type FlashLoan @entity(immutable: false) {
   """
   tx hash
   """ #
@@ -306,7 +306,7 @@ type FlashLoan @entity {
   assetPriceUSD: BigDecimal!
 }
 
-type LiquidationCall implements UserTransaction @entity {
+type LiquidationCall implements UserTransaction @entity(immutable: false) {
   """
   tx hash
   """ #
@@ -327,7 +327,7 @@ type LiquidationCall implements UserTransaction @entity {
   borrowAssetPriceUSD: BigDecimal!
 }
 
-type MintUnbacked @entity {
+type MintUnbacked @entity(immutable: false) {
   id: ID!
   pool: Pool!
   user: User!
@@ -339,7 +339,7 @@ type MintUnbacked @entity {
   timestamp: Int!
 }
 
-type BackUnbacked @entity {
+type BackUnbacked @entity(immutable: false) {
   id: ID!
   pool: Pool!
   reserve: Reserve!
@@ -352,7 +352,7 @@ type BackUnbacked @entity {
   timestamp: Int!
 }
 
-type MintedToTreasury @entity {
+type MintedToTreasury @entity(immutable: false) {
   id: ID!
   pool: Pool!
   reserve: Reserve!
@@ -360,7 +360,7 @@ type MintedToTreasury @entity {
   timestamp: Int!
 }
 
-type UserEModeSet implements UserTransaction @entity {
+type UserEModeSet implements UserTransaction @entity(immutable: false) {
   id: ID!
   user: User!
   timestamp: Int!
@@ -369,7 +369,7 @@ type UserEModeSet implements UserTransaction @entity {
   action: Action!
 }
 
-type ReserveConfigurationHistoryItem @entity {
+type ReserveConfigurationHistoryItem @entity(immutable: false) {
   """
   tx hash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
@@ -387,7 +387,7 @@ type ReserveConfigurationHistoryItem @entity {
   timestamp: Int!
 }
 
-type ReserveParamsHistoryItem @entity {
+type ReserveParamsHistoryItem @entity(immutable: false) {
   """
   tx hash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
@@ -431,7 +431,7 @@ type ReserveParamsHistoryItem @entity {
   # lifetimeVariableDebtFeeCollected: BigInt!
 }
 
-type RewardFeedOracle @entity {
+type RewardFeedOracle @entity(immutable: false) {
   """
   address of reward
   """
@@ -441,7 +441,7 @@ type RewardFeedOracle @entity {
   updatedAt: Int!
 }
 
-type Reward @entity {
+type Reward @entity(immutable: false) {
   """
   address of ic:asset:reward
   """
@@ -460,7 +460,7 @@ type Reward @entity {
   updatedAt: Int!
 }
 
-type UserReward @entity {
+type UserReward @entity(immutable: false) {
   """
   id: ic:asset:reward:user
   """
@@ -472,7 +472,7 @@ type UserReward @entity {
   updatedAt: Int!
 }
 
-type RewardsController @entity {
+type RewardsController @entity(immutable: false) {
   """
   address of the incentives controller
   """
@@ -482,7 +482,7 @@ type RewardsController @entity {
   claimIncentives: [ClaimRewardsCall!]! @derivedFrom(field: "rewardsController")
 }
 
-type RewardedAction @entity {
+type RewardedAction @entity(immutable: false) {
   """
   txHash
   """
@@ -492,7 +492,7 @@ type RewardedAction @entity {
   amount: BigInt!
 }
 
-type ClaimRewardsCall implements UserTransaction @entity {
+type ClaimRewardsCall implements UserTransaction @entity(immutable: false) {
   """
   txHash
   """
@@ -507,7 +507,7 @@ type ClaimRewardsCall implements UserTransaction @entity {
   timestamp: Int!
 }
 
-type EModeCategory @entity {
+type EModeCategory @entity(immutable: false) {
   """
   id: categoryId
   """
@@ -519,7 +519,7 @@ type EModeCategory @entity {
   label: String!
 }
 
-type MapAssetPool @entity {
+type MapAssetPool @entity(immutable: false) {
   """
   address of a /s /v token
   """
@@ -528,7 +528,7 @@ type MapAssetPool @entity {
   underlyingAsset: Bytes!
 }
 
-type Reserve @entity {
+type Reserve @entity(immutable: false) {
   """
   Reserve address
   """
@@ -636,7 +636,7 @@ type Reserve @entity {
   supplies: [Supply!]! @derivedFrom(field: "reserve")
 }
 
-type ATokenBalanceHistoryItem @entity {
+type ATokenBalanceHistoryItem @entity(immutable: false) {
   """
   userReserve + txHash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
@@ -648,7 +648,7 @@ type ATokenBalanceHistoryItem @entity {
   index: BigInt!
 }
 
-type VTokenBalanceHistoryItem @entity {
+type VTokenBalanceHistoryItem @entity(immutable: false) {
   """
   userReserve + txHash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
@@ -660,7 +660,7 @@ type VTokenBalanceHistoryItem @entity {
   index: BigInt!
 }
 
-type STokenBalanceHistoryItem @entity {
+type STokenBalanceHistoryItem @entity(immutable: false) {
   """
   userReserve + txHash
   """ # TODO: replace with blockNumber/timestamp + blockPosition
@@ -673,7 +673,7 @@ type STokenBalanceHistoryItem @entity {
 }
 
 # TODO: not needed any more, can use borrow object and filter by user
-#type UserBorrowHistoryItem @entity {
+#type UserBorrowHistoryItem @entity(immutable: false) {
 #  """
 #  userReserve + txHash
 #  """ # TODO: replace with blockNumber/timestamp + blockPosition
@@ -686,7 +686,7 @@ type STokenBalanceHistoryItem @entity {
 #  timestamp: Int!
 #}
 
-type StableTokenDelegatedAllowance @entity {
+type StableTokenDelegatedAllowance @entity(immutable: false) {
   """
   stable + fromuser address + touser address+ reserve address
   """
@@ -697,7 +697,7 @@ type StableTokenDelegatedAllowance @entity {
   userReserve: UserReserve!
 }
 
-type VariableTokenDelegatedAllowance @entity {
+type VariableTokenDelegatedAllowance @entity(immutable: false) {
   """
   variable + fromuser address + touser address+ reserve address
   """
@@ -708,7 +708,7 @@ type VariableTokenDelegatedAllowance @entity {
   userReserve: UserReserve!
 }
 
-type UserReserve @entity {
+type UserReserve @entity(immutable: false) {
   """
   user address + reserve address
   """
@@ -754,7 +754,7 @@ type UserReserve @entity {
   liquidationCallHistory: [LiquidationCall!]! @derivedFrom(field: "collateralUserReserve")
 }
 
-type User @entity {
+type User @entity(immutable: false) {
   """
   user address
   """
@@ -786,7 +786,7 @@ type User @entity {
   claimRewards: [ClaimRewardsCall!]! @derivedFrom(field: "user")
 }
 
-type SwapHistory @entity {
+type SwapHistory @entity(immutable: false) {
   """
   tx hash
   """
@@ -798,7 +798,7 @@ type SwapHistory @entity {
   swapType: String!
 }
 
-type Facilitator @entity {
+type Facilitator @entity(immutable: false) {
   id: ID!
   bucketLevel: BigInt!
   bucketCapacity: BigInt!
@@ -811,7 +811,7 @@ type Facilitator @entity {
   treasuryUpdateHistory: [FacilitatorTreasuryUpdated!]! @derivedFrom(field: "facilitator")
 }
 
-type FacilitatorLevelUpdated @entity {
+type FacilitatorLevelUpdated @entity(immutable: false) {
   id: ID!
   txHash: Bytes!
   facilitator: Facilitator!
@@ -819,7 +819,7 @@ type FacilitatorLevelUpdated @entity {
   newBucketLevel: BigInt!
 }
 
-type FacilitatorCapacityUpdated @entity {
+type FacilitatorCapacityUpdated @entity(immutable: false) {
   id: ID!
   txHash: Bytes!
   facilitator: Facilitator!
@@ -827,7 +827,7 @@ type FacilitatorCapacityUpdated @entity {
   newBucketCapacity: BigInt!
 }
 
-type FacilitatorTreasuryDistribution @entity {
+type FacilitatorTreasuryDistribution @entity(immutable: false) {
   id: ID!
   facilitator: Facilitator!
   amount: BigInt!
@@ -836,7 +836,7 @@ type FacilitatorTreasuryDistribution @entity {
   txHash: Bytes!
 }
 
-type FacilitatorTreasuryUpdated @entity {
+type FacilitatorTreasuryUpdated @entity(immutable: false) {
   id: ID!
   facilitator: Facilitator!
   previousTreasury: Bytes!
@@ -844,7 +844,7 @@ type FacilitatorTreasuryUpdated @entity {
   txHash: Bytes!
 }
 
-type GhoFlashMinter @entity {
+type GhoFlashMinter @entity(immutable: false) {
   id: ID!
   facilitator: Facilitator!
   fee: BigInt!
@@ -853,7 +853,7 @@ type GhoFlashMinter @entity {
   feeUpdates: [GhoFlashMinterFeeUpdate!]! @derivedFrom(field: "ghoFlashMinter")
 }
 
-type GhoFlashMint @entity {
+type GhoFlashMint @entity(immutable: false) {
   id: ID!
   ghoFlashMinter: GhoFlashMinter!
   receiver: Bytes!
@@ -863,7 +863,7 @@ type GhoFlashMint @entity {
   timestamp: Int!
 }
 
-type GhoFlashMinterFeeUpdate @entity {
+type GhoFlashMinterFeeUpdate @entity(immutable: false) {
   id: ID!
   ghoFlashMinter: GhoFlashMinter!
   oldFee: BigInt!
@@ -871,7 +871,7 @@ type GhoFlashMinterFeeUpdate @entity {
   txHash: Bytes!
 }
 
-type GhoDiscount @entity {
+type GhoDiscount @entity(immutable: false) {
   id: ID!
   discountToken: Bytes!
   discountRate: BigInt!
@@ -882,7 +882,7 @@ type GhoDiscount @entity {
   discountTokenUpdates: [GhoDiscountTokenUpdate!]! @derivedFrom(field: "ghoDiscount")
 }
 
-type GhoDiscountHistoryItem @entity {
+type GhoDiscountHistoryItem @entity(immutable: false) {
   id: ID!
   txHash: Bytes!
   ghoDiscount: GhoDiscount!
@@ -894,7 +894,7 @@ type GhoDiscountHistoryItem @entity {
   newMinDiscountTokenBalance: BigInt!
 }
 
-type GhoDiscountTokenUpdate @entity {
+type GhoDiscountTokenUpdate @entity(immutable: false) {
   id: ID!
   txHash: Bytes!
   ghoDiscount: GhoDiscount!
