@@ -77,6 +77,11 @@
     "prettier": "^1.18.2",
     "typescript": "3.5.3"
   },
+  "overrides": {
+    "@graphprotocol/graph-cli": {
+      "glob": "11.1.0"
+    }
+  },
   "engines": {
     "node": ">=18"
   }
