@@ -164,7 +164,6 @@ export function handleUserIndexUpdated(event: UserIndexUpdated): void {
       userReserve.sTokenincentivesUserIndex = index;
       userReserve.sIncentivesLastUpdateTimestamp = blockTimestamp;
     }
-
     userReserve.save();
   } else {
     log.warning(
