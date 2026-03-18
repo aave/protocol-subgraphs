@@ -81,7 +81,8 @@
     "@graphprotocol/graph-cli": {
       "glob": "11.1.0",
       "undici": "7.18.2"
-    }
+    },
+    "axios": "0.30.3"
   },
   "engines": {
     "node": ">=18"
