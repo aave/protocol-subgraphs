@@ -82,6 +82,9 @@
       "glob": "11.1.0",
       "undici": "7.18.2"
     },
+    "filelist": {
+      "minimatch": "5.1.7"
+    },
     "axios": "0.30.3"
   },
   "engines": {
