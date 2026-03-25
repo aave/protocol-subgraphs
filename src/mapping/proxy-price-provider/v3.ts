@@ -143,19 +143,18 @@ export function priceFeedUpdated(
 
     // Type simple means that the source is chainlink source
     if (priceOracleAsset.type == PRICE_ORACLE_ASSET_TYPE_SIMPLE) {
+      let aggregatorAddress = assetOracleAddress;
+
       // get underlying aggregator from proxy (assetOracleAddress) address
       let chainlinkProxyInstance = EACAggregatorProxy.bind(assetOracleAddress);
       let aggregatorAddressCall = chainlinkProxyInstance.try_aggregator();
-      // If we can't get the aggregator, it means that the source address is not a chainlink proxy
-      // so it has been registered badly.
-      if (aggregatorAddressCall.reverted) {
-        log.error(
-          `PROXY: Simple Type must be a chainlink proxy. || asset: {} | assetOracleAddress: {}`,
-          [sAssetAddress, assetOracleAddress.toHexString()]
-        );
-        return;
+
+      // If aggregator() call succeeds, it's a proxy - use the underlying aggregator
+      // If it fails, the source address itself is the direct aggregator (e.g., PT tokens)
+      if (!aggregatorAddressCall.reverted) {
+        aggregatorAddress = aggregatorAddressCall.value;
       }
-      let aggregatorAddress = aggregatorAddressCall.value;
+
       priceOracleAsset.priceSource = aggregatorAddress;
       // create ChainLink aggregator template entity
       ChainlinkAggregatorContract.create(aggregatorAddress);
