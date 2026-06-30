@@ -1,0 +1,9 @@
+{
+  "network": "monad",
+  "AaveOracleAddress": "0x0c02b2c2038066C10Eab8fe1D5Cdb73d5a78A1Bf",
+  "AaveOracleStartBlock": 81909749,
+  "PoolAddressesProviderRegistryAddress": "0xa7790F5EDE1f1A57e7122e869eF6095c07C7E01d",
+  "PoolAddressesProviderRegistryStartBlock": 81909735,
+  "RewardsControllerAddress": "0x6f275486dC3EF07691B846E500556774B2D98F59",
+  "RewardsControllerStartBlock": 81909758
+}
