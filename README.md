@@ -38,6 +38,7 @@ The Aave Protocol subgraphs index data from the protocol smart contracts, and ex
 - [Ink V3](https://thegraph.com/explorer/subgraphs/6AY9ccNwMwd3G27zp9vUKWCi9ugvNS6gkh5EEBY2xnPC)
 - [MegaETH V3](https://thegraph.com/explorer/subgraphs/DnfLSdosqrcZ8pb8G2rL954SdRB8Pk4jjkgjtfwfx7cY)
 - [X Layer V3](https://thegraph.com/explorer/subgraphs/3sfF6x49emXFzMov1q7AvRVCkVZpSTZxuKeLDXZY53sE)
+- [Monad V3](https://thegraph.com/explorer/subgraphs/H36q2dDvJHQP1A2ayzL1XpjoB5aKuMZcB8iLa7nR3X3D)
 
 ### Test networks
 
