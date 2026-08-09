@@ -82,7 +82,8 @@
   "overrides": {
     "@graphprotocol/graph-cli": {
       "glob": "11.1.0",
-      "undici": "7.18.2"
+      "undici": "7.18.2",
+      "decompress": "npm:@xhmikosr/decompress@11.1.3"
     },
     "filelist": {
       "minimatch": "5.1.9"
@@ -90,6 +91,6 @@
     "axios": "0.30.3"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.18.1"
   }
 }
