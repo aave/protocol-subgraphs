@@ -34,7 +34,6 @@ import { MOCK_USD_ADDRESS } from '../../utils/constants';
 import { genericPriceUpdate, usdEthPriceUpdate } from '../../helpers/price-updates';
 import { PriceOracle, PriceOracleAsset } from '../../../generated/schema';
 import { EACAggregatorProxy } from '../../../generated/AaveOracle/EACAggregatorProxy';
-export { handleFallbackOracleUpdated, handleWethSet } from './proxy-price-provider';
 
 export function priceFeedUpdated(
   event: ethereum.Event,
