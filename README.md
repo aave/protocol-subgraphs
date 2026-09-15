@@ -295,25 +295,68 @@ To query based on a historical timestamp, you will need to convert the timstamp 
 
 ### Pagination
 
-The Graph places a limit on the number of items which can returned by a single query (currently 100). To fetch a larger number of items, the `first` and `skip` parameters can be used to create paginated queries.
+The Graph returns 100 entities per collection by default; this is not a hard maximum of 100 per query. Set `first` explicitly and use a page size supported by the endpoint. See [The Graph's querying best practices](https://thegraph.com/docs/en/subgraphs/querying/best-practices/).
 
-For example, if you wanted to fetch the first 200 transactions for an Aave market, you can't query 200 items at once, but you can achieve the same thing by concatenating the output of these queries:
+`first` and `skip` work for small offset-based queries, but large `skip` values generally perform poorly. For larger exports, use an ID cursor with `orderBy: id`, `orderDirection: asc`, and `where: { id_gt: $lastID }`, as described in [The Graph's GraphQL API guide](https://thegraph.com/docs/en/subgraphs/querying/graphql-api/#pagination-example).
 
-```
-{
-  userTransactions(orderBy: timestamp, orderDirection: asc, first: 100, skip: 0){
+#### Exporting a User's Transaction History
+
+Use a V2 or V3 protocol deployment exposing `UserTransaction`, not a governance subgraph. Choose a finalized block hash on that deployment's network, and keep it fixed for every page. The endpoint must have indexed and retained the requested block; an unavailable historical block is an error, not an empty result.
+
+```graphql
+query TransactionPage($first: Int!, $lastID: String!, $user: String!, $blockHash: Bytes!) {
+  userTransactions(
+    first: $first
+    orderBy: id
+    orderDirection: asc
+    where: { user: $user, id_gt: $lastID }
+    block: { hash: $blockHash }
+  ) {
+    id
     timestamp
+    txHash
+    action
+  }
+  _meta(block: { hash: $blockHash }) {
+    deployment
+    hasIndexingErrors
+    block { number hash }
   }
 }
 ```
 
+Start with `lastID: ""`, a lowercase wallet address for `user`, and an explicit page size such as `first: 100`. After each page, pass its final `id` as `lastID`. Continue until an empty page is returned, even if an earlier page contains fewer rows than requested.
+
+IDs are ordered lexicographically, not chronologically. If chronological output is needed, sort the collected rows by `timestamp`, using `id` to break ties. A timestamp alone is not a safe cursor because multiple events can share the same timestamp.
+
+#### Read-only Node.js Example
+
+[`examples/paginate-user-transactions.mjs`](examples/paginate-user-transactions.mjs) implements this loop using native `fetch` on Node.js 20.18.1 or later, with no dependency installation required. Replace all placeholders below with your query endpoint, wallet address, and finalized block hash. Obtain the query URL and any required API key from The Graph Explorer; do not include an authenticated URL in public reports or logs.
+
+```bash
+export SUBGRAPH_URL='https://YOUR_QUERY_ENDPOINT'
+export USER_ADDRESS='0xYOUR_WALLET_ADDRESS'
+export BLOCK_HASH='0xYOUR_FINALIZED_BLOCK_HASH'
+node examples/paginate-user-transactions.mjs
 ```
-{
-  userTransactions(orderBy: timestamp, orderDirection: asc, first: 100, skip: 100){
-    timestamp
-  }
-}
+
+The command prints the transaction count and snapshot metadata after the loop finishes. `PAGE_SIZE` optionally overrides the default of 100. The exported `paginateUserTransactions` async generator also yields each page for applications that need the transaction rows.
+
+Run the example's local tests with:
+
+```bash
+node --test examples/paginate-user-transactions.test.mjs
 ```
+
+#### Checking an Export
+
+- Check HTTP status and GraphQL errors before reading a page; do not accept partial data alongside errors.
+- Check `_meta.deployment`, `_meta.block.number`, and `_meta.block.hash` on every page, including the empty final page. Restart if the deployment or snapshot changes.
+- Require `_meta.hasIndexingErrors` to be `false`. Missing metadata or an indexing error is not evidence of a complete export.
+- Reject duplicate, unordered, or non-advancing IDs rather than silently deduplicating inconsistent responses. The example performs these checks before yielding each page.
+- Treat any failed run as incomplete, even if earlier pages were collected successfully.
+
+Exhausting this cursor covers the matching entities returned by that indexed deployment at the selected block. It does not independently prove that every on-chain event was indexed correctly. For inconsistent results, record the exact query, variables, deployment ID, block number/hash, page counts, and error responses, with credentials removed. Compare repeated exports against the same deployment and snapshot before attributing missing data to pagination, indexing, or backend behaviour.
 
 </details>
 
