@@ -111,7 +111,7 @@ export function getPriceOracleAssetPlatform(_type: BigInt): string {
   } else if (type == 4) {
     return PRICE_ORACLE_ASSET_PLATFORM_GELATO;
   } else {
-    // other untraked types:
+    // other untracked types:
     log.error('This type is not tracked:: {}', [type.toString()]);
     return PRICE_ORACLE_ASSET_PLATFORM_ERROR;
   }

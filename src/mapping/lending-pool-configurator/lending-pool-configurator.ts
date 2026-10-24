@@ -79,7 +79,7 @@ export function handleReserveInterestRateStrategyChanged(
   }
   //////
   let reserve = getOrInitReserve(event.params.asset, event);
-  // if reserve is not initialize, needed to handle ropsten wrong deployment
+  // if reserve is not initialized, needed to handle ropsten wrong deployment
   if (reserve.aToken == zeroAddress().toHexString()) {
     return;
   }

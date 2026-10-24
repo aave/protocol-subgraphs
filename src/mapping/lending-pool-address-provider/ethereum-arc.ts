@@ -99,7 +99,7 @@ export function handleProxyCreated(event: ProxyCreated): void {
   genericAddressProviderUpdate(poolComponent, newProxyAddress, event);
 }
 
-// TODO: not completely sure that this should work, as id passed through event can not mach, and proxy? or impl?
+// TODO: not completely sure that this should work, as id passed through event can not match, and proxy? or impl?
 export function handleAddressSet(event: AddressSet): void {
   let mappedId = '';
   if (event.params.id.toString() == 'LENDING_POOL') {
